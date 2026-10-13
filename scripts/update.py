@@ -187,9 +187,9 @@ def fetch_meta(nsuid):
     try:
         html = get(HK_PAGE.format(id=nsuid))
     except urllib.error.HTTPError as e:
-        return nsuid, ("404" if e.code == 404 else "err"), None
-    except Exception:
-        return nsuid, "err", None
+        return nsuid, ("404" if e.code == 404 else f"HTTP{e.code}"), None
+    except Exception as e:
+        return nsuid, type(e).__name__, None
     ld = {}
     m = LDJSON.search(html)
     if m:
@@ -205,7 +205,7 @@ def fetch_meta(nsuid):
         f = {}
     name = s(f.get("formalName")) or s(ld.get("name"))
     if not name:
-        return nsuid, "err", None
+        return nsuid, "no-data" if len(html) > 20000 else f"short-page({len(html)})", None
     plat = f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else (
         "BEE" if "Switch 2" in s(ld.get("gamePlatform")) else "HAC")
     img_url = s(ld.get("image")) or s(f.get("heroBannerUrl"))
@@ -215,24 +215,38 @@ def fetch_meta(nsuid):
 
 
 def refresh_meta(games, limit, retry_404):
+    """慢慢抓，避免被港區網站當成機器人擋掉；連續失敗太多次就先停，下次再繼續。"""
     todo = [i for i, g in games.items()
             if not g.get("meta") and g.get("status") in SELLING and (retry_404 or not g.get("hk404"))]
     todo.sort(key=lambda i: (games[i].get("sale") is None, -int(i)))  # 特價中、較新的優先
+    total = len(todo)
     todo = todo[:limit]
-    log(f"抓商品資料：{len(todo)} 筆")
+    log(f"抓商品資料：本次 {len(todo)} 筆（尚缺 {total} 筆）")
     os.makedirs(os.path.join(DOCS, "d"), exist_ok=True)
-    ok = 0
-    with ThreadPoolExecutor(4) as ex:
-        for nsuid, st, rec in ex.map(fetch_meta, todo):
-            g = games[nsuid]
-            if st == "ok":
-                g.update(name=rec["name"], plat=rec["plat"], img=rec["img"] or g.get("img", ""),
-                         meta=True, hk404=False)
-                save(os.path.join(DOCS, "d", nsuid[-6:] + ".json"), rec["detail"])
-                ok += 1
-            elif st == "404":
-                g["hk404"] = True
-    log(f"  完成 {ok} 筆")
+    stats, fails, ok = {}, 0, 0
+    for n, nsuid in enumerate(todo, 1):
+        nsuid, st, rec = fetch_meta(nsuid)
+        stats[st] = stats.get(st, 0) + 1
+        g = games[nsuid]
+        if st == "ok":
+            g.update(name=rec["name"], plat=rec["plat"], img=rec["img"] or g.get("img", ""),
+                     meta=True, hk404=False)
+            save(os.path.join(DOCS, "d", nsuid[-6:] + ".json"), rec["detail"])
+            ok += 1
+            fails = 0
+        elif st == "404":
+            g["hk404"] = True
+            fails = 0
+        else:
+            fails += 1
+            if fails >= 15:
+                log(f"  連續 {fails} 次失敗（{st}），可能被暫時擋住，先停止，下次再繼續")
+                break
+            time.sleep(10)
+        if n % 50 == 0:
+            log(f"  {n}/{len(todo)} {stats}")
+        time.sleep(1.5)
+    log(f"  完成 {ok} 筆，結果統計：{stats}")
 
 
 # ───────────── 4. 價格歷史 ─────────────
@@ -315,7 +329,7 @@ def main():
     global TODAY
     ap = argparse.ArgumentParser()
     ap.add_argument("--full", action="store_true", help="從頭掃描全部編號，並重試港區查不到的商品")
-    ap.add_argument("--meta-limit", type=int, default=5000)
+    ap.add_argument("--meta-limit", type=int, default=700)
     args = ap.parse_args()
     now = datetime.now(TW)
     TODAY = now.strftime("%Y-%m-%d")
