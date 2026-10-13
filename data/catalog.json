@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-13 16:57",
+"asof":"2026-10-13 21:16",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -105,7 +105,7 @@
 "reg":990,
 "sale":198,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -297,7 +297,7 @@
 "reg":1050,
 "sale":315,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -705,7 +705,7 @@
 "reg":335,
 "sale":67,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -741,7 +741,7 @@
 "reg":102,
 "sale":51,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -753,7 +753,7 @@
 "reg":940,
 "sale":188,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -981,7 +981,7 @@
 "reg":1250,
 "sale":112,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -1281,7 +1281,7 @@
 "reg":975,
 "sale":39,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -1473,7 +1473,7 @@
 "reg":1990,
 "sale":518,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -1533,7 +1533,7 @@
 "reg":620,
 "sale":188,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -1929,7 +1929,7 @@
 "reg":598,
 "sale":179,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -2049,7 +2049,7 @@
 "reg":1190,
 "sale":595,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -2145,7 +2145,7 @@
 "reg":1490,
 "sale":358,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -2469,7 +2469,7 @@
 "reg":1010,
 "sale":101,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -2937,7 +2937,7 @@
 "reg":698,
 "sale":139,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -2961,7 +2961,7 @@
 "reg":473,
 "sale":156,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -2973,7 +2973,7 @@
 "reg":473,
 "sale":156,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -3489,7 +3489,7 @@
 "reg":1590,
 "sale":160,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -3609,7 +3609,7 @@
 "reg":1790,
 "sale":179,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4053,7 +4053,7 @@
 "reg":1390,
 "sale":556,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4089,7 +4089,7 @@
 "reg":598,
 "sale":179,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4161,7 +4161,7 @@
 "reg":670,
 "sale":134,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4257,7 +4257,7 @@
 "reg":1390,
 "sale":556,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4377,7 +4377,7 @@
 "reg":880,
 "sale":352,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4509,7 +4509,7 @@
 "reg":500,
 "sale":250,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4593,7 +4593,7 @@
 "reg":610,
 "sale":40,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4605,7 +4605,7 @@
 "reg":1690,
 "sale":676,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4653,7 +4653,7 @@
 "reg":840,
 "sale":420,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4737,7 +4737,7 @@
 "reg":748,
 "sale":523,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4785,7 +4785,7 @@
 "reg":279,
 "sale":190,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -4857,7 +4857,7 @@
 "reg":670,
 "sale":275,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5145,7 +5145,7 @@
 "reg":1490,
 "sale":298,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5193,7 +5193,7 @@
 "reg":610,
 "sale":40,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5289,7 +5289,7 @@
 "reg":950,
 "sale":85,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5301,7 +5301,7 @@
 "reg":950,
 "sale":123,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5313,7 +5313,7 @@
 "reg":950,
 "sale":76,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5325,7 +5325,7 @@
 "reg":1250,
 "sale":87,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5409,7 +5409,7 @@
 "reg":478,
 "sale":191,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5481,7 +5481,7 @@
 "reg":1050,
 "sale":525,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5769,7 +5769,7 @@
 "reg":949,
 "sale":94,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5841,7 +5841,7 @@
 "reg":889,
 "sale":355,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5865,7 +5865,7 @@
 "reg":1250,
 "sale":250,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5925,7 +5925,7 @@
 "reg":1080,
 "sale":108,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -5961,7 +5961,7 @@
 "reg":1490,
 "sale":288,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6177,7 +6177,7 @@
 "reg":1790,
 "sale":179,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6249,7 +6249,7 @@
 "reg":350,
 "sale":210,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6261,7 +6261,7 @@
 "reg":350,
 "sale":210,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6273,7 +6273,7 @@
 "reg":500,
 "sale":300,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6285,7 +6285,7 @@
 "reg":500,
 "sale":300,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6297,7 +6297,7 @@
 "reg":500,
 "sale":300,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6309,7 +6309,7 @@
 "reg":500,
 "sale":300,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6381,7 +6381,7 @@
 "reg":1790,
 "sale":580,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6465,7 +6465,7 @@
 "reg":330,
 "sale":66,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6477,7 +6477,7 @@
 "reg":357,
 "sale":178,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -6861,7 +6861,7 @@
 "reg":473,
 "sale":236,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7041,7 +7041,7 @@
 "reg":478,
 "sale":239,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7077,7 +7077,7 @@
 "reg":490,
 "sale":98,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7245,7 +7245,7 @@
 "reg":1180,
 "sale":472,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7425,7 +7425,7 @@
 "reg":190,
 "sale":77,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7461,7 +7461,7 @@
 "reg":1080,
 "sale":324,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7773,7 +7773,7 @@
 "reg":1190,
 "sale":588,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7917,7 +7917,7 @@
 "reg":300,
 "sale":135,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -7989,7 +7989,7 @@
 "reg":1190,
 "sale":773,
 "end":"2026-11-04T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8013,7 +8013,7 @@
 "reg":328,
 "sale":98,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8145,7 +8145,7 @@
 "reg":1180,
 "sale":472,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8241,7 +8241,7 @@
 "reg":1150,
 "sale":460,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8469,7 +8469,7 @@
 "reg":890,
 "sale":260,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8481,7 +8481,7 @@
 "reg":328,
 "sale":164,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8649,7 +8649,7 @@
 "reg":1190,
 "sale":705,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8853,7 +8853,7 @@
 "reg":890,
 "sale":526,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -8925,7 +8925,7 @@
 "reg":1790,
 "sale":1253,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -9009,7 +9009,7 @@
 "reg":830,
 "sale":170,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -9045,7 +9045,7 @@
 "reg":790,
 "sale":316,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -9081,7 +9081,7 @@
 "reg":860,
 "sale":430,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -9285,7 +9285,7 @@
 "reg":830,
 "sale":290,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -9333,7 +9333,7 @@
 "reg":830,
 "sale":170,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -9813,7 +9813,7 @@
 "reg":428,
 "sale":180,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -10053,7 +10053,7 @@
 "reg":90,
 "sale":60,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -10473,7 +10473,7 @@
 "reg":780,
 "sale":429,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -10845,7 +10845,7 @@
 "reg":890,
 "sale":178,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -11049,7 +11049,7 @@
 "reg":82,
 "sale":41,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -11265,7 +11265,7 @@
 "reg":328,
 "sale":229,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -11349,7 +11349,7 @@
 "reg":590,
 "sale":354,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -11493,7 +11493,7 @@
 "reg":1029,
 "sale":720,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -11613,7 +11613,7 @@
 "reg":1450,
 "sale":725,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12141,7 +12141,7 @@
 "reg":470,
 "sale":305,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12225,7 +12225,7 @@
 "reg":990,
 "sale":355,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12261,7 +12261,7 @@
 "reg":455,
 "sale":295,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12333,7 +12333,7 @@
 "reg":1320,
 "sale":792,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12513,7 +12513,7 @@
 "reg":1190,
 "sale":595,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12621,7 +12621,7 @@
 "reg":790,
 "sale":400,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12645,7 +12645,7 @@
 "reg":1190,
 "sale":768,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12801,7 +12801,7 @@
 "reg":579,
 "sale":463,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12825,7 +12825,7 @@
 "reg":899,
 "sale":449,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12897,7 +12897,7 @@
 "reg":215,
 "sale":107,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -12933,7 +12933,7 @@
 "reg":585,
 "sale":198,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -13185,7 +13185,7 @@
 "reg":399,
 "sale":279,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -13197,7 +13197,7 @@
 "reg":890,
 "sale":623,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -13509,7 +13509,7 @@
 "reg":988,
 "sale":790,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -13581,7 +13581,7 @@
 "reg":228,
 "sale":114,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -13881,7 +13881,7 @@
 "reg":859,
 "sale":601,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14097,7 +14097,7 @@
 "reg":890,
 "sale":540,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14193,7 +14193,7 @@
 "reg":148,
 "sale":74,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14205,7 +14205,7 @@
 "reg":399,
 "sale":199,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14445,7 +14445,7 @@
 "reg":148,
 "sale":74,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14505,7 +14505,7 @@
 "reg":590,
 "sale":354,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14757,7 +14757,7 @@
 "reg":519,
 "sale":363,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14769,7 +14769,7 @@
 "reg":1180,
 "sale":640,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -14781,7 +14781,7 @@
 "reg":1180,
 "sale":650,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15153,7 +15153,7 @@
 "reg":328,
 "sale":278,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15165,7 +15165,7 @@
 "reg":590,
 "sale":147,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15273,7 +15273,7 @@
 "reg":393,
 "sale":176,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15357,7 +15357,7 @@
 "reg":144,
 "sale":72,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15489,7 +15489,7 @@
 "reg":1160,
 "sale":580,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15621,7 +15621,7 @@
 "reg":749,
 "sale":411,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15813,7 +15813,7 @@
 "reg":305,
 "sale":152,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15873,7 +15873,7 @@
 "reg":200,
 "sale":80,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -15933,7 +15933,7 @@
 "reg":300,
 "sale":240,
 "end":"2026-10-24T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16161,7 +16161,7 @@
 "reg":455,
 "sale":318,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16293,7 +16293,7 @@
 "reg":450,
 "sale":315,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16305,7 +16305,7 @@
 "reg":213,
 "sale":106,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16569,7 +16569,7 @@
 "reg":1190,
 "sale":588,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16689,7 +16689,7 @@
 "reg":1880,
 "sale":1316,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16701,7 +16701,7 @@
 "reg":566,
 "sale":367,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -16761,7 +16761,7 @@
 "reg":240,
 "sale":96,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17085,7 +17085,7 @@
 "reg":200,
 "sale":79,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17181,7 +17181,7 @@
 "reg":235,
 "sale":119,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17241,7 +17241,7 @@
 "reg":560,
 "sale":392,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17337,7 +17337,7 @@
 "reg":288,
 "sale":172,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17433,7 +17433,7 @@
 "reg":123,
 "sale":104,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17517,7 +17517,7 @@
 "reg":499,
 "sale":399,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17841,7 +17841,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17877,7 +17877,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17949,7 +17949,7 @@
 "reg":1990,
 "sale":1180,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17973,7 +17973,7 @@
 "reg":449,
 "sale":150,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -17985,7 +17985,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18009,7 +18009,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18033,7 +18033,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18057,7 +18057,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18177,7 +18177,7 @@
 "reg":1420,
 "sale":852,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18441,7 +18441,7 @@
 "reg":213,
 "sale":106,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18477,7 +18477,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18501,7 +18501,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18525,7 +18525,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18537,7 +18537,7 @@
 "reg":195,
 "sale":156,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18549,7 +18549,7 @@
 "reg":320,
 "sale":160,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -18957,7 +18957,7 @@
 "reg":749,
 "sale":224,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19293,7 +19293,7 @@
 "reg":590,
 "sale":236,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19461,7 +19461,7 @@
 "reg":315,
 "sale":80,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19473,7 +19473,7 @@
 "reg":590,
 "sale":236,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19509,7 +19509,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19569,7 +19569,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19617,7 +19617,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19725,7 +19725,7 @@
 "reg":279,
 "sale":92,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19797,7 +19797,7 @@
 "reg":249,
 "sale":93,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -19821,7 +19821,7 @@
 "reg":1190,
 "sale":892,
 "end":"2027-01-07T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20361,7 +20361,7 @@
 "reg":149,
 "sale":89,
 "end":"2026-10-19T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20373,7 +20373,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20577,7 +20577,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20601,7 +20601,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20625,7 +20625,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20649,7 +20649,7 @@
 "reg":670,
 "sale":402,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -20781,7 +20781,7 @@
 "reg":159,
 "sale":62,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -21033,7 +21033,7 @@
 "reg":328,
 "sale":98,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -21321,7 +21321,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -21885,7 +21885,7 @@
 "reg":215,
 "sale":119,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22281,7 +22281,7 @@
 "reg":125,
 "sale":40,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22293,7 +22293,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22341,7 +22341,7 @@
 "reg":337,
 "sale":202,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22353,7 +22353,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22377,7 +22377,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22413,7 +22413,7 @@
 "reg":149,
 "sale":74,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22497,7 +22497,7 @@
 "reg":125,
 "sale":40,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -22641,7 +22641,7 @@
 "reg":319,
 "sale":255,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23193,7 +23193,7 @@
 "reg":240,
 "sale":156,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23349,7 +23349,7 @@
 "reg":690,
 "sale":586,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23457,7 +23457,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23577,7 +23577,7 @@
 "reg":790,
 "sale":316,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23601,7 +23601,7 @@
 "reg":790,
 "sale":316,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23697,7 +23697,7 @@
 "reg":478,
 "sale":430,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23709,7 +23709,7 @@
 "reg":399,
 "sale":92,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23877,7 +23877,7 @@
 "reg":125,
 "sale":40,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23937,7 +23937,7 @@
 "reg":330,
 "sale":198,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -23949,7 +23949,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24201,7 +24201,7 @@
 "reg":488,
 "sale":390,
 "end":"2026-10-31T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24225,7 +24225,7 @@
 "reg":178,
 "sale":89,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24237,7 +24237,7 @@
 "reg":148,
 "sale":103,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24249,7 +24249,7 @@
 "reg":268,
 "sale":187,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24381,7 +24381,7 @@
 "reg":90,
 "sale":54,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24393,7 +24393,7 @@
 "reg":309,
 "sale":92,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24417,7 +24417,7 @@
 "reg":239,
 "sale":107,
 "end":"2026-10-19T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24513,7 +24513,7 @@
 "reg":899,
 "sale":359,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24549,7 +24549,7 @@
 "reg":899,
 "sale":359,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24585,7 +24585,7 @@
 "reg":238,
 "sale":190,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24597,7 +24597,7 @@
 "reg":152,
 "sale":30,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24609,7 +24609,7 @@
 "reg":319,
 "sale":255,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -24717,7 +24717,7 @@
 "reg":300,
 "sale":210,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25125,7 +25125,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25197,7 +25197,7 @@
 "reg":199,
 "sale":37,
 "end":"2026-11-08T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25269,7 +25269,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25293,7 +25293,7 @@
 "reg":149,
 "sale":89,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25305,7 +25305,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-19T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25365,7 +25365,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25377,7 +25377,7 @@
 "reg":399,
 "sale":95,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25413,7 +25413,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25473,7 +25473,7 @@
 "reg":790,
 "sale":316,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25485,7 +25485,7 @@
 "reg":790,
 "sale":316,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25521,7 +25521,7 @@
 "reg":399,
 "sale":279,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25569,7 +25569,7 @@
 "reg":350,
 "sale":175,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25773,7 +25773,7 @@
 "reg":40,
 "sale":36,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25893,7 +25893,7 @@
 "reg":299,
 "sale":149,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -25905,7 +25905,7 @@
 "reg":988,
 "sale":790,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26037,7 +26037,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26157,7 +26157,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26205,7 +26205,7 @@
 "reg":409,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26229,7 +26229,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26313,7 +26313,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26361,7 +26361,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26397,7 +26397,7 @@
 "reg":60,
 "sale":30,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26457,7 +26457,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26469,7 +26469,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26481,7 +26481,7 @@
 "reg":484,
 "sale":242,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26517,7 +26517,7 @@
 "reg":599,
 "sale":539,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26673,7 +26673,7 @@
 "reg":328,
 "sale":278,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26697,7 +26697,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26805,7 +26805,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26841,7 +26841,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26889,7 +26889,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -26901,7 +26901,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -27213,7 +27213,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -27273,7 +27273,7 @@
 "reg":250,
 "sale":100,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -27561,7 +27561,7 @@
 "reg":156,
 "sale":101,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -27789,7 +27789,7 @@
 "reg":399,
 "sale":95,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -27825,7 +27825,7 @@
 "reg":99,
 "sale":69,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -27957,7 +27957,7 @@
 "reg":199,
 "sale":41,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28077,7 +28077,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28101,7 +28101,7 @@
 "reg":89,
 "sale":44,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28113,7 +28113,7 @@
 "reg":409,
 "sale":98,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28125,7 +28125,7 @@
 "reg":790,
 "sale":395,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28173,7 +28173,7 @@
 "reg":95,
 "sale":30,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28197,7 +28197,7 @@
 "reg":400,
 "sale":79,
 "end":"2026-10-24T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28257,7 +28257,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28365,7 +28365,7 @@
 "reg":159,
 "sale":95,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28389,7 +28389,7 @@
 "reg":550,
 "sale":330,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28425,7 +28425,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28473,7 +28473,7 @@
 "reg":305,
 "sale":152,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28485,7 +28485,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28533,7 +28533,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28581,7 +28581,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28593,7 +28593,7 @@
 "reg":275,
 "sale":192,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28629,7 +28629,7 @@
 "reg":165,
 "sale":110,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28749,7 +28749,7 @@
 "reg":488,
 "sale":390,
 "end":"2026-10-31T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28809,7 +28809,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28929,7 +28929,7 @@
 "reg":268,
 "sale":182,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28941,7 +28941,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28953,7 +28953,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28965,7 +28965,7 @@
 "reg":899,
 "sale":359,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28977,7 +28977,7 @@
 "reg":899,
 "sale":359,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -28989,7 +28989,7 @@
 "reg":499,
 "sale":399,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29049,7 +29049,7 @@
 "reg":788,
 "sale":630,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29061,7 +29061,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29289,7 +29289,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29313,7 +29313,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29337,7 +29337,7 @@
 "reg":250,
 "sale":125,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29349,7 +29349,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29361,7 +29361,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29373,7 +29373,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29385,7 +29385,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29601,7 +29601,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29649,7 +29649,7 @@
 "reg":929,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29661,7 +29661,7 @@
 "reg":939,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29685,7 +29685,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29817,7 +29817,7 @@
 "reg":160,
 "sale":96,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -29997,7 +29997,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30021,7 +30021,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30093,7 +30093,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30261,7 +30261,7 @@
 "reg":75,
 "sale":33,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30333,7 +30333,7 @@
 "reg":157,
 "sale":94,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30345,7 +30345,7 @@
 "reg":125,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30369,7 +30369,7 @@
 "reg":999,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30381,7 +30381,7 @@
 "reg":148,
 "sale":74,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30453,7 +30453,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30465,7 +30465,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30729,7 +30729,7 @@
 "reg":1190,
 "sale":825,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -30921,7 +30921,7 @@
 "reg":1488,
 "sale":1264,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31005,7 +31005,7 @@
 "reg":1088,
 "sale":761,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31041,7 +31041,7 @@
 "reg":960,
 "sale":672,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31305,7 +31305,7 @@
 "reg":268,
 "sale":187,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31377,7 +31377,7 @@
 "reg":148,
 "sale":74,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31401,7 +31401,7 @@
 "reg":677,
 "sale":507,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31485,7 +31485,7 @@
 "reg":500,
 "sale":400,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31605,7 +31605,7 @@
 "reg":500,
 "sale":350,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31677,7 +31677,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31713,7 +31713,7 @@
 "reg":189,
 "sale":122,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31917,7 +31917,7 @@
 "reg":624,
 "sale":156,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31965,7 +31965,7 @@
 "reg":590,
 "sale":472,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -31989,7 +31989,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32073,7 +32073,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32193,7 +32193,7 @@
 "reg":259,
 "sale":97,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32205,7 +32205,7 @@
 "reg":158,
 "sale":102,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32253,7 +32253,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32337,7 +32337,7 @@
 "reg":89,
 "sale":30,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32373,7 +32373,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32433,7 +32433,7 @@
 "reg":48,
 "sale":43,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32685,7 +32685,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32877,7 +32877,7 @@
 "reg":250,
 "sale":93,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32901,7 +32901,7 @@
 "reg":220,
 "sale":143,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32949,7 +32949,7 @@
 "reg":1490,
 "sale":1341,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -32997,7 +32997,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33021,7 +33021,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33033,7 +33033,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33045,7 +33045,7 @@
 "reg":156,
 "sale":31,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33057,7 +33057,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33081,7 +33081,7 @@
 "reg":150,
 "sale":105,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33141,7 +33141,7 @@
 "reg":119,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33153,7 +33153,7 @@
 "reg":189,
 "sale":129,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33249,7 +33249,7 @@
 "reg":381,
 "sale":304,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33273,7 +33273,7 @@
 "reg":250,
 "sale":50,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33285,7 +33285,7 @@
 "reg":490,
 "sale":294,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33381,7 +33381,7 @@
 "reg":1190,
 "sale":892,
 "end":"2026-11-07T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33453,7 +33453,7 @@
 "reg":125,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33621,7 +33621,7 @@
 "reg":118,
 "sale":82,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33645,7 +33645,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33753,7 +33753,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -33801,7 +33801,7 @@
 "reg":1750,
 "sale":1225,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34077,7 +34077,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34101,7 +34101,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34245,7 +34245,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34341,7 +34341,7 @@
 "reg":188,
 "sale":37,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34437,7 +34437,7 @@
 "reg":238,
 "sale":166,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34461,7 +34461,7 @@
 "reg":899,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34557,7 +34557,7 @@
 "reg":299,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34569,7 +34569,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34581,7 +34581,7 @@
 "reg":299,
 "sale":89,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34665,7 +34665,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34749,7 +34749,7 @@
 "reg":155,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34773,7 +34773,7 @@
 "reg":195,
 "sale":64,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34821,7 +34821,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -34905,7 +34905,7 @@
 "reg":155,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35121,7 +35121,7 @@
 "reg":49,
 "sale":44,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35181,7 +35181,7 @@
 "reg":188,
 "sale":131,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35229,7 +35229,7 @@
 "reg":555,
 "sale":388,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35253,7 +35253,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35265,7 +35265,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35277,7 +35277,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35289,7 +35289,7 @@
 "reg":785,
 "sale":628,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35409,7 +35409,7 @@
 "reg":148,
 "sale":103,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35493,7 +35493,7 @@
 "reg":399,
 "sale":359,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35505,7 +35505,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35517,7 +35517,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35553,7 +35553,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35601,7 +35601,7 @@
 "reg":77,
 "sale":34,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35685,7 +35685,7 @@
 "reg":238,
 "sale":190,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35721,7 +35721,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35853,7 +35853,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35901,7 +35901,7 @@
 "reg":156,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -35937,7 +35937,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36033,7 +36033,7 @@
 "reg":119,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36045,7 +36045,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36129,7 +36129,7 @@
 "reg":249,
 "sale":161,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36165,7 +36165,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36177,7 +36177,7 @@
 "reg":319,
 "sale":191,
 "end":"2026-10-31T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36297,7 +36297,7 @@
 "reg":749,
 "sale":524,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36309,7 +36309,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36333,7 +36333,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36357,7 +36357,7 @@
 "reg":259,
 "sale":96,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36405,7 +36405,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36477,7 +36477,7 @@
 "reg":579,
 "sale":463,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36621,7 +36621,7 @@
 "reg":51,
 "sale":45,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36681,7 +36681,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36861,7 +36861,7 @@
 "reg":200,
 "sale":100,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36885,7 +36885,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36945,7 +36945,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -36957,7 +36957,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-25T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37005,7 +37005,7 @@
 "reg":268,
 "sale":241,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37089,7 +37089,7 @@
 "reg":432,
 "sale":345,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37125,7 +37125,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37257,7 +37257,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37293,7 +37293,7 @@
 "reg":408,
 "sale":306,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37365,7 +37365,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37425,7 +37425,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37437,7 +37437,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37449,7 +37449,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37461,7 +37461,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37485,7 +37485,7 @@
 "reg":158,
 "sale":94,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37521,7 +37521,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37533,7 +37533,7 @@
 "reg":408,
 "sale":326,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37593,7 +37593,7 @@
 "reg":148,
 "sale":88,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37689,7 +37689,7 @@
 "reg":249,
 "sale":174,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37809,7 +37809,7 @@
 "reg":199,
 "sale":99,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37881,7 +37881,7 @@
 "reg":299,
 "sale":194,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37917,7 +37917,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -37965,7 +37965,7 @@
 "reg":180,
 "sale":108,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38049,7 +38049,7 @@
 "reg":379,
 "sale":322,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38061,7 +38061,7 @@
 "reg":1190,
 "sale":1071,
 "end":"2026-10-14T14:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38109,7 +38109,7 @@
 "reg":159,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38121,7 +38121,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38133,7 +38133,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38145,7 +38145,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38157,7 +38157,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38217,7 +38217,7 @@
 "reg":1455,
 "sale":1309,
 "end":"2026-11-04T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38265,7 +38265,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38337,7 +38337,7 @@
 "reg":1490,
 "sale":1192,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38481,7 +38481,7 @@
 "reg":158,
 "sale":79,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38493,7 +38493,7 @@
 "reg":315,
 "sale":63,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38505,7 +38505,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38517,7 +38517,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38529,7 +38529,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38553,7 +38553,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38589,7 +38589,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38613,7 +38613,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38625,7 +38625,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38733,7 +38733,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-24T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38769,7 +38769,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38781,7 +38781,7 @@
 "reg":187,
 "sale":37,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -38865,7 +38865,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39009,7 +39009,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39021,7 +39021,7 @@
 "reg":689,
 "sale":620,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39141,7 +39141,7 @@
 "reg":399,
 "sale":339,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39189,7 +39189,7 @@
 "reg":690,
 "sale":586,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39237,7 +39237,7 @@
 "reg":125,
 "sale":91,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39261,7 +39261,7 @@
 "reg":315,
 "sale":94,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39273,7 +39273,7 @@
 "reg":90,
 "sale":63,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39285,7 +39285,7 @@
 "reg":158,
 "sale":63,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39333,7 +39333,7 @@
 "reg":158,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39369,7 +39369,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39429,7 +39429,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39465,7 +39465,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39477,7 +39477,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39585,7 +39585,7 @@
 "reg":250,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39609,7 +39609,7 @@
 "reg":744,
 "sale":483,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39621,7 +39621,7 @@
 "reg":965,
 "sale":675,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39693,7 +39693,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39705,7 +39705,7 @@
 "reg":157,
 "sale":78,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39717,7 +39717,7 @@
 "reg":155,
 "sale":77,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39765,7 +39765,7 @@
 "reg":198,
 "sale":158,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39945,7 +39945,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -39957,7 +39957,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40005,7 +40005,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40017,7 +40017,7 @@
 "reg":999,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40041,7 +40041,7 @@
 "reg":249,
 "sale":93,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40149,7 +40149,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40185,7 +40185,7 @@
 "reg":1600,
 "sale":1280,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40197,7 +40197,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40245,7 +40245,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40257,7 +40257,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40269,7 +40269,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40281,7 +40281,7 @@
 "reg":219,
 "sale":93,
 "end":"2026-10-19T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40305,7 +40305,7 @@
 "reg":649,
 "sale":89,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40317,7 +40317,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40353,7 +40353,7 @@
 "reg":159,
 "sale":79,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40389,7 +40389,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40413,7 +40413,7 @@
 "reg":160,
 "sale":80,
 "end":"2026-10-20T01:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40461,7 +40461,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40473,7 +40473,7 @@
 "reg":450,
 "sale":360,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40485,7 +40485,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40761,7 +40761,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40773,7 +40773,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40821,7 +40821,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40845,7 +40845,7 @@
 "reg":965,
 "sale":675,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -40881,7 +40881,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41001,7 +41001,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41037,7 +41037,7 @@
 "reg":159,
 "sale":79,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41085,7 +41085,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41109,7 +41109,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41145,7 +41145,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41169,7 +41169,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41193,7 +41193,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41229,7 +41229,7 @@
 "reg":1350,
 "sale":1215,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41289,7 +41289,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41301,7 +41301,7 @@
 "reg":289,
 "sale":179,
 "end":"2026-10-18T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41397,7 +41397,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41421,7 +41421,7 @@
 "reg":860,
 "sale":567,
 "end":"2026-11-07T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41445,7 +41445,7 @@
 "reg":1450,
 "sale":1160,
 "end":"2026-11-07T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41469,7 +41469,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41481,7 +41481,7 @@
 "reg":129,
 "sale":30,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41493,7 +41493,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41505,7 +41505,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41517,7 +41517,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41529,7 +41529,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41553,7 +41553,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41685,7 +41685,7 @@
 "reg":663,
 "sale":397,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41697,7 +41697,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41709,7 +41709,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41793,7 +41793,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41853,7 +41853,7 @@
 "reg":159,
 "sale":79,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41877,7 +41877,7 @@
 "reg":94,
 "sale":30,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41925,7 +41925,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41937,7 +41937,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -41997,7 +41997,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42165,7 +42165,7 @@
 "reg":450,
 "sale":270,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42213,7 +42213,7 @@
 "reg":268,
 "sale":201,
 "end":"2026-11-01T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42225,7 +42225,7 @@
 "reg":190,
 "sale":38,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42237,7 +42237,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42297,7 +42297,7 @@
 "reg":1690,
 "sale":1352,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42477,7 +42477,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42549,7 +42549,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42621,7 +42621,7 @@
 "reg":159,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42657,7 +42657,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42741,7 +42741,7 @@
 "reg":220,
 "sale":143,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42825,7 +42825,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42837,7 +42837,7 @@
 "reg":749,
 "sale":299,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42945,7 +42945,7 @@
 "reg":377,
 "sale":301,
 "end":"2026-11-07T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -42957,7 +42957,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43065,7 +43065,7 @@
 "reg":319,
 "sale":95,
 "end":"2026-10-24T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43113,7 +43113,7 @@
 "reg":199,
 "sale":99,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43173,7 +43173,7 @@
 "reg":190,
 "sale":95,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43185,7 +43185,7 @@
 "reg":250,
 "sale":95,
 "end":"2026-10-23T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43197,7 +43197,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-10T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43209,7 +43209,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-10T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43233,7 +43233,7 @@
 "reg":249,
 "sale":93,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43305,7 +43305,7 @@
 "reg":159,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43389,7 +43389,7 @@
 "reg":310,
 "sale":155,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43449,7 +43449,7 @@
 "reg":549,
 "sale":129,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43461,7 +43461,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43473,7 +43473,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43485,7 +43485,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43545,7 +43545,7 @@
 "reg":259,
 "sale":96,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43701,7 +43701,7 @@
 "reg":159,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43809,7 +43809,7 @@
 "reg":159,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43833,7 +43833,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43905,7 +43905,7 @@
 "reg":249,
 "sale":93,
 "end":"2026-10-24T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -43917,7 +43917,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44013,7 +44013,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44025,7 +44025,7 @@
 "reg":259,
 "sale":96,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44037,7 +44037,7 @@
 "reg":259,
 "sale":96,
 "end":"2026-10-21T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44229,7 +44229,7 @@
 "reg":188,
 "sale":94,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44277,7 +44277,7 @@
 "reg":158,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44409,7 +44409,7 @@
 "reg":379,
 "sale":265,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44565,7 +44565,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44577,7 +44577,7 @@
 "reg":90,
 "sale":63,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44589,7 +44589,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44661,7 +44661,7 @@
 "reg":109,
 "sale":87,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44853,7 +44853,7 @@
 "reg":314,
 "sale":157,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -44997,7 +44997,7 @@
 "reg":555,
 "sale":388,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45009,7 +45009,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45021,7 +45021,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45033,7 +45033,7 @@
 "reg":299,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45045,7 +45045,7 @@
 "reg":159,
 "sale":110,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45189,7 +45189,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45201,7 +45201,7 @@
 "reg":130,
 "sale":30,
 "end":"2026-10-16T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45261,7 +45261,7 @@
 "reg":188,
 "sale":94,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45273,7 +45273,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45393,7 +45393,7 @@
 "reg":156,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45489,7 +45489,7 @@
 "reg":220,
 "sale":143,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45501,7 +45501,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45633,7 +45633,7 @@
 "reg":508,
 "sale":360,
 "end":"2026-10-22T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45681,7 +45681,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45705,7 +45705,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45729,7 +45729,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45801,7 +45801,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45813,7 +45813,7 @@
 "reg":259,
 "sale":96,
 "end":"2026-10-24T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45837,7 +45837,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45849,7 +45849,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-03T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45909,7 +45909,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-10-29T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45921,7 +45921,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -45993,7 +45993,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46005,7 +46005,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46065,7 +46065,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46077,7 +46077,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46101,7 +46101,7 @@
 "reg":314,
 "sale":157,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46137,7 +46137,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46161,7 +46161,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46173,7 +46173,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46197,7 +46197,7 @@
 "reg":399,
 "sale":339,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46221,7 +46221,7 @@
 "reg":349,
 "sale":279,
 "end":"2026-11-04T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46233,7 +46233,7 @@
 "reg":349,
 "sale":279,
 "end":"2026-11-04T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46269,7 +46269,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46473,7 +46473,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46581,7 +46581,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46593,7 +46593,7 @@
 "reg":473,
 "sale":119,
 "end":"2026-10-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46725,7 +46725,7 @@
 "reg":490,
 "sale":367,
 "end":"2026-10-26T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46749,7 +46749,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-10-30T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46845,7 +46845,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46977,7 +46977,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -46989,7 +46989,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47049,7 +47049,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47121,7 +47121,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47193,7 +47193,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47349,7 +47349,7 @@
 "reg":377,
 "sale":297,
 "end":"2026-11-10T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47361,7 +47361,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47373,7 +47373,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47385,7 +47385,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47457,7 +47457,7 @@
 "reg":241,
 "sale":180,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47553,7 +47553,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47601,7 +47601,7 @@
 "reg":156,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47625,7 +47625,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47637,7 +47637,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-10-27T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47673,7 +47673,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47685,7 +47685,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-11-17T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47697,7 +47697,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47709,7 +47709,7 @@
 "reg":799,
 "sale":319,
 "end":"2026-10-20T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47721,7 +47721,7 @@
 "reg":750,
 "sale":525,
 "end":"2026-11-05T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47817,7 +47817,7 @@
 "reg":110,
 "sale":55,
 "end":"2026-11-06T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47829,7 +47829,7 @@
 "reg":599,
 "sale":539,
 "end":"2026-11-11T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -47841,7 +47841,7 @@
 "reg":599,
 "sale":30,
 "end":"2026-10-15T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48021,7 +48021,7 @@
 "reg":129,
 "sale":96,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48093,7 +48093,7 @@
 "reg":82,
 "sale":73,
 "end":"2026-10-31T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48129,7 +48129,7 @@
 "reg":156,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48189,7 +48189,7 @@
 "reg":110,
 "sale":88,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48273,7 +48273,7 @@
 "reg":156,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48285,7 +48285,7 @@
 "reg":110,
 "sale":99,
 "end":"2026-11-08T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48345,7 +48345,7 @@
 "reg":360,
 "sale":144,
 "end":"2026-10-28T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48525,7 +48525,7 @@
 "reg":157,
 "sale":31,
 "end":"2026-11-02T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48537,7 +48537,7 @@
 "reg":110,
 "sale":99,
 "end":"2026-10-14T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48549,7 +48549,7 @@
 "reg":110,
 "sale":88,
 "end":"2026-10-13T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48597,7 +48597,7 @@
 "reg":184,
 "sale":92,
 "end":"2026-10-31T15:59:59Z",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -48905,7 +48905,7 @@
 "name":"《海綿寶寶：海洋巨頭之亂》",
 "plat":"",
 "img":"a005b5489421fa7d1481eb5b4e6ab561f069cbe8f2d4e0be07b49d7138db078f",
-"status":"unreleased",
+"status":"onsale",
 "reg":1199,
 "sale":null,
 "end":"",
@@ -51195,13 +51195,13 @@
 },
 "70010000134673":{
 "name":"美少女校園生活：青春回憶",
-"plat":"",
+"plat":"HAC",
 "img":"7784b85cb09220b96f69a020d0d770d5c5de46e3c6b678b49dc2f9bb6d15cc10",
 "status":"onsale",
 "reg":110,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51243,13 +51243,13 @@
 },
 "70010000134723":{
 "name":"Adventure of Kanjiro Chapter 2",
-"plat":"",
+"plat":"HAC",
 "img":"04e465e8f2a331b995abb731c1b0ac23dfbc6dd8641a94ad802ee952aebb5d97",
 "status":"onsale",
 "reg":300,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51267,49 +51267,49 @@
 },
 "70010000134767":{
 "name":"《特務蜘蛛：8號情報員》",
-"plat":"",
+"plat":"HAC",
 "img":"26e66b8d95c7604b8540e00baa466fefd3edeb1309ea74eed9f69abd2cf16fa7",
 "status":"unreleased",
 "reg":299,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000134779":{
 "name":"What have you done, father?",
-"plat":"",
+"plat":"BEE",
 "img":"ee228199d1924996123438eaf2142e795d93e5131156890b0b0a820ff834b02e",
 "status":"onsale",
 "reg":499,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000134800":{
 "name":"Dead Seek",
-"plat":"",
+"plat":"HAC",
 "img":"5f45aa5bb970af025de713ad6d3b2246325bbfb39c2cc5919a5cdb85c47061dc",
 "status":"onsale",
 "reg":223,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000134806":{
 "name":"MotionPlay Sports",
-"plat":"",
+"plat":"HAC",
 "img":"eb16018cbed3d54a1968e1339d349850e48dc5553cfc4d1b6a576b7eb6da852c",
 "status":"onsale",
 "reg":469,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51327,13 +51327,13 @@
 },
 "70010000134837":{
 "name":"The Last Cat in the Universe 宇宙中最後一隻貓",
-"plat":"",
+"plat":"HAC",
 "img":"a6e0607d09b6a1cc97288a9f9914fcb81b4ea17c25f74835f551a674855737e7",
 "status":"unreleased",
 "reg":255,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51351,13 +51351,13 @@
 },
 "70010000134854":{
 "name":"Big Adventure: Trip to Europe 13 Collector's Edition",
-"plat":"",
+"plat":"HAC",
 "img":"3af30667b0d3e74591963f7e9cf39f9eae4723bdd744e4e6352f5b79a0b6353a",
 "status":"onsale",
 "reg":260,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51375,37 +51375,37 @@
 },
 "70010000134872":{
 "name":"Elland: The Crystal Wars",
-"plat":"",
+"plat":"HAC",
 "img":"466d8c2ea96fcb8cc019cd6adcec3038da5624d29c1fb314ca4d3da32e4ca806",
 "status":"onsale",
 "reg":289,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000134881":{
 "name":"騎士盤騎士",
-"plat":"",
+"plat":"BEE",
 "img":"ad768859bb19c1b058e3798c37f0171a7b4c87f921ced2c14d82e7053fb8218d",
 "status":"unreleased",
 "reg":216,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000134887":{
 "name":"Fading Echo - 消逝迴響",
-"plat":"",
+"plat":"BEE",
 "img":"aff2ced120ff4a9228d2b4893bcdcfd432826c13ec9d33e325f9fb2e08fb8a59",
 "status":"onsale",
 "reg":328,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51423,25 +51423,25 @@
 },
 "70010000134955":{
 "name":"Real Girls: Forbidden Glow",
-"plat":"",
+"plat":"HAC",
 "img":"856504e8d7435ad38c1c2cf508b91390ce86993907ceebc816e228c8244587bc",
 "status":"onsale",
 "reg":30,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000134966":{
 "name":"選一選，完成！平假名單字測驗",
-"plat":"",
+"plat":"HAC",
 "img":"bde4c2d7deda2d0f757f0b37af906fe6f0a2703a797eb8360003275e26752c66",
 "status":"onsale",
 "reg":150,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51483,13 +51483,13 @@
 },
 "70010000135001":{
 "name":"Puzzle X: Model Girls",
-"plat":"",
+"plat":"HAC",
 "img":"2b295561855a5a6df1e4d1cfd352c4e9f0bc7b7bfc2596a01935e0b01d877bf7",
 "status":"onsale",
 "reg":599,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51519,61 +51519,61 @@
 },
 "70010000135062":{
 "name":"皮克敏4 Nintendo Switch 2 Edition + 大家來挑戰! 當多慮檢定",
-"plat":"",
+"plat":"BEE",
 "img":"88d58b329a06ef32a403ff4a1e98a34790fbd0ecee384f968dbeb7d6e8407e13",
 "status":"unreleased",
 "reg":1549,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135068":{
 "name":"星之卡比 躍然世界",
-"plat":"",
+"plat":"BEE",
 "img":"8d604fc77d5baed81aecc94f8a1726028d17efacbf28ce4e0c135ec35544e728",
 "status":"unreleased",
 "reg":null,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135074":{
 "name":"密特羅德 絕境嗜生",
-"plat":"",
+"plat":"BEE",
 "img":"eaa3086f0d9e18a3c0e3fcc5cf7b42cca8acb2a2439bde2dc9269a5c115c7279",
 "status":"preorder",
 "reg":1880,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135118":{
 "name":"Resonant Blade",
-"plat":"",
+"plat":"HAC",
 "img":"23e3d12cf91a5e751c8ccfa3089df2bbf556389e226f771074e08750f918b1cb",
 "status":"onsale",
 "reg":286,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135131":{
 "name":"Asdivine Knot - Nintendo Switch 2 Edition",
-"plat":"",
+"plat":"BEE",
 "img":"49fed8d35677d5369ac6e4aaf83728d91c2f948cdf276b76ab9f9b99ad390cac",
 "status":"onsale",
 "reg":598,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51591,25 +51591,25 @@
 },
 "70010000135191":{
 "name":"春之聲，宛如你 / The Sound of Spring Is Like You",
-"plat":"",
+"plat":"HAC",
 "img":"d43bff7c429fa816ced89eaab4dd12f3cf29a02f313991513e9819187a838149",
 "status":"onsale",
 "reg":298,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135241":{
 "name":"My Clothing Store Simulator",
-"plat":"",
+"plat":"HAC",
 "img":"f4cd590353acfa29a6ad75be2e19ecd19a77d9987455c069ad2d94cdeee8bb92",
 "status":"onsale",
 "reg":319,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51627,49 +51627,49 @@
 },
 "70010000135292":{
 "name":"兔子和烏龜的殘酷跳躍比賽 (RABBIT AND TURTLE HARSH JUMP RACE)",
-"plat":"",
+"plat":"HAC",
 "img":"f6f78ae2892722d1899703cf2cad33360db47dc82a2b65cb37be7afa119cb175",
 "status":"onsale",
 "reg":120,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135298":{
 "name":"女武神傳奇 (VALKYRIE SAGA)",
-"plat":"",
+"plat":"HAC",
 "img":"58dee298de89609c4b6a4894aa07f8026f7833fea6c1ad27e79e4e743a0a840f",
 "status":"unreleased",
 "reg":219,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135319":{
 "name":"Canvas Puzzle",
-"plat":"",
+"plat":"HAC",
 "img":"7e3be1a5a41ee28032c37172fb34cbd98eabcb3f06bcaa25b72004e21405e941",
 "status":"onsale",
 "reg":120,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135354":{
 "name":"Rhythm Flow",
-"plat":"",
+"plat":"HAC",
 "img":"88825bbaa0d104c5f9283e8e76ba571705eeac0c5a09da085d70cebb0296ee1a",
 "status":"onsale",
 "reg":162,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51687,61 +51687,61 @@
 },
 "70010000135414":{
 "name":"Naughty Baby",
-"plat":"",
+"plat":"HAC",
 "img":"bcba8070c2c693ea8e6957e264ea9cc17cd84ec625e326d8c9fab3f2440a7080",
 "status":"onsale",
 "reg":159,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135449":{
 "name":"Very Scary Game",
-"plat":"",
+"plat":"HAC",
 "img":"4918349ab9ca2831ab611e1ce7e62dc5bfa3031bda3d16adc131824baf274726",
 "status":"onsale",
 "reg":299,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135461":{
 "name":"Nutty Gunner: 2D Squirrel Shooter",
-"plat":"",
+"plat":"HAC",
 "img":"f0ddb859d8431ca1fb71fb1098fbe783886848ae0935effe5379a0ef7305c549",
 "status":"onsale",
 "reg":159,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135517":{
 "name":"Roll Golf",
-"plat":"",
+"plat":"HAC",
 "img":"3de41e09a1d94bfbe0d8d10fbe8cf753e409a225b786f3ce79d1a64f927e6171",
 "status":"onsale",
 "reg":161,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135523":{
 "name":"Meccha Chameleon",
-"plat":"",
+"plat":"BEE",
 "img":"f3c3a1be1cf1c4a1364293da2040abb264ee4713fd546fb8b3c7f9755a57e1c6",
 "status":"onsale",
 "reg":190,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51771,109 +51771,109 @@
 },
 "70010000135622":{
 "name":"堡壘合併",
-"plat":"",
+"plat":"HAC",
 "img":"3bca896ef47919eea7e93cbc4a23ad7ec93860c8a1379f8775a2a1fc43a1ea66",
 "status":"onsale",
 "reg":0,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135628":{
 "name":"Cat Simulator",
-"plat":"",
+"plat":"HAC",
 "img":"2368a7b850196a2aa6fb75352ccdd09ae9b472d6048727e5d63042ae3f9ccc3e",
 "status":"onsale",
 "reg":222,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135662":{
 "name":"4096 Space Traders Era",
-"plat":"",
+"plat":"HAC",
 "img":"3aeae250e596ccdcb185c39a47f9603a5a758e879009232bac540ec359f48582",
 "status":"onsale",
 "reg":349,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135694":{
 "name":"Color Lines",
-"plat":"",
+"plat":"HAC",
 "img":"9fbc8e90a59311c782761801d6cc5814936015434d45e36208308744f39f851a",
 "status":"onsale",
 "reg":191,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135700":{
 "name":"The Pit Is Hungry",
-"plat":"",
+"plat":"HAC",
 "img":"f409786f64cc2c223d97deb0268c6102529390b5552a34ab7f5cdccfd643570d",
 "status":"onsale",
 "reg":160,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135729":{
 "name":"地牢大出血 - Nintendo Switch 2 Edition",
-"plat":"",
+"plat":"BEE",
 "img":"03c1c34e32c1823552e43a6ee68c2e321f21c8dc06e929a5b8d10aff2d98f8bb",
 "status":"onsale",
 "reg":339,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135771":{
 "name":"現代部隊(Modern Forces)",
-"plat":"",
+"plat":"HAC",
 "img":"d1c1bdfee7c3b068c77f748d6b788e93c851cefd3b96fcf6aa421dabf9f664d4",
 "status":"onsale",
 "reg":750,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135787":{
 "name":"ZENONIA",
-"plat":"",
+"plat":"HAC",
 "img":"feee02bb4f21bff95a1242a09a9dc9c8811a9962dbe3f85a85eba7cf9e2f5f58",
 "status":"unreleased",
 "reg":216,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135805":{
 "name":"Radon Blast",
-"plat":"",
+"plat":"HAC",
 "img":"1a92b1e0e5e2dfa88f1fec3f73a6f216a23bdb661f65dfcf810c2f6add8c4d7d",
 "status":"onsale",
 "reg":119,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51891,61 +51891,61 @@
 },
 "70010000135901":{
 "name":"Rusty Prison: Horror",
-"plat":"",
+"plat":"HAC",
 "img":"b7c1623bac738c05e32e07900c73345182830fa8436085d777e8b254e460e78b",
 "status":"onsale",
 "reg":149,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135949":{
 "name":"Sputnika Game",
-"plat":"",
+"plat":"HAC",
 "img":"cda32cde3390cf2f6a45ec6a296870527f56cebb82ef8431381e6ac43bed0262",
 "status":"onsale",
 "reg":89,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135959":{
 "name":"Rogue Vault",
-"plat":"",
+"plat":"HAC",
 "img":"071dc9fc3cfbebbeda72968fb2b57b934e405bb5d6e82bed12421d435a130a73",
 "status":"onsale",
 "reg":160,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135969":{
 "name":"實習生：辦公室的誘惑 (The Intern: Temptation at Work - Climb the ladder. Win their hearts)",
-"plat":"",
+"plat":"HAC",
 "img":"3d93c99d3d1e41c33ebff68476e8b83b7cbc12ba92297a7ea3804fe4b619531a",
 "status":"onsale",
 "reg":799,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000135972":{
 "name":"BROKEN FIELDS: Stay or Run? (破碎田野：留下還是逃跑？)",
-"plat":"",
+"plat":"HAC",
 "img":"fb6799251b62d14765b4a04bece84ef2d2a5b4c9096be80195201642038dfdc9",
 "status":"onsale",
 "reg":638,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -51963,61 +51963,61 @@
 },
 "70010000135991":{
 "name":"美麗世界的美女 寫真拼圖",
-"plat":"",
+"plat":"HAC",
 "img":"c35e093866c182186a81606eaf529377f5f372da823c75d1f0b5272e06a01807",
 "status":"onsale",
 "reg":110,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136002":{
 "name":"姆明 (Moomin)：瘋狂夏日",
-"plat":"",
+"plat":"HAC",
 "img":"1d55236fdea84d622e72df92c68d6224badaf3db93aebf0c12da123feaf03097",
 "status":"unreleased",
 "reg":328,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136010":{
 "name":"Radon Blast 2",
-"plat":"",
+"plat":"HAC",
 "img":"467f7a06c9604d052bc8554f3a060622ed543d5929d13a8ca42f74e3eb0f1654",
 "status":"onsale",
 "reg":119,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136039":{
 "name":"Zombie Siege",
-"plat":"",
+"plat":"HAC",
 "img":"8baac84800d9ab77887c07ab65097ea9937414b736b4c42433c6b1d8caa5df17",
 "status":"onsale",
 "reg":161,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136059":{
 "name":"神射手丹: 包羅萬象事務所",
-"plat":"",
+"plat":"BEE",
 "img":"f9e203d95fbe4be7cd941471b2abcf75c8ac82d24415279ece096b737f9ca6c5",
 "status":"onsale",
 "reg":439,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52059,13 +52059,13 @@
 },
 "70010000136168":{
 "name":"Croc's World 5",
-"plat":"",
+"plat":"HAC",
 "img":"e6f483f09768405d5a0e23d8cedc4f4a7d95f479018f0d3aecf4fb784d550fcf",
 "status":"unreleased",
 "reg":199,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52083,13 +52083,13 @@
 },
 "70010000136238":{
 "name":"Chit Chat Party!",
-"plat":"",
+"plat":"BEE",
 "img":"31782edea5a525584bee47445ff13306563d97c413e78c1ab84e934938353cf6",
 "status":"onsale",
 "reg":320,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52119,37 +52119,37 @@
 },
 "70010000136354":{
 "name":"木木屋 (Woodo) - Nintendo Switch 2 Edition",
-"plat":"",
+"plat":"BEE",
 "img":"c642e9cc10e2fadd48a945960b8fa6de41a74e595109f3659b949f9fde6c2932",
 "status":"onsale",
 "reg":550,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136359":{
 "name":"和心儀的她 心動海灘約會拼圖",
-"plat":"",
+"plat":"HAC",
 "img":"4b2aba3b65db82b76d15ebed9c4b4a501c228682dbcd2558c59e603f123272ad",
 "status":"onsale",
 "reg":110,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136365":{
 "name":"Cozy Cat Shop",
-"plat":"",
+"plat":"HAC",
 "img":"add65796ad100ac741a6d3b54febbc8a41eeb58a10af0f20298a8faa72a48532",
 "status":"unreleased",
 "reg":220,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52167,13 +52167,13 @@
 },
 "70010000136408":{
 "name":"Dream Hike",
-"plat":"",
+"plat":"HAC",
 "img":"e0ac9d4127915fc0c484b684bb4b5c806b2e20b30405a797be3e82eebfb0a4ab",
 "status":"onsale",
 "reg":126,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52191,13 +52191,13 @@
 },
 "70010000136442":{
 "name":"Cozy Tea House",
-"plat":"",
+"plat":"HAC",
 "img":"0ecf2910812e071554039d583319c1a3d35276cbeb85a19501b25b12f3a3f7dc",
 "status":"onsale",
 "reg":159,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52227,97 +52227,97 @@
 },
 "70010000136499":{
 "name":"抖S上司與 心跳辦公室拼圖",
-"plat":"",
+"plat":"HAC",
 "img":"29d03efcbcb4a26fff55425adec50198c17807e0d09d06b8f5efcb154e6502d3",
 "status":"onsale",
 "reg":110,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136589":{
 "name":"Quantum Defense",
-"plat":"",
+"plat":"HAC",
 "img":"ddf0a47a5100b7edcd37b37c31f3e3a0fce381d0ca34bd7bd61b23c20c3005d7",
 "status":"onsale",
 "reg":159,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136625":{
 "name":"Lordcraft",
-"plat":"",
+"plat":"HAC",
 "img":"c938f932be0272d7cd4a35c23eb716dff27b0ca5528a78ed532ae5235ddabb9e",
 "status":"onsale",
 "reg":179,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136645":{
 "name":"Obby Sword Master",
-"plat":"",
+"plat":"HAC",
 "img":"6edf5a0a68105fe8bfaa83807053e72c8a130262a6571a287b15f812f38b3efb",
 "status":"onsale",
 "reg":165,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136672":{
 "name":"Swing Shift",
-"plat":"",
+"plat":"HAC",
 "img":"250d214ed4262b5b58f14dedf9dff283362f9515599a29a369367e5682e41484",
 "status":"onsale",
 "reg":165,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136696":{
 "name":"Mel The Pyramid Cat",
-"plat":"",
+"plat":"HAC",
 "img":"1ee152220a1677d33a1d92e495559eea63c664798b045d3e6f4fa43a428afcb8",
 "status":"onsale",
 "reg":225,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136702":{
 "name":"Mel The Space Cat",
-"plat":"",
+"plat":"HAC",
 "img":"36311a410eb821f6b30442bedfe6be203ff54902ca556fa257e7605688ac8197",
 "status":"onsale",
 "reg":225,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000136708":{
 "name":"Mel The Cat",
-"plat":"",
+"plat":"HAC",
 "img":"a8089bf456d0281349b4e21e3e8732d57dd62fcea214a6c2e88234a555f11b42",
 "status":"onsale",
 "reg":225,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52335,13 +52335,13 @@
 },
 "70010000136881":{
 "name":"Escape from ChungaChanga: Island Survival",
-"plat":"",
+"plat":"HAC",
 "img":"10e4e9457c85efb42a27414a43b4351c0d8c61d394597e415b6afe97d5cb7e89",
 "status":"onsale",
 "reg":319,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52359,13 +52359,13 @@
 },
 "70010000136923":{
 "name":"Super Dev Quest",
-"plat":"",
+"plat":"HAC",
 "img":"92c424016264b17e6b7662ca90e7c131607854812b5fbec07aa0ea7099be6369",
 "status":"onsale",
 "reg":222,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52383,25 +52383,25 @@
 },
 "70010000136957":{
 "name":"Game Shop Panic",
-"plat":"",
+"plat":"HAC",
 "img":"15d2abc2627227d89f124763941a8b55b5c2a7833bac8256a965e231f49ff85b",
 "status":"onsale",
 "reg":136,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000137058":{
 "name":"人臉門 (The Face Door)",
-"plat":"",
+"plat":"HAC",
 "img":"c2730ada2a2b2ccd288f02181ab41e03f91696d1d18f94d8f3f0f2bedcf9146e",
 "status":"onsale",
 "reg":200,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52431,13 +52431,13 @@
 },
 "70010000137162":{
 "name":"Settlement Defense",
-"plat":"",
+"plat":"HAC",
 "img":"2b44fadab8a5df24ca0c92e53a06fb6470b694b3121e4e7d16ec4ada1afb1b15",
 "status":"onsale",
 "reg":158,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52479,13 +52479,13 @@
 },
 "70010000137287":{
 "name":"Battlefront Defense",
-"plat":"",
+"plat":"HAC",
 "img":"669e469fd75ce89bdefa528decf54f4b9f1aa54fc5109d9f4f11023cddf99bd2",
 "status":"onsale",
 "reg":158,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52527,13 +52527,13 @@
 },
 "70010000137368":{
 "name":"Freaky Trip: Puzzled",
-"plat":"",
+"plat":"HAC",
 "img":"954347fc1cdc4eacb8a34cee70758a12da439cb596731a222f4f44999b280229",
 "status":"unreleased",
 "reg":222,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52623,37 +52623,37 @@
 },
 "70010000137661":{
 "name":"Parkour Obby: Food Escape",
-"plat":"",
+"plat":"HAC",
 "img":"ef2864e02950ff940799fbe87b4642d9a477649c564375bdf50efbaa04a5c07c",
 "status":"onsale",
 "reg":126,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000137667":{
 "name":"Stock Cars Racing",
-"plat":"",
+"plat":"HAC",
 "img":"468c46dc57e176ed4d42d92bb485cf9522d264a2ce6a919eb042fe30c0dadcc3",
 "status":"onsale",
 "reg":249,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000137722":{
 "name":"Realm Under Siege",
-"plat":"",
+"plat":"HAC",
 "img":"656cddac1d50770ae2937da190407949bdc5c52131cf704f131bd5be4cc6bb69",
 "status":"onsale",
 "reg":158,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52671,13 +52671,13 @@
 },
 "70010000137767":{
 "name":"Twofold – Nintendo Switch 2 Edition",
-"plat":"",
+"plat":"BEE",
 "img":"59171d4399c51500c0adee3b6147897979438ac0b9f2d26abc512f3744c1caf4",
 "status":"onsale",
 "reg":407,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52707,13 +52707,13 @@
 },
 "70010000137850":{
 "name":"Lightbringer's Journey",
-"plat":"",
+"plat":"HAC",
 "img":"f7a5bba25ab268e5ade0b4e2cabd2bc6138f7f8f3dea2429db65bf76ca554e66",
 "status":"onsale",
 "reg":158,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52743,13 +52743,13 @@
 },
 "70010000137932":{
 "name":"姆明：冬日尋暖 – Nintendo Switch 2 Edition",
-"plat":"",
+"plat":"BEE",
 "img":"4528a368d0b938471e1a2a65005160289b517db4c699c12869e83d2a5972af8e",
 "status":"onsale",
 "reg":328,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52791,49 +52791,49 @@
 },
 "70010000138111":{
 "name":"Mother Simulator",
-"plat":"",
+"plat":"HAC",
 "img":"07ae210ea5b95b2b3cf4e5190f7a63caf683b65583f9733dfb909bb8c6b17aec",
 "status":"onsale",
 "reg":222,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000138152":{
 "name":"Family Journey: Hidden Across the World Collector's Edition",
-"plat":"",
+"plat":"HAC",
 "img":"2da3da133ccf980eab891bb55c6b57acbdbe924404e1993d441870b91b246ee6",
 "status":"onsale",
 "reg":370,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000138276":{
 "name":"Crab Evolution Roguelite",
-"plat":"",
+"plat":"HAC",
 "img":"0f826101818faed51dbcc3de94ffd4f73afcd76c878886d10224f5a900d28b08",
 "status":"unreleased",
 "reg":189,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
 "70010000138310":{
 "name":"Bally's Number Laboratory",
-"plat":"",
+"plat":"HAC",
 "img":"593a8ab27b90d54315d8155485ad3aed7030be7b45b8959f0a0571d0f37dca23",
 "status":"unreleased",
 "reg":160,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52887,13 +52887,13 @@
 },
 "70010000138601":{
 "name":"Cargo Rail Tycoon",
-"plat":"",
+"plat":"HAC",
 "img":"335e10e8404ed9eb5f21f54923fb8e36231a6a4e9c04c82b0d33f1242a099d17",
 "status":"preorder",
 "reg":249,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -52959,13 +52959,13 @@
 },
 "70010000139338":{
 "name":"星界戰士 (Astral Ascent) - Nintendo Switch 2 Edition",
-"plat":"",
+"plat":"BEE",
 "img":"c10fe20164a0595f40c60cbc1f1647ba8ddacdbfb4758b3ee3239f1f280d194e",
 "status":"onsale",
 "reg":790,
 "sale":null,
 "end":"",
-"meta":false,
+"meta":true,
 "hk404":false,
 "first_seen":"2026-10-13"
 },
@@ -53094,7 +53094,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":60,
@@ -53106,7 +53106,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":129,
@@ -53118,7 +53118,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":449,
@@ -53130,7 +53130,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":0,
@@ -53142,7 +53142,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":285,
@@ -53154,7 +53154,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":110,
@@ -53166,7 +53166,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":110,
@@ -53178,7 +53178,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":110,
@@ -53190,7 +53190,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":110,
@@ -53202,7 +53202,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":99,
@@ -53214,7 +53214,7 @@
 "plat":"",
 "img":"",
 "meta":false,
-"hk404":false,
+"hk404":true,
 "first_seen":"2026-10-13",
 "status":"unreleased",
 "reg":370,
