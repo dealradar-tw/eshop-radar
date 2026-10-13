@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#151a21">
+<title>台區特價雷達</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow column — header stats, sticky filter bar, dense price-tag rows like a shop shelf */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#151a21; --muted:#5d6876; --line:#d8dee5;
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#1f5fd1; --urgent:#c4361d; --star:#e0a400; --s2:#7a2ff0; --s2-ink:#ffffff; --s2-soft:#f1eaff;
+  --display:"Bricolage Grotesque","Noto Sans TC",system-ui,sans-serif;
+  --body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.stats{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:16px;font-variant-numeric:tabular-nums}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
+.stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;margin-top:18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.row1{display:flex;gap:8px;flex-wrap:wrap}
+input[type=search],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;min-width:0}
+input[type=search]{flex:1 1 220px}
+select{flex:0 0 auto}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chips .lbl{font-size:12px;color:var(--muted);margin-right:2px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line)}
+.tab{font:inherit;font-weight:700;font-size:15px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 14px 9px;cursor:pointer;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.bar{margin-top:0!important}
+.plat{display:inline-block;font-size:11px;font-weight:700;background:var(--s2);color:var(--s2-ink);border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;letter-spacing:.02em}
+li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var(--surface) 55%);box-shadow:inset 4px 0 0 var(--s2)}
+.thumb .s2mark{position:absolute;right:0;top:0;background:var(--s2);color:var(--s2-ink);font-family:var(--display);font-weight:800;font-size:11px;line-height:1.5;padding:1px 6px;border-radius:0 0 0 6px;letter-spacing:.02em}
+.hot-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--urgent);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-right:6px;vertical-align:1px}
+.rank{font-family:var(--display);font-weight:800;font-size:22px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.price .full{font-family:var(--display);font-size:18px;font-weight:800}
+.note{font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:16px 0 0;line-height:1.7}
+h2.sec{font-family:var(--display);font-size:20px;font-weight:800;margin:24px 0 10px}
+.count{font-size:13px;color:var(--muted);margin:12px 0 6px;font-variant-numeric:tabular-nums}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+li{display:grid;grid-template-columns:112px minmax(0,1fr) auto 36px;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 8px 10px 10px}
+.tag{font-family:var(--display);font-weight:800;font-size:19px;background:var(--tag);color:var(--tag-ink);border-radius:6px;text-align:center;padding:8px 0 8px 9px;font-variant-numeric:tabular-nums;position:relative}
+.tag::before{content:"";position:absolute;left:5px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--bg);transform:translateY(-50%)}
+.thumb{position:relative;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .tag{position:absolute;left:0;bottom:0;font-size:14px;padding:2px 7px;border-radius:0 6px 0 0}
+.thumb .tag::before{display:none}
+.thumb .rank{position:absolute;left:0;top:0;background:var(--ink);color:var(--bg);font-size:14px;padding:1px 8px;border-radius:0 0 6px 0}
+.thumb .rank,.thumb .tag{line-height:1.4}
+.info{min-width:0}
+.name{font:inherit;font-weight:500;color:var(--ink);text-decoration:none;display:block;overflow-wrap:anywhere;background:none;border:0;padding:0;text-align:left;cursor:pointer}
+.thumb[data-open]{cursor:pointer}
+.sheet-bg{position:fixed;inset:0;background:rgb(0 0 0 / .45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--ink);width:100%;max-width:520px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:0 0 calc(20px + env(safe-area-inset-bottom,0px))}
+@media (min-width:700px){.sheet-bg{align-items:center}.sheet{border-radius:16px;max-height:84vh}}
+.sheet .hero{position:relative;aspect-ratio:16/9;background:var(--line)}
+.sheet .hero img{width:100%;height:100%;object-fit:cover;display:block}
+.sheet .x{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgb(0 0 0 / .55);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.sheet .body{padding:16px 18px 0;display:flex;flex-direction:column;gap:14px}
+.sheet h2{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.25;margin:0;text-wrap:balance}
+.sheet .pricebox{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--bg);border-radius:10px;padding:12px 14px}
+.sheet .pricebox .tag{font-size:18px;padding:6px 10px 6px 14px}
+.sheet .pricebox b{font-family:var(--display);font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.sheet .pricebox s{color:var(--muted);font-variant-numeric:tabular-nums}
+.sheet .pricebox .when{font-size:13px;color:var(--muted);flex-basis:100%}
+.sheet dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
+.sheet dt{color:var(--muted)}
+.sheet dd{margin:0;overflow-wrap:anywhere}
+.sheet .desc{font-size:14px;line-height:1.75;white-space:pre-line;margin:0}
+.sheet .catch{font-weight:700;font-size:15px;margin:0}
+.sheet .media{display:flex;flex-direction:column;gap:8px}
+.sheet .media div{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sheet .media span{font-size:13px;color:var(--muted);width:3em}
+.sheet .media a{font-size:13px;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--bg)}
+.sheet .media a:hover{border-color:var(--accent);color:var(--accent)}
+.sheet .pending{font-size:13px;color:var(--muted);margin:0}
+.sheet .ref{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:12px;font-size:13px;color:var(--muted)}
+.sheet .ref a{color:var(--accent);font-weight:500}
+.name:hover{color:var(--accent);text-decoration:underline}
+.name.unnamed{color:var(--muted);font-style:italic}
+.meta{font-size:12px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.meta .soon{color:var(--urgent);font-weight:700}
+.price{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.price s{display:block;font-size:12px;color:var(--muted)}
+.price b{font-family:var(--display);font-size:20px;font-weight:800}
+.price b small{font-family:var(--body);font-size:11px;font-weight:500;margin-right:2px;color:var(--muted)}
+.star{font:inherit;font-size:20px;line-height:1;background:none;border:0;color:var(--line);cursor:pointer;padding:6px;border-radius:6px}
+.star[aria-pressed="true"]{color:var(--star)}
+.more{display:block;margin:16px auto 0;font:inherit;font-weight:500;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 20px;cursor:pointer}
+.empty{text-align:center;color:var(--muted);padding:40px 0}
+footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
+@media (max-width:480px){
+  li{grid-template-columns:96px minmax(0,1fr) auto;gap:10px}
+  .thumb{grid-row:1/3;align-self:start}
+  .thumb .tag{font-size:13px}
+  .star{grid-column:3;grid-row:1;justify-self:end;align-self:start;padding:0 2px;font-size:18px}
+  .price{grid-column:2/4;grid-row:2;text-align:left;display:flex;gap:8px;align-items:baseline}
+  .price s{display:inline}
+  .price b{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.low-badge{display:inline-block;font-size:11px;font-weight:700;background:#178a4c;color:#fff;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.new-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-right:6px;vertical-align:1px}
+.shots{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin:0 -18px;padding-inline:18px}
+.shots img{flex:0 0 86%;max-width:86%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;scroll-snap-align:center;background:var(--line)}
+.vid{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#000}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid button{position:absolute;inset:0;width:100%;border:0;cursor:pointer;background:center/cover no-repeat;color:#fff;font-size:15px;font-weight:700}
+.vid button span{background:rgb(0 0 0 / .65);padding:10px 18px;border-radius:999px}
+.vids-more{display:flex;gap:6px;flex-wrap:wrap}
+.lowline{font-size:13px;color:var(--muted)}
+.lowline b{color:#178a4c}
+footer code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.loading{text-align:center;color:var(--muted);padding:40px 0}
+</style>
+<style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>台區特價雷達</h1>
+  <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time></p>
+  <div class="stats">
+    <div><b id="sTotal">–</b><span>件特價中</span></div>
+    <div><b id="sDeep">–</b><span>件 5 折以下</span></div>
+    <div><b id="sLow">–</b><span>件史低價</span></div>
+    <div><b id="sSoon">–</b><span>件 3 天內結束</span></div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tDeals" data-tab="deals" aria-selected="true">特價中</button>
+  <button class="tab" role="tab" id="tHot" data-tab="hot" aria-selected="false">熱門排行</button>
+  <button class="tab" role="tab" id="tAll" data-tab="all" aria-selected="false">全部遊戲</button>
+</nav>
+
+<section id="pList">
+<div class="bar">
+  <div class="row1">
+    <input id="q" type="search" placeholder="搜尋遊戲名稱或編號" aria-label="搜尋遊戲名稱或編號">
+    <select id="sort" aria-label="排序方式"></select>
+  </div>
+  <div class="chips plats" role="group" aria-label="主機">
+    <span class="lbl">主機</span>
+    <button class="chip" data-p="all" aria-pressed="true">全部</button>
+    <button class="chip" data-p="0" aria-pressed="false">Switch</button>
+    <button class="chip" data-p="1" aria-pressed="false">Switch 2</button>
+  </div>
+  <div class="chips" id="tiers" role="group" aria-label="價格區間">
+    <span class="lbl">價格</span>
+    <button class="chip" data-t="all" aria-pressed="false">全部</button>
+    <button class="chip" data-t="lt100" aria-pressed="false">NT$100 以下</button>
+    <button class="chip" data-t="100" aria-pressed="true">NT$100 以上</button>
+    <button class="chip" data-t="500" aria-pressed="false">NT$500 以上</button>
+    <button class="chip" id="lowOnly" aria-pressed="false">史低價</button>
+    <button class="chip" id="favOnly" aria-pressed="false" style="margin-left:auto">★ 只看收藏</button>
+  </div>
+</div>
+<p class="count" id="count"></p>
+<ul id="list"></ul>
+<button class="more" id="more" hidden>顯示更多</button>
+</section>
+
+<section id="pHot" hidden>
+  <p class="note">台灣與港區沒有公開下載排行，這裡用任天堂日本官方公布的下載排行，挑出台灣區有賣的遊戲，左邊數字是日本排行的名次。日本玩家的口味和台灣不完全一樣，請當作參考。</p>
+  <div class="chips plats" role="group" aria-label="主機" style="margin-top:14px">
+    <span class="lbl">主機</span>
+    <button class="chip" data-p="all" aria-pressed="true">全部</button>
+    <button class="chip" data-p="0" aria-pressed="false">Switch</button>
+    <button class="chip" data-p="1" aria-pressed="false">Switch 2</button>
+  </div>
+  <h2 class="sec" id="secS2">Switch 2</h2>
+  <ul id="hotS2"></ul>
+  <h2 class="sec" id="secSw">Switch</h2>
+  <ul id="hotSw"></ul>
+</section>
+
+<div id="sheet" hidden></div>
+
+<footer>
+  非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自港區商品頁（與台區共用）。<br>
+  「史低價」是本站開始追蹤（2026-10-13）以來的最低價。「名稱待補」是只在台灣區販售、港區沒有頁面的商品。<br>
+  大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
+  收藏存在這台裝置的瀏覽器裡。想收到降價通知，可把收藏編號貼到 GitHub 的 <code>data/wishlist.txt</code>：
+  <button class="chip" id="copyFav" style="margin-top:6px">複製收藏編號</button> <span id="copyMsg"></span>
+</footer>
+</div>
+
+<script>
+const IMG = h => h ? `https://img-eshop.cdn.nintendo.net/i/${h}.jpg` : "";
+const $ = s => document.querySelector(s);
+const nf = n => (n ?? 0).toLocaleString("zh-TW");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const full = id6 => "70010000" + id6;
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+
+let GAMES = [], BY = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "";
+let favs = new Set(store.get("favs", []));
+let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
+let favOnly = false, lowOnly = false, shown = 60;
+const today = new Date(); today.setHours(0, 0, 0, 0);
+
+function daysLeft(end){
+  if (!end) return null;
+  return Math.floor((new Date(end + "T23:59:59+08:00") - today) / 864e5);
+}
+function toGame(r){
+  const [id, name, s2, img, reg, sale, end, low, lowDate, nPrices, status, firstSeen, hasDetail] = r;
+  const price = sale ?? reg;
+  return {
+    id, name, s2: !!s2, img, reg, sale, end, low, lowDate, nPrices, status, firstSeen, hasDetail: !!hasDetail,
+    price, onSale: sale != null,
+    pct: sale != null && reg ? Math.round((1 - sale / reg) * 100) : 0,
+    save: sale != null ? reg - sale : 0,
+    days: daysLeft(end),
+    isLow: sale != null && nPrices > 1 && low != null && sale <= low,
+  };
+}
+
+const SORTS = {
+  deals: [["pct","折扣最多"],["low","價格最低"],["save","省最多錢"],["end","最快結束"],["new","最新上架"]],
+  all:   [["new","最新上架"],["low","價格最低"],["high","價格最高"],["name","名稱"]],
+};
+const sorters = {
+  pct:  (a,b) => b.pct - a.pct || b.save - a.save,
+  low:  (a,b) => (a.price ?? 1e9) - (b.price ?? 1e9) || b.pct - a.pct,
+  high: (a,b) => (b.price ?? -1) - (a.price ?? -1),
+  save: (a,b) => b.save - a.save,
+  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.pct - a.pct,
+  new:  (a,b) => b.id.localeCompare(a.id),
+  name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
+};
+
+const thumb = g => `<div class="thumb" data-open="${g.id}">${g.img ? `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}${g.s2 ? '<span class="s2mark" aria-hidden="true">Switch 2</span>' : ""}`;
+function endText(g){
+  if (g.status === 1) return "預購中";
+  if (g.status === 2) return "尚未發售";
+  if (!g.onSale || g.days === null) return "";
+  if (g.days < 0) return '<span class="soon">已結束</span>';
+  if (g.days === 0) return '<span class="soon">今天結束</span>';
+  if (g.days <= 3) return `<span class="soon">剩 ${g.days} 天</span>`;
+  const [, m, d] = g.end.split("-");
+  return `${+m}/${+d} 結束`;
+}
+function badges(g){
+  return (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
+    + (g.isLow ? '<span class="low-badge">史低</span>' : "")
+    + (HOT_IDS.has(g.id) ? '<span class="hot-badge">熱門</span>' : "")
+    + (g.firstSeen && g.firstSeen > "2026-10-13" && (today - new Date(g.firstSeen)) < 7 * 864e5 ? '<span class="new-badge">新上架</span>' : "");
+}
+function priceHTML(g){
+  if (g.reg === 0) return '<b class="full">免費</b>';
+  if (g.reg == null) return '<b class="full" style="font-size:14px">價格未定</b>';
+  if (g.onSale) return `<s>NT$${nf(g.reg)}</s><b><small>NT$</small>${nf(g.sale)}</b>`;
+  return `<b class="full"><small>NT$</small>${nf(g.reg)}</b>`;
+}
+function row(g, rank){
+  const meta = [badges(g) + endText(g), rank ? esc(rank) : ""].filter(Boolean).join(" · ");
+  return `<li${g.s2 ? ' class="s2"' : ""}>
+    ${thumb(g)}${rank ? `<div class="rank">#${rank.match(/第 (\d+) 名/)?.[1] ?? ""}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
+    <div class="info">
+      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補（台區限定）</button>`}
+      <div class="meta">${meta || "&nbsp;"}</div>
+    </div>
+    <div class="price">${priceHTML(g)}</div>
+    <button class="star" data-id="${g.id}" aria-pressed="${favs.has(g.id)}" aria-label="收藏">★</button>
+  </li>`;
+}
+
+function inTier(g){
+  if (tier === "all") return true;
+  if (g.price == null) return false;
+  return tier === "lt100" ? g.price < 100 : g.price >= +tier;
+}
+function filtered(){
+  const q = $("#q").value.trim().toLowerCase();
+  return GAMES.filter(g =>
+    (tab === "all" || g.onSale) &&
+    (plat === "all" || +g.s2 === +plat) &&
+    inTier(g) &&
+    (!lowOnly || g.isLow) &&
+    (!favOnly || favs.has(g.id)) &&
+    (!q || (g.name || "").toLowerCase().includes(q) || full(g.id).includes(q))
+  ).sort(sorters[$("#sort").value] || sorters.pct);
+}
+function render(){
+  const rows = filtered();
+  $("#count").textContent = `顯示 ${nf(Math.min(shown, rows.length))} / ${nf(rows.length)} 件`;
+  $("#list").innerHTML = rows.length ? rows.slice(0, shown).map(g => row(g)).join("")
+    : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${favOnly ? "還沒有收藏。點遊戲右邊的 ★ 加入收藏。" : "沒有符合條件的遊戲。"}</li>`;
+  $("#more").hidden = rows.length <= shown;
+}
+function renderHot(){
+  const mk = (list, label) => list.map(h => {
+    const g = BY.get(h.id.slice(-6));
+    return g ? row(g, `日本${h.src} ${label}第 ${h.rank} 名`) : "";
+  }).join("");
+  $("#hotS2").innerHTML = mk(HOT.s2, "");
+  $("#hotSw").innerHTML = mk(HOT.sw, "");
+  $("#secS2").hidden = $("#hotS2").hidden = plat === "0";
+  $("#secSw").hidden = $("#hotSw").hidden = plat === "1";
+}
+function setSortOptions(){
+  const key = tab === "all" ? "all" : "deals";
+  const saved = store.get("sort_" + key, SORTS[key][0][0]);
+  $("#sort").innerHTML = SORTS[key].map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
+  $("#sort").value = SORTS[key].some(([v]) => v === saved) ? saved : SORTS[key][0][0];
+}
+function showTab(t){
+  tab = t; store.set("tab", t);
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
+  $("#q").placeholder = t === "all" ? "搜尋全部遊戲（名稱或編號）" : "搜尋特價遊戲（名稱或編號）";
+  shown = 60;
+  if (t === "hot") renderHot(); else { setSortOptions(); render(); }
+}
+function setChips(){
+  document.querySelectorAll(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
+  document.querySelectorAll("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
+  $("#favOnly").setAttribute("aria-pressed", favOnly);
+  $("#lowOnly").setAttribute("aria-pressed", lowOnly);
+}
+function rerender(){ shown = 60; setChips(); tab === "hot" ? renderHot() : render(); }
+
+// ── 詳情 ──
+let lastFocus = null;
+async function openDetail(id){
+  const g = BY.get(id); if (!g) return;
+  let det = {};
+  if (g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
+  const hot = [...HOT.s2.map(h => [h, "Switch 2"]), ...HOT.sw.map(h => [h, "Switch"])].find(([h]) => h.id.slice(-6) === id);
+  const priceBox = g.reg === 0 ? "<b>免費</b>"
+    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b><small>NT$</small>${nf(g.sale)}</b></div>
+       <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}</div>`
+    : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"
+    : `<b><small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
+  const lowLine = g.low != null && g.nPrices > 1
+    ? `<div class="lowline">${g.isLow ? "<b>目前就是史低價</b>" : `史低價 NT$${nf(g.low)}（${g.lowDate}）`}</div>` : "";
+  const rows = [
+    ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
+    det.publisher && ["發行商", esc(det.publisher)],
+    det.release && ["發售日", esc(det.release)],
+    det.genres?.length && ["類型", esc(det.genres.join("、"))],
+    det.players && ["遊玩人數", esc(det.players)],
+    det.langs?.length && ["語言", det.langs.map(l => /中文/.test(l) ? `<b>${esc(l)}</b>` : esc(l)).join("、")],
+    det.modes?.length && ["遊玩模式", esc(det.modes.join("、"))],
+    det.size && ["容量", esc(det.size)],
+    hot && ["熱門", `日本${esc(hot[0].src)} ${hot[1]} 下載排行第 ${hot[0].rank} 名`],
+    ["編號", full(id)],
+  ].filter(Boolean);
+  const vids = det.vids || [];
+  $("#sheet").innerHTML = `<div class="sheet-bg" data-close>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+      <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
+      <div class="body">
+        <h2 id="dTitle">${esc(g.name || "名稱待補（台區限定）")}</h2>
+        <div class="pricebox">${priceBox}</div>
+        ${lowLine}
+        <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+        ${det.catch ? `<p class="catch">${esc(det.catch)}</p>` : ""}
+        ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : `<p class="pending">${g.name ? "這款遊戲沒有介紹資料。" : "只在台灣區販售，港區沒有頁面，暫無介紹。"}</p>`}
+        ${det.shots?.length ? `<div class="shots">${det.shots.map(u => `<img src="${esc(u)}" alt="遊戲截圖" loading="lazy">`).join("")}</div>` : ""}
+        ${vids.length ? `<div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
+          ${vids.length > 1 ? `<div class="vids-more">${vids.map((v, i) => `<button class="chip" data-yt="${v}">影片 ${i + 1}</button>`).join("")}</div>` : ""}` : ""}
+        <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
+        ${g.name ? `<div class="ref">港區商品頁內容與台區相同。注意：該頁顯示的是港幣價格，與台灣區價格不同。
+          <a href="https://ec.nintendo.com/HK/zh/titles/${full(id)}" target="_blank" rel="noopener">開啟港區商品頁（參考用）↗</a></div>` : ""}
+      </div>
+    </div></div>`;
+  lastFocus = document.activeElement;
+  $("#sheet").hidden = false;
+  document.body.style.overflow = "hidden";
+  $("#sheet .x").focus();
+}
+function closeDetail(){
+  $("#sheet").hidden = true; $("#sheet").innerHTML = "";
+  document.body.style.overflow = "";
+  lastFocus?.focus();
+}
+function playYT(v){
+  const box = $("#vid"); if (!box) return;
+  box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v)}?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="遊戲影片"></iframe>`;
+}
+function toggleFav(id){
+  favs.has(id) ? favs.delete(id) : favs.add(id);
+  store.set("favs", [...favs]);
+  document.querySelectorAll(`.star[data-id="${id}"]`).forEach(s => s.setAttribute("aria-pressed", favs.has(id)));
+}
+
+// ── 事件 ──
+document.addEventListener("click", e => {
+  const t = e.target;
+  const star = t.closest(".star");
+  if (star) { toggleFav(star.dataset.id); if (favOnly && tab !== "hot") render(); return; }
+  const o = t.closest("[data-open]");
+  if (o) { openDetail(o.dataset.open); return; }
+  if (t.matches("[data-close]")) { closeDetail(); return; }
+  const yt = t.closest("[data-yt]");
+  if (yt) { playYT(yt.dataset.yt); return; }
+  const f = t.closest("[data-fav]");
+  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; if (favOnly) render(); return; }
+  const tb = t.closest(".tab");
+  if (tb) { showTab(tb.dataset.tab); return; }
+  const p = t.closest(".plats [data-p]");
+  if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
+  const ti = t.closest("#tiers [data-t]");
+  if (ti) { tier = ti.dataset.t; store.set("tier", tier); rerender(); return; }
+  if (t.id === "favOnly") { favOnly = !favOnly; rerender(); return; }
+  if (t.id === "lowOnly") { lowOnly = !lowOnly; rerender(); return; }
+  if (t.id === "more") { shown += 60; render(); return; }
+  if (t.id === "copyFav") {
+    const text = [...favs].map(full).join("\n");
+    const done = () => $("#copyMsg").textContent = favs.size ? `已複製 ${favs.size} 個編號` : "還沒有收藏";
+    navigator.clipboard?.writeText(text).then(done, () => { prompt("複製下面的編號：", text); });
+  }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#sheet").hidden) closeDetail(); });
+$("#q").addEventListener("input", () => { shown = 60; render(); });
+$("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (tab === "all" ? "all" : "deals"), $("#sort").value); render(); });
+
+// ── 載入資料 ──
+(async () => {
+  $("#list").innerHTML = '<li class="loading" style="display:block">載入中…</li>';
+  try {
+    const [data, hot] = await Promise.all([
+      fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
+      fetch("hot.json").then(r => r.json()).catch(() => ({s2: [], sw: []})),
+    ]);
+    ASOF = data.asof;
+    GAMES = data.rows.map(toGame);
+    GAMES.forEach(g => BY.set(g.id, g));
+    HOT = hot;
+    HOT_IDS = new Set([...hot.s2, ...hot.sw].map(h => h.id.slice(-6)));
+    $("#asof").textContent = ASOF;
+    const deals = GAMES.filter(g => g.onSale);
+    $("#sTotal").textContent = nf(deals.length);
+    $("#sDeep").textContent = nf(deals.filter(g => g.pct >= 50).length);
+    $("#sLow").textContent = nf(deals.filter(g => g.isLow).length);
+    $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
+    setChips();
+    showTab(["deals", "hot", "all"].includes(tab) ? tab : "deals");
+  } catch (e) {
+    $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
+  }
+})();
+
+</script>
+</body>
+</html>
