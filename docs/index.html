@@ -18,10 +18,10 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
-  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; color-scheme:dark}}
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
-  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; color-scheme:dark}
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
@@ -130,6 +130,16 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 footer code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 .loading{text-align:center;color:var(--muted);padding:40px 0}
 .chips .sep{width:10px}
+.hk-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--hk,#b4530b);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
+.region h3{font-size:15px;margin:0 0 6px}
+.region table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.region th{font-weight:500;color:var(--muted);text-align:left;font-size:12px;padding:4px 6px;border-bottom:1px solid var(--line)}
+.region td{padding:7px 6px;border-bottom:1px solid var(--line)}
+.region td:nth-child(n+2),.region th:nth-child(n+2){text-align:right}
+.region tr.best td{background:color-mix(in srgb,#178a4c 10%,transparent)}
+.region tr.best b{color:#178a4c;font-size:11px}
+.region a{color:var(--accent);text-decoration:none}
+.region .cnote{margin-top:6px}
 .more-f{font-weight:500}
 .fsum{font-size:12px;color:var(--accent)}
 .filters{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
@@ -293,7 +303,7 @@ const store = {
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
 
-let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "";
+let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "", FX = {};
 let favs = new Set(store.get("favs", []).map(String));
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
@@ -311,6 +321,10 @@ function common(o){
   o.save = o.onSale ? o.reg - o.sale : 0;
   o.days = daysLeft(o.end);
   o.isLow = o.onSale && o.nPrices > 1 && o.low != null && o.sale <= o.low;
+  o.hkNow = o.hkSale ?? o.hkReg ?? null;
+  o.hkTwd = o.hkNow != null && FX.HKD ? Math.round(o.hkNow * FX.HKD) : null;
+  // 港區換算台幣後比台區便宜 10% 以上才標示
+  o.hkCheap = o.hkTwd != null && o.price > 0 && o.hkTwd <= o.price * 0.9 ? Math.round((1 - o.hkTwd / o.price) * 100) : 0;
   return o;
 }
 function fromRow(fields, r, extra){
@@ -335,8 +349,27 @@ function badges(g){
   return (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
     + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
+    + (g.hkCheap ? `<span class="hk-badge">港區便宜 ${g.hkCheap}%</span>` : "")
     + (HOT_IDS.has(g.id) ? '<span class="hot-badge">熱門</span>' : "")
     + (g.firstSeen && g.firstSeen > "2026-10-14" && (today - new Date(g.firstSeen)) < 7 * 864e5 ? '<span class="new-badge">新上架</span>' : "");
+}
+// ── 跨區比價（換算台幣） ──
+function regionBox(g, id){
+  if (g.hkNow == null || g.reg == null) return "";
+  const twd = g.price, rows = [
+    {flag: "台灣", cur: "NT$", local: twd, reg: g.reg, sale: g.sale, twd},
+    {flag: "香港", cur: "HK$", local: g.hkNow, reg: g.hkReg, sale: g.hkSale, twd: g.hkTwd,
+     url: g.isDlc ? "" : `https://ec.nintendo.com/HK/zh/titles/${full(id)}`},
+  ];
+  const best = Math.min(...rows.filter(r => r.twd != null).map(r => r.twd));
+  return `<div class="region"><h3>各區價格比較</h3><table>
+    <thead><tr><th>地區</th><th>當地價格</th><th>約合台幣</th></tr></thead><tbody>
+    ${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>
+      <td>${r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${r.flag} ↗</a>` : r.flag}</td>
+      <td>${r.sale != null && r.sale < r.reg ? `<s>${r.cur}${nf(r.reg)}</s> ` : ""}${r.cur}${nf(r.local)}</td>
+      <td>${r.twd != null ? `NT$${nf(r.twd)}` : "–"}${r.twd === best ? " <b>最便宜</b>" : ""}</td></tr>`).join("")}
+    </tbody></table>
+    <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
 }
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
@@ -570,6 +603,7 @@ async function openDetail(id){
         <h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
+        ${regionBox(g, id)}
         <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
         ${det.catch ? `<p class="catch">${esc(det.catch)}</p>` : ""}
         ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : g.isDlc ? "" : `<p class="pending">${g.name ? (g.hasDetail ? "這款遊戲沒有介紹資料。" : "介紹資料準備中，之後的自動更新會補上。") : "暫無介紹資料。"}</p>`}
@@ -585,8 +619,6 @@ async function openDetail(id){
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
-        ${g.hkReg != null && !g.isDlc ? `<div class="ref">港區價格參考：${g.hkSale != null && g.hkSale < g.hkReg ? `<s>HK$${nf(g.hkReg)}</s> <b>HK$${nf(g.hkSale)}</b>` : `HK$${nf(g.hkReg)}`}（港幣，與台灣區價格不同）
-          <a href="https://ec.nintendo.com/HK/zh/titles/${full(id)}" target="_blank" rel="noopener">開啟港區商品頁（參考用）↗</a></div>` : ""}
       </div>
     </div></div>`;
   if ($("#sheet").hidden) lastFocus = document.activeElement;
@@ -707,6 +739,7 @@ $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (t
       fetch("hot.json").then(r => r.json()).catch(() => ({s2: [], sw: []})),
     ]);
     ASOF = data.asof;
+    FX = data.fx || {};
     const games = data.rows.map(r => fromRow(data.fields, r, {isDlc: false}));
     games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; BY.set(g.id, g); });
     const dlcs = (dlc.rows || []).map(r => fromRow(dlc.fields, r, {isDlc: true}));

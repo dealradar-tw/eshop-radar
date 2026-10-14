@@ -452,7 +452,41 @@ def backfill_filters(games):
         g["pmax"] = max(nums) if nums else 0
 
 
-def build_site(games, dlcs, hist, hist_hk, asof):
+# ───────────── 匯率（台灣銀行即期賣出，失敗時改用 open.er-api.com，再失敗沿用上次） ─────────────
+FX_CODES = ("HKD", "JPY")
+
+
+def fetch_fx(prev):
+    fx = {}
+    try:
+        for line in get("https://rate.bot.com.tw/xrt/flcsv/0/day").splitlines():
+            c = [x.strip() for x in line.split(",")]
+            if c and c[0] in FX_CODES and "本行賣出" in c:
+                i = c.index("本行賣出")
+                v = float(c[i + 2]) or float(c[i + 1])  # 即期賣出；沒有就用現金賣出
+                if v > 0:
+                    fx[c[0]] = v
+    except Exception as e:
+        log(f"  台銀匯率失敗：{e}")
+    if len(fx) < len(FX_CODES):
+        try:
+            r = json.loads(get("https://open.er-api.com/v6/latest/TWD"))["rates"]
+            for k in FX_CODES:
+                if k not in fx and r.get(k):
+                    fx[k] = round(1 / r[k], 4)
+        except Exception as e:
+            log(f"  備用匯率失敗：{e}")
+    if not fx:
+        log("  沿用上次匯率")
+        return prev or {}
+    out = dict(prev or {})
+    out.update(fx)
+    out["date"] = TODAY
+    log(f"匯率：{ {k: out.get(k) for k in FX_CODES} }")
+    return out
+
+
+def build_site(games, dlcs, hist, hist_hk, asof, fx=None):
     backfill_filters(games)
     dlc_count = {}
     for d in dlcs.values():
@@ -472,6 +506,7 @@ def build_site(games, dlcs, hist, hist_hk, asof):
     rows.sort(key=lambda r: r[0])
     save(os.path.join(DOCS, "data.json"), {
         "asof": asof,
+        "fx": fx or {},
         "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale"],
         "rows": rows})
@@ -561,11 +596,12 @@ def main():
 
     asof = now.strftime("%Y-%m-%d %H:%M")
     cat["asof"] = asof
+    cat["fx"] = fetch_fx(cat.get("fx"))
     save(os.path.join(DATA, "catalog.json"), cat, pretty=True)
     save(os.path.join(DATA, "dlc.json"), dlcs, pretty=True)
     save(os.path.join(DATA, "history.json"), hist)
     save(os.path.join(DATA, "history_hk.json"), hist_hk)
-    build_site(games, dlcs, hist, hist_hk, asof)
+    build_site(games, dlcs, hist, hist_hk, asof, cat["fx"])
     log(f"今日降價：{len(drops)} 筆")
     notify(items, drops)
 
