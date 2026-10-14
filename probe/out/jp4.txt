@@ -1,0 +1,20 @@
+## shop=1 JP/ja OK {"errors":[{"message":"error","path":["item","b"],"locations":[{"line":1,"column":234}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"345563f5bcdfe98e160122f04a1101db"}},{"message":"error","path":["item","a"],"locations":[{"line":1,"column":151}],"extensions":{"type":"ht
+## shop=1 JP/en OK {"errors":[{"message":"error","path":["item","b"],"locations":[{"line":1,"column":234}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"85b12ad6233ec836c9f57d04863b55f1"}},{"message":"error","path":["item","a"],"locations":[{"line":1,"column":151}],"extensions":{"type":"ht
+## shop=2 JP/ja OK {"errors":[{"message":"error","path":["item","b"],"locations":[{"line":1,"column":234}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"4c57e18c5e1b6e7466661acb11c470b6"}},{"message":"error","path":["item","a"],"locations":[{"line":1,"column":151}],"extensions":{"type":"ht
+## shop=2 JP/en OK {"errors":[{"message":"error","path":["item","b"],"locations":[{"line":1,"column":234}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"9f36eb8e79cfeb52aadb1a09842cab19"}},{"message":"error","path":["item","a"],"locations":[{"line":1,"column":151}],"extensions":{"type":"ht
+## shop=3 JP/ja OK {"data":{"item":{"a":{"nsUid":70010000022675,"formalName":"ブック・オブ・デーモンズ","applications":[{"id":"01007a200f452000"}]},"b":{"nsUid":70010000000965,"formalName":"Minecraft","applications":[{"id":"0100d71004694000"}]}}}}
+
+## shop=3 JP/en OK {"data":{"item":{"a":{"nsUid":70010000022675,"formalName":"ブック・オブ・デーモンズ","applications":[{"id":"01007a200f452000"}]},"b":{"nsUid":70010000000965,"formalName":"Minecraft","applications":[{"id":"0100d71004694000"}]}}}}
+
+## shop=4 JP/ja OK {"data":{"item":{"a":{"nsUid":70010000022675,"formalName":"ブック・オブ・デーモンズ","applications":[{"id":"01007a200f452000"}]},"b":{"nsUid":70010000000965,"formalName":"Minecraft","applications":[{"id":"0100d71004694000"}]}}}}
+
+## shop=4 JP/en OK {"data":{"item":{"a":{"nsUid":70010000022675,"formalName":"ブック・オブ・デーモンズ","applications":[{"id":"01007a200f452000"}]},"b":{"nsUid":70010000000965,"formalName":"Minecraft","applications":[{"id":"0100d71004694000"}]}}}}
+
+## shop=5 JP/ja OK {"data":{"item":{"a":{"nsUid":70010000022675,"formalName":"ブック・オブ・デーモンズ","applications":[{"id":"01007a200f452000"}]},"b":{"nsUid":70010000000965,"formalName":"Minecraft","applications":[{"id":"0100d71004694000"}]}}}}
+
+## shop=5 JP/en OK {"data":{"item":{"a":{"nsUid":70010000022675,"formalName":"ブック・オブ・デーモンズ","applications":[{"id":"01007a200f452000"}]},"b":{"nsUid":70010000000965,"formalName":"Minecraft","applications":[{"id":"0100d71004694000"}]}}}}
+
+## shop=6 JP/ja OK {"errors":[{"message":"error","path":["item","b"],"locations":[{"line":1,"column":234}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f1a21d26050a292fdd8b45e6611c3ef8"}},{"message":"error","path":["item","a"],"locations":[{"line":1,"column":151}],"extensions":{"type":"ht
+## shop=6 JP/en OK {"errors":[{"message":"error","path":["item","b"],"locations":[{"line":1,"column":234}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"70d6fbe8fc578611c89f311d1030d104"}},{"message":"error","path":["item","a"],"locations":[{"line":1,"column":151}],"extensions":{"type":"ht
+## https://ec.nintendo.com/JP/ja/titles/70010000022675 200 len=2511 appIds=[]
+## https://store-jp.nintendo.com/item/software/D70010000022675 200 len=2511 appIds=[]
