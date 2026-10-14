@@ -32,12 +32,16 @@ base = {"shopId": 3, "language": "zh"}
 def app(fields):
     return """query App($shopId: Int!, $country: CountryCode!, $language: LanguageCode!, $nsUid: NsUid!)
 @inContext(shopId: $shopId, country: $country, language: $language) { item { applicationItem(nsUid: $nsUid) { """ + fields + """ } } }"""
-for label, f in [("min", "nsUid formalName labelPlatform heroBannerUrl releaseDateOnEshop"),
-                 ("text", "catchCopy description"), ("pub", "publisher { name }"), ("shots", "screenshotUrls"),
-                 ("movies", "movies { __typename ... on YoutubeMovie { youtubeId } }"), ("langs", "languages { name }"),
-                 ("players", "playerNumber { offlineMax localMax onlineMax }"), ("dlc", "dlcItems { offsetInfo { total } }")]:
-    q("APP TW-only 102139 " + label, app(f), {**base, "country": "TW", "nsUid": 70010000102139})
-q("APP TW 027622 min", app("nsUid formalName"), {**base, "country": "TW", "nsUid": 70010000027622})
-q("DLC TW 035483 count", DLC, {**base, "country": "TW", "applicationNsUid": 70010000035483, "offset": 0, "limit": 100})
+for label, f in [("genre", "genre"), ("genres", "genres { name }"), ("tags", "tags { subCategory { categoryId name } }"),
+                 ("playStyles", "playStyles { name }"), ("romSizes", "romSizes { hac { totalRomSize { rawValue } } bee { totalRomSize { rawValue } } }"),
+                 ("players6", "playerNumber { offlineMin offlineMax localMin localMax onlineMin onlineMax }"),
+                 ("rating", "ratingInfo { rating { name age } }"), ("apps", "applications { id }")]:
+    q("APP 027622 " + label, app(f), {**base, "country": "TW", "nsUid": 70010000027622})
+multi = """query M($shopId: Int!, $country: CountryCode!, $language: LanguageCode!)
+@inContext(shopId: $shopId, country: $country, language: $language) { item {
+ a: applicationItem(nsUid: 70010000027622) { nsUid formalName }
+ b: applicationItem(nsUid: 70010000102139) { nsUid formalName }
+ c: applicationItem(nsUid: 70010000999999) { nsUid formalName } } }"""
+q("MULTI alias", multi, {**base, "country": "TW"})
 open(OUT, "w", encoding="utf-8").write("\n".join(out))
 print("\n".join(o[:400] for o in out))
