@@ -273,8 +273,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <div id="lightbox" hidden></div>
 
 <footer>
-  非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自港區商品頁（與台區共用）。<br>
-  價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。「名稱待補」是只在台灣區販售、港區沒有頁面的商品。<br>
+  非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
+  價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。「名稱待補」是商店暫時查不到資料的商品，之後的自動更新會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏存在這台裝置的瀏覽器裡。想收到降價通知，可把收藏編號貼到 GitHub 的 <code>data/wishlist.txt</code>：
   <button class="chip" id="copyFav" style="margin-top:6px">複製收藏編號</button> <span id="copyMsg"></span>
@@ -556,6 +556,7 @@ async function openDetail(id){
     det.langs?.length && ["語言", det.langs.map(l => /中文/.test(l) ? `<b>${esc(l)}</b>` : esc(l)).join("、")],
     det.modes?.length && ["遊玩模式", esc(det.modes.join("、"))],
     det.size && ["容量", esc(det.size)],
+    det.rating && ["分級", esc(det.rating)],
     hot && ["熱門", `日本${esc(hot[0].src)} ${hot[1]} 下載排行第 ${hot[0].rank} 名`],
     ["編號", full(id)],
   ].filter(Boolean);
@@ -566,12 +567,12 @@ async function openDetail(id){
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
       <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
       <div class="body">
-        <h2 id="dTitle">${esc(g.name || "名稱待補（台區限定）")}</h2>
+        <h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
         <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
         ${det.catch ? `<p class="catch">${esc(det.catch)}</p>` : ""}
-        ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : g.isDlc ? "" : `<p class="pending">${g.name ? (g.hasDetail ? "這款遊戲沒有介紹資料。" : "介紹資料準備中，之後的自動更新會補上。") : "只在台灣區販售，港區沒有頁面，暫無介紹。"}</p>`}
+        ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : g.isDlc ? "" : `<p class="pending">${g.name ? (g.hasDetail ? "這款遊戲沒有介紹資料。" : "介紹資料準備中，之後的自動更新會補上。") : "暫無介紹資料。"}</p>`}
         ${SHOTS.length ? `<div class="shots">${SHOTS.map((u, i) => `<img src="${esc(u)}" alt="遊戲截圖 ${i + 1}" loading="lazy" data-shot="${i}">`).join("")}</div>` : ""}
         ${vids.length ? `<div class="vid-list">
           <div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
@@ -584,7 +585,7 @@ async function openDetail(id){
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
-        ${g.name && !g.isDlc ? `<div class="ref">港區商品頁內容與台區相同。注意：該頁顯示的是港幣價格，與台灣區價格不同。
+        ${g.hkReg != null && !g.isDlc ? `<div class="ref">港區價格參考：${g.hkSale != null && g.hkSale < g.hkReg ? `<s>HK$${nf(g.hkReg)}</s> <b>HK$${nf(g.hkSale)}</b>` : `HK$${nf(g.hkReg)}`}（港幣，與台灣區價格不同）
           <a href="https://ec.nintendo.com/HK/zh/titles/${full(id)}" target="_blank" rel="noopener">開啟港區商品頁（參考用）↗</a></div>` : ""}
       </div>
     </div></div>`;

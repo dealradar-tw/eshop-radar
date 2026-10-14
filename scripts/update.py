@@ -5,7 +5,7 @@
 做的事：
   1. 重新查詢所有已知遊戲與 DLC 的台灣區價格（同時記錄港區價格，供跨區比價）
   2. 往後掃描新編號，找出新上架的遊戲（--full 時從頭到尾全部重掃）
-  3. 到港區商品頁抓名稱、平台、封面、介紹、DLC 清單
+  3. 從任天堂商店資料介面（台灣區）抓名稱、平台、封面、介紹、DLC 清單
   4. 記錄價格歷史（只在價格變動時新增一筆）
   5. 產生網站資料：docs/data.json、docs/dlc.json、docs/d/<編號>.json、docs/h/<編號>.json
   6. （選用）收藏遊戲降價時發 Telegram 通知
@@ -22,10 +22,9 @@ UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.3
                     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
       "Accept-Language": "zh-TW,zh;q=0.9"}
 PRICE_API = "https://api.ec.nintendo.com/v1/price?country={cc}&lang=zh&ids={ids}"
-HK_PAGE = "https://ec.nintendo.com/HK/zh/titles/{id}"
 BASE = 70010000000000
 SELLING = ("onsale", "preorder", "unreleased")
-DETAIL_VERSION = 2   # 詳細資料格式版本；舊版會在之後的排程中慢慢重抓
+DETAIL_VERSION = 3   # 詳細資料格式版本；舊版會在之後的排程中重抓
 
 
 def log(*a):
@@ -115,7 +114,7 @@ def refresh_prices(games, full):
             seen.add(nsuid)
             g = games.get(nsuid)
             if g is None:
-                g = games[nsuid] = {"name": "", "plat": "", "img": "", "meta": False, "hk404": False,
+                g = games[nsuid] = {"name": "", "plat": "", "img": "", "meta": False,
                                     "first_seen": TODAY}
                 new.append(nsuid)
             g.update(info)
@@ -166,32 +165,52 @@ def refresh_hk_prices(items):
         time.sleep(0.4)
 
 
-# ───────────── 3. 商品資料（港區頁面） ─────────────
-PUSH = re.compile(r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)', re.S)
-LDJSON = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
+# ───────────── 3. 商品資料（任天堂商店 GraphQL，台灣區） ─────────────
+GQL_URL = "https://wb.lp1.savanna.srv.nintendo.net/graphql"
+GQL_HEADERS = {"content-type": "application/json", "accept": "application/json",
+               "X-Nintendo-Savanna-Client-Id": "042e4bd1f0eec144167dbc0c63f1d17876e7b9ec322713b613614214e3675df9",
+               "Origin": "https://ec.nintendo.com", "Referer": "https://ec.nintendo.com/", **UA}
+GQL_CTX = ("query Q($shopId: Int!, $country: CountryCode!, $language: LanguageCode!) "
+           "@inContext(shopId: $shopId, country: $country, language: $language) { item { %s } }")
+GQL_VARS = {"shopId": 3, "country": "TW", "language": "zh"}
+APP_FIELDS = ("nsUid formalName labelPlatform heroBannerUrl releaseDateOnEshop catchCopy description genre "
+              "publisher { name } screenshotUrls movies { __typename ... on YoutubeMovie { youtubeId } } "
+              "languages { name } playerNumber { offlineMin offlineMax localMin localMax onlineMin onlineMax } "
+              "playStyles { name } ratingInfo { rating { name age } } applications { id } "
+              "romSizes { hac { totalRomSize { rawValue } estimatedRomSize { rawValue } } "
+              "bee { totalRomSize { rawValue } estimatedRomSize { rawValue } } }")
+DLC_FIELDS = ("items { __typename ... on DlcItem { nsUid formalName labelPlatform heroBannerUrl releaseDateOnEshop "
+              "isMembershipRequired } } offsetInfo { total }")
 MODES = {"TV_MODE": "TV 模式", "TABLETOP_MODE": "桌上模式", "HANDHELD_MODE": "手提模式"}
 IMG_HASH = re.compile(r"/i/([0-9a-f]{20,})\.(?:jpg|png)")
 
 
-def grab_object(text, key):
-    i = text.find(f'"{key}":{{')
-    if i < 0:
-        return None
-    start = text.index("{", i)
-    depth, in_str, esc = 0, False, False
-    for j in range(start, len(text)):
-        c = text[j]
-        if in_str:
-            if esc: esc = False
-            elif c == "\\": esc = True
-            elif c == '"': in_str = False
-        elif c == '"': in_str = True
-        elif c == "{": depth += 1
-        elif c == "}":
-            depth -= 1
-            if depth == 0:
-                return json.loads(text[start:j + 1])
-    return None
+class Blocked(Exception):
+    pass
+
+
+def gql(body_fields):
+    """送一個 GraphQL 查詢；回傳 data.item（可能部分為 None）。"""
+    body = json.dumps({"query": GQL_CTX % body_fields, "variables": GQL_VARS}).encode()
+    last = None
+    for attempt in range(4):
+        try:
+            req = urllib.request.Request(GQL_URL, data=body, headers=GQL_HEADERS)
+            with urllib.request.urlopen(req, timeout=40) as r:
+                d = json.loads(r.read().decode("utf-8", "replace"))
+            return (d.get("data") or {}).get("item") or {}
+        except urllib.error.HTTPError as e:
+            last = f"HTTP{e.code}"
+            if e.code in (403, 429):
+                time.sleep(20 * (attempt + 1))
+            elif e.code == 400:
+                return None
+            else:
+                time.sleep(5 * (attempt + 1))
+        except Exception as e:
+            last = type(e).__name__
+            time.sleep(5 * (attempt + 1))
+    raise Blocked(last)
 
 
 def s(x):
@@ -208,54 +227,7 @@ def img_hash(url):
     return m.group(1) if m else ""
 
 
-def page_payload(html):
-    payload = ""
-    for chunk in PUSH.findall(html):
-        try: payload += json.loads('"' + chunk + '"')
-        except Exception: pass
-    return payload
-
-
-def dlc_from_items(items):
-    out = []
-    for it in items or []:
-        if not isinstance(it, dict):
-            continue
-        nid = str(it.get("nsUid", ""))
-        if not re.fullmatch(r"\d{14}", nid):
-            continue
-        out.append({"id": nid, "name": s(it.get("formalName")), "img": img_hash(it.get("heroBannerUrl")),
-                    "date": s(it.get("releaseDateOnEshop")), "mem": bool(it.get("isMembershipRequired"))})
-    return out
-
-
-def dlc_from_aocs_page(nsuid):
-    """DLC 很多時，商品頁只列前幾個；到「追加內容」頁抓完整清單。"""
-    try:
-        payload = page_payload(get(HK_PAGE.format(id=nsuid) + "/aocs"))
-    except Exception:
-        return []
-    out, seen = [], set()
-    for m in re.finditer(r'"nsUid":\s*"?(7005\d{10})', payload):
-        nid = m.group(1)
-        if nid in seen:
-            continue
-        seen.add(nid)
-        chunk = payload[m.start(): m.start() + 2500]
-        nxt = chunk.find('"nsUid"', 10)
-        if nxt > 0:
-            chunk = chunk[:nxt]
-        name = re.search(r'"formalName":\s*"((?:[^"\\]|\\.)*)"', chunk)
-        img = re.search(r'"heroBannerUrl":\s*"([^"]+)"', chunk)
-        date = re.search(r'"releaseDateOnEshop":\s*"([^"]+)"', chunk)
-        mem = re.search(r'"isMembershipRequired":\s*(true|false)', chunk)
-        out.append({"id": nid, "name": json.loads('"' + name.group(1) + '"') if name else "",
-                    "img": img_hash(img.group(1)) if img else "", "date": date.group(1) if date else "",
-                    "mem": bool(mem and mem.group(1) == "true")})
-    return out
-
-
-def build_detail(f, ld, nsuid):
+def build_detail(f):
     pn = f.get("playerNumber") or {}
 
     def rng(a, b):
@@ -270,7 +242,7 @@ def build_detail(f, ld, nsuid):
         rng("onlineMin", "onlineMax") and "網路 " + rng("onlineMin", "onlineMax")] if x)
     langs = []
     for l in f.get("languages") or []:
-        n = s(l.get("name"))
+        n = s((l or {}).get("name"))
         if n and n not in langs:
             langs.append(n)
     rs = f.get("romSizes") or {}
@@ -281,97 +253,134 @@ def build_detail(f, ld, nsuid):
     vids = [m.get("youtubeId") for m in (f.get("movies") or [])
             if isinstance(m, dict) and re.fullmatch(r"[\w-]{11}", str(m.get("youtubeId")))][:8]
     modes = [MODES[p["name"]] for p in (f.get("playStyles") or []) if isinstance(p, dict) and p.get("name") in MODES]
-    genres = [x.strip() for x in s(ld.get("genre")).split("/") if x.strip()]
-    dlc_seg = f.get("dlcItems") or {}
-    dlc = dlc_from_items(dlc_seg.get("items"))
-    total = (dlc_seg.get("offsetInfo") or {}).get("total") or 0
-    if total > len(dlc):
-        more = dlc_from_aocs_page(nsuid)
-        known = {d["id"] for d in dlc}
-        dlc += [d for d in more if d["id"] not in known]
+    genres = [x.strip() for x in s(f.get("genre")).split("/") if x.strip()]
+    rating = (f.get("ratingInfo") or {}).get("rating") or {}
     apps = [s(a.get("id")) for a in (f.get("applications") or []) if isinstance(a, dict) and s(a.get("id"))]
     rec = {"v": DETAIL_VERSION,
            "catch": s(f.get("catchCopy")), "desc": s(f.get("description"))[:3000],
            "publisher": s((f.get("publisher") or {}).get("name")), "release": s(f.get("releaseDateOnEshop")),
            "genres": genres, "players": players, "langs": langs,
            "pmax": max([pn.get(k) or 0 for k in ("offlineMax", "localMax", "onlineMax")] or [0]),
-           "poff": pn.get("offlineMax") or 0,
-           "size": size, "modes": modes, "shots": shots, "vids": vids,
-           "dlc": dlc, "dlcTotal": total, "titleId": apps[0] if apps else ""}
+           "poff": pn.get("offlineMax") or 0, "rating": s(rating.get("name")),
+           "size": size, "modes": modes, "shots": shots, "vids": vids, "titleId": apps[0] if apps else ""}
     return {k: v for k, v in rec.items() if v not in ("", [], None, 0) or k == "v"}
 
 
-def fetch_meta(nsuid):
-    try:
-        html = get(HK_PAGE.format(id=nsuid))
-    except urllib.error.HTTPError as e:
-        return nsuid, ("404" if e.code == 404 else f"HTTP{e.code}"), None
-    except Exception as e:
-        return nsuid, type(e).__name__, None
-    ld = {}
-    m = LDJSON.search(html)
-    if m:
-        try: ld = json.loads(m.group(1))
-        except Exception: pass
-    try:
-        f = grab_object(page_payload(html), "serverFragment") or {}
-    except Exception:
-        f = {}
-    name = s(f.get("formalName")) or s(ld.get("name"))
-    if not name:
-        return nsuid, "no-data" if len(html) > 20000 else f"short-page({len(html)})", None
-    plat = f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else (
-        "BEE" if "Switch 2" in s(ld.get("gamePlatform")) else "HAC")
-    return nsuid, "ok", {"name": name, "plat": plat,
-                         "img": img_hash(ld.get("image")) or img_hash(f.get("heroBannerUrl")),
-                         "detail": build_detail(f, ld, nsuid)}
+def fetch_apps(ids):
+    """一次查多款遊戲（每款一個別名）。回傳 {nsuid: 資料或 None}。"""
+    fields = " ".join(f"a{i}: applicationItem(nsUid: {nid}) {{ {APP_FIELDS} }}" for i, nid in enumerate(ids))
+    item = gql(fields)
+    if item is None:  # 整批被拒，改成一款一款查，找出問題的那款
+        out = {}
+        for nid in ids:
+            one = gql(f"a0: applicationItem(nsUid: {nid}) {{ {APP_FIELDS} }}")
+            out[nid] = (one or {}).get("a0")
+            time.sleep(0.5)
+        return out
+    return {nid: item.get(f"a{i}") for i, nid in enumerate(ids)}
 
 
-def refresh_meta(games, dlcs, limit, retry_404):
-    """慢慢抓，避免被港區網站當成機器人擋掉；連續失敗太多次就先停，下次再繼續。"""
-    selling = lambda g: g.get("status") in SELLING
-    missing = [i for i, g in games.items()
-               if selling(g) and not g.get("meta") and (retry_404 or not g.get("hk404"))]
-    outdated = [i for i, g in games.items()
-                if selling(g) and g.get("meta") and g.get("dv", 1) < DETAIL_VERSION]
-    key = lambda i: (games[i].get("sale") is None, -int(i))  # 特價中、較新的優先
-    todo = sorted(missing, key=key) + sorted(outdated, key=key)
-    log(f"抓商品資料：本次最多 {limit} 筆（缺資料 {len(missing)}、需更新格式 {len(outdated)}）")
-    todo = todo[:limit]
-    os.makedirs(os.path.join(DOCS, "d"), exist_ok=True)
-    stats, fails, ok = {}, 0, 0
-    for n, nsuid in enumerate(todo, 1):
-        nsuid, st, rec = fetch_meta(nsuid)
-        stats[st] = stats.get(st, 0) + 1
-        g = games[nsuid]
-        if st == "ok":
-            g.update(name=rec["name"], plat=rec["plat"], img=rec["img"] or g.get("img", ""),
-                     meta=True, hk404=False, dv=DETAIL_VERSION)
-            det = rec["detail"]
-            save(os.path.join(DOCS, "d", nsuid[-6:] + ".json"), det)
-            g["genres"] = det.get("genres", [])
-            g["zh"] = (1 if any("繁體" in l for l in det.get("langs", [])) else 0) | \
-                      (2 if any("簡體" in l for l in det.get("langs", [])) else 0)
-            g["pmax"], g["poff"] = det.get("pmax", 0), det.get("poff", 0)
-            g["dlc"] = [d["id"] for d in det.get("dlc", [])]
-            for d in det.get("dlc", []):
-                cur = dlcs.setdefault(d["id"], {"first_seen": TODAY})
-                cur.update(parent=nsuid, name=d["name"], img=d["img"], mem=d["mem"], date=d["date"])
-            ok += 1
-            fails = 0
-        elif st == "404":
-            g["hk404"] = True
-            fails = 0
-        else:
-            fails += 1
-            if fails >= 15:
-                log(f"  連續 {fails} 次失敗（{st}），可能被暫時擋住，先停止，下次再繼續")
+def fetch_dlc_lists(ids):
+    """一次查多款遊戲的 DLC 清單（每款最多 200 個，超過再分頁）。"""
+    out = {}
+    def q(pairs):
+        fields = " ".join(
+            f"d{i}: dlcItemsByApplicationItem(nsUid: {nid}, offset: {off}, limit: 100, publicStatuses: [PUBLIC], "
+            f"salesStatuses: [ONSALE, PRE_ORDER], isIncludeBundleItem: true) {{ {DLC_FIELDS} }}"
+            for i, (nid, off) in enumerate(pairs))
+        return gql(fields) or {}
+    item = q([(nid, 0) for nid in ids])
+    for i, nid in enumerate(ids):
+        seg = item.get(f"d{i}") or {}
+        items = list(seg.get("items") or [])
+        total = (seg.get("offsetInfo") or {}).get("total") or 0
+        off = 100
+        while total > off and off < 1000:
+            more = (q([(nid, off)]).get("d0") or {}).get("items") or []
+            if not more:
                 break
-            time.sleep(10)
-        if n % 50 == 0:
-            log(f"  {n}/{len(todo)} {stats}")
-        time.sleep(1.5)
-    log(f"  完成 {ok} 筆，結果統計：{stats}")
+            items += more
+            off += 100
+            time.sleep(1)
+        out[nid] = [{"id": str(it["nsUid"]), "name": s(it.get("formalName")), "img": img_hash(it.get("heroBannerUrl")),
+                     "date": s(it.get("releaseDateOnEshop")), "mem": bool(it.get("isMembershipRequired"))}
+                    for it in items if isinstance(it, dict) and it.get("__typename") == "DlcItem" and it.get("nsUid")]
+    return out
+
+
+def refresh_meta(games, dlcs, limit, retry_missing):
+    """用任天堂商店的資料介面（台灣區）補齊名稱、平台、介紹與 DLC 清單。"""
+    selling = lambda g: g.get("status") in SELLING
+    need = [i for i, g in games.items() if selling(g) and (
+            not g.get("meta") or g.get("dv", 1) < DETAIL_VERSION) and (retry_missing or not g.get("nodata"))]
+    need.sort(key=lambda i: (games[i].get("meta", False), games[i].get("sale") is None, -int(i)))
+    todo = need[:limit]
+    log(f"抓商品資料：本次 {len(todo)} 筆（待處理 {len(need)}）")
+    os.makedirs(os.path.join(DOCS, "d"), exist_ok=True)
+    ok = nodata = 0
+    done = []
+    try:
+        for n, b in enumerate(batches(todo, 20), 1):
+            res = fetch_apps(b)
+            for nid in b:
+                f, g = res.get(nid), games[nid]
+                if not f or not s(f.get("formalName")):
+                    g["nodata"] = True
+                    nodata += 1
+                    continue
+                det = build_detail(f)
+                g.update(name=s(f["formalName"]), plat=f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else "HAC",
+                         img=img_hash(f.get("heroBannerUrl")) or g.get("img", ""), meta=True, nodata=False,
+                         dv=DETAIL_VERSION, genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
+                         zh=(1 if any("繁體" in l for l in det.get("langs", [])) else 0)
+                            | (2 if any("簡體" in l for l in det.get("langs", [])) else 0))
+                g.pop("hk404", None)
+                done.append((nid, det))
+                ok += 1
+            if n % 20 == 0:
+                log(f"  {n * 20}/{len(todo)}（成功 {ok}、查無 {nodata}）")
+            time.sleep(1.2)
+        log(f"  商品資料完成 {ok} 筆，查無資料 {nodata} 筆")
+        # DLC 清單
+        dl_total = 0
+        for b in batches([nid for nid, _ in done], 10):
+            lists = fetch_dlc_lists(b)
+            for nid, det in done:
+                if nid not in lists:
+                    continue
+                items = lists[nid]
+                det["dlc"] = items
+                games[nid]["dlc"] = [d["id"] for d in items]
+                for d in items:
+                    cur = dlcs.setdefault(d["id"], {"first_seen": TODAY})
+                    cur.update(parent=nid, name=d["name"], img=d["img"], mem=d["mem"], date=d["date"])
+                dl_total += len(items)
+            time.sleep(1.2)
+        log(f"  DLC 清單完成，共 {dl_total} 個")
+    except Blocked as e:
+        log(f"  資料介面暫時無法使用（{e}），先停止，下次再繼續")
+    for nid, det in done:
+        save(os.path.join(DOCS, "d", nid[-6:] + ".json"), det)
+
+
+def refresh_all_dlc_lists(games, dlcs):
+    """每週一次：重新查所有遊戲的 DLC 清單，找出新推出的 DLC。"""
+    ids = [i for i, g in games.items() if g.get("status") in SELLING and g.get("meta")]
+    log(f"重新整理 DLC 清單：{len(ids)} 款遊戲")
+    found = 0
+    try:
+        for b in batches(ids, 10):
+            for nid, items in fetch_dlc_lists(b).items():
+                games[nid]["dlc"] = [d["id"] for d in items]
+                for d in items:
+                    if d["id"] not in dlcs:
+                        found += 1
+                    cur = dlcs.setdefault(d["id"], {"first_seen": TODAY})
+                    cur.update(parent=nid, name=d["name"], img=d["img"], mem=d["mem"], date=d["date"])
+            time.sleep(1.2)
+    except Blocked as e:
+        log(f"  資料介面暫時無法使用（{e}），先停止")
+    log(f"  新發現 DLC {found} 個")
 
 
 # ───────────── 4. 價格歷史 ─────────────
@@ -527,8 +536,8 @@ def notify(items, drops):
 def main():
     global TODAY
     ap = argparse.ArgumentParser()
-    ap.add_argument("--full", action="store_true", help="從頭掃描全部編號，並重試港區查不到的商品")
-    ap.add_argument("--meta-limit", type=int, default=800)
+    ap.add_argument("--full", action="store_true", help="從頭掃描全部編號，並重試查不到資料的商品")
+    ap.add_argument("--meta-limit", type=int, default=5000)
     args = ap.parse_args()
     now = datetime.now(TW)
     TODAY = now.strftime("%Y-%m-%d")
@@ -541,6 +550,8 @@ def main():
     refresh_prices(games, args.full)
     refresh_dlc_prices(dlcs)
     refresh_meta(games, dlcs, args.meta_limit, args.full)
+    if args.full:
+        refresh_all_dlc_lists(games, dlcs)
     refresh_dlc_prices({k: v for k, v in dlcs.items() if "status" not in v})  # 這次新發現的 DLC
     refresh_hk_prices({**games, **dlcs})
 
