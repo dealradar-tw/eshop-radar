@@ -338,8 +338,14 @@ function common(o){
   o.isLow = o.onSale && o.nPrices > 1 && o.low != null && o.sale <= o.low;
   o.hkNow = o.hkSale ?? o.hkReg ?? null;
   o.hkTwd = o.hkNow != null && FX.HKD ? Math.round(o.hkNow * FX.HKD) : null;
-  // 港區換算台幣後比台區便宜 10% 以上才標示
-  o.hkCheap = o.hkTwd != null && o.price > 0 && o.hkTwd <= o.price * 0.9 ? Math.round((1 - o.hkTwd / o.price) * 100) : 0;
+  o.jpNow = o.jpSale ?? o.jpReg ?? null;
+  o.jpTwd = o.jpNow != null && FX.JPY ? Math.round(o.jpNow * FX.JPY) : null;
+  // 其他地區換算台幣後比台區便宜 10% 以上才標示（取最便宜的那區）
+  o.cheapRegion = "", o.cheapPct = 0;
+  for (const [r, v] of [["港區", o.hkTwd], ["日區", o.jpTwd]]) {
+    const pct = v != null && o.price > 0 && v <= o.price * 0.9 ? Math.round((1 - v / o.price) * 100) : 0;
+    if (pct > o.cheapPct) { o.cheapPct = pct; o.cheapRegion = r; }
+  }
   return o;
 }
 function fromRow(fields, r, extra){
@@ -364,18 +370,20 @@ function badges(g){
   return (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
     + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
-    + (g.hkCheap ? `<span class="hk-badge">港區便宜 ${g.hkCheap}%</span>` : "")
+    + (g.cheapPct ? `<span class="hk-badge">${g.cheapRegion}便宜 ${g.cheapPct}%</span>` : "")
     + (HOT_IDS.has(g.id) ? '<span class="hot-badge">熱門</span>' : "")
     + (g.firstSeen && g.firstSeen > "2026-10-14" && (today - new Date(g.firstSeen)) < 7 * 864e5 ? '<span class="new-badge">新上架</span>' : "");
 }
 // ── 跨區比價（換算台幣） ──
 function regionBox(g, id){
-  if (g.hkNow == null || g.reg == null) return "";
+  if ((g.hkNow == null && g.jpNow == null) || g.reg == null) return "";
   const twd = g.price, rows = [
     {flag: "台灣", cur: "NT$", local: twd, reg: g.reg, sale: g.sale, twd},
     {flag: "香港", cur: "HK$", local: g.hkNow, reg: g.hkReg, sale: g.hkSale, twd: g.hkTwd,
      url: g.isDlc ? "" : `https://ec.nintendo.com/HK/zh/titles/${full(id)}`},
-  ];
+    {flag: "日本", cur: "¥", local: g.jpNow, reg: g.jpReg, sale: g.jpSale, twd: g.jpTwd,
+     url: g.jpId ? `https://store-jp.nintendo.com/item/software/D${g.jpId}` : ""},
+  ].filter(r => r.local != null);
   const best = Math.min(...rows.filter(r => r.twd != null).map(r => r.twd));
   return `<div class="region"><h3>各區價格比較</h3><table>
     <thead><tr><th>地區</th><th>當地價格</th><th>約合台幣</th></tr></thead><tbody>
@@ -384,7 +392,7 @@ function regionBox(g, id){
       <td>${r.sale != null && r.sale < r.reg ? `<s>${r.cur}${nf(r.reg)}</s> ` : ""}${r.cur}${nf(r.local)}</td>
       <td>${r.twd != null ? `NT$${nf(r.twd)}` : "–"}${r.twd === best ? " <b>最便宜</b>" : ""}</td></tr>`).join("")}
     </tbody></table>
-    <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
+    <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣、1 日圓 ≈ ${FX.JPY} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。日本區只對應遊戲本體，DLC 暫不比較。實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
 }
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
