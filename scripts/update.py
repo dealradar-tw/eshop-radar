@@ -730,7 +730,7 @@ def notify(items, drops, fx):
     if not parts:
         log("收藏清單沒有需要通知的事")
         return
-    site = os.environ.get("SITE_URL", "")
+    site = os.environ.get("SITE_URL") or "https://jackie-1002.github.io/eshop-radar/"
     text = "\n\n".join(parts) + (f"\n\n{site}" if site else "")
     for k in range(0, len(text), 3800):  # Telegram 單則上限 4096 字
         body = urllib.parse.urlencode({"chat_id": chat, "text": text[k:k + 3800],
