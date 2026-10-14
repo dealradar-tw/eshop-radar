@@ -129,6 +129,57 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 .lowline b{color:#178a4c}
 footer code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 .loading{text-align:center;color:var(--muted);padding:40px 0}
+.chips .sep{width:10px}
+.more-f{font-weight:500}
+.fsum{font-size:12px;color:var(--accent)}
+.filters{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.filters .chip{font-size:12px;padding:3px 10px}
+.fnote{font-size:11px;color:var(--muted);margin:0}
+.dlc-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-right:6px;vertical-align:1px}
+.zh-badge{display:inline-block;font-size:11px;color:var(--muted);margin-right:6px}
+/* 價格走勢圖 */
+.chart{display:flex;flex-direction:column;gap:8px}
+.chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chart-head h3{font-size:15px;margin:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:12px;border:0;background:var(--surface);color:var(--muted);padding:4px 10px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chart svg{width:100%;height:auto;display:block;background:var(--bg);border-radius:8px}
+.chart .axis{font-size:11px;fill:var(--muted);font-family:var(--body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .line-tw{fill:none;stroke:var(--accent);stroke-width:2}
+.chart .area-tw{fill:var(--accent);opacity:.12}
+.chart .pt-low{fill:#178a4c}
+.chart .lbl-low{font-size:11px;fill:#178a4c;font-weight:700;font-family:var(--body)}
+.cstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.cstats div{background:var(--bg);border-radius:8px;padding:8px 10px}
+.cstats b{display:block;font-family:var(--display);font-size:17px;font-variant-numeric:tabular-nums}
+.cstats span{font-size:11px;color:var(--muted)}
+.cnote{font-size:11px;color:var(--muted);margin:0}
+/* DLC 清單 */
+.dlcs h3{font-size:15px;margin:0 0 6px}
+.dlcs ul{gap:4px}
+.dlcs li{grid-template-columns:72px minmax(0,1fr) auto;gap:10px;padding:6px 8px;border-radius:8px}
+.dlcs .thumb .tag{font-size:11px;padding:1px 5px}
+.dlcs .price b{font-size:15px}
+.dlcs .price .full{font-size:14px}
+.dlcs .name{font-size:13px}
+.parent-link{font:inherit;font-size:13px;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-align:left}
+/* 截圖 lightbox */
+.shots img{cursor:zoom-in}
+#lightbox{position:fixed;inset:0;z-index:40;background:rgb(0 0 0 / .94);display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+#lightbox img{max-width:100vw;max-height:86vh;object-fit:contain;user-select:none}
+#lightbox .lb-btn{position:absolute;border:0;background:rgb(255 255 255 / .14);color:#fff;width:44px;height:44px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer}
+#lightbox .lb-x{top:calc(12px + env(safe-area-inset-top,0px));right:12px}
+#lightbox .lb-prev{left:10px;top:50%;transform:translateY(-50%)}
+#lightbox .lb-next{right:10px;top:50%;transform:translateY(-50%)}
+#lightbox .lb-count{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:#ddd;font-size:13px}
+@media (hover:none){#lightbox .lb-prev,#lightbox .lb-next{display:none}}
+/* 影片 */
+.vid-list{display:flex;flex-direction:column;gap:6px}
+.vid-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.vid-row .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.yt-link{font-size:13px;color:var(--accent);text-decoration:none;margin-left:auto}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -146,9 +197,9 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </header>
 
 <nav class="tabs" role="tablist">
-  <button class="tab" role="tab" id="tDeals" data-tab="deals" aria-selected="true">特價中</button>
-  <button class="tab" role="tab" id="tHot" data-tab="hot" aria-selected="false">熱門排行</button>
-  <button class="tab" role="tab" id="tAll" data-tab="all" aria-selected="false">全部遊戲</button>
+  <button class="tab" role="tab" data-tab="deals" aria-selected="true">特價中</button>
+  <button class="tab" role="tab" data-tab="hot" aria-selected="false">熱門排行</button>
+  <button class="tab" role="tab" data-tab="all" aria-selected="false">全部遊戲</button>
 </nav>
 
 <section id="pList">
@@ -163,6 +214,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-p="0" aria-pressed="false">Switch</button>
     <button class="chip" data-p="1" aria-pressed="false">Switch 2</button>
   </div>
+  <div class="chips" role="group" aria-label="類別">
+    <span class="lbl">類別</span>
+    <button class="chip" data-k="game" aria-pressed="true">遊戲</button>
+    <button class="chip" data-k="dlc" aria-pressed="false">DLC 追加內容</button>
+    <button class="chip" data-k="both" aria-pressed="false">遊戲＋DLC</button>
+  </div>
   <div class="chips" id="tiers" role="group" aria-label="價格區間">
     <span class="lbl">價格</span>
     <button class="chip" data-t="all" aria-pressed="false">全部</button>
@@ -170,7 +227,27 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-t="100" aria-pressed="true">NT$100 以上</button>
     <button class="chip" data-t="500" aria-pressed="false">NT$500 以上</button>
     <button class="chip" id="lowOnly" aria-pressed="false">史低價</button>
+  </div>
+  <div class="chips">
+    <button class="chip more-f" id="moreF" aria-expanded="false">更多篩選 ▾</button>
+    <span id="fSummary" class="fsum"></span>
     <button class="chip" id="favOnly" aria-pressed="false" style="margin-left:auto">★ 只看收藏</button>
+  </div>
+  <div id="filters" class="filters" hidden>
+    <div class="chips" id="fZh"><span class="lbl">中文</span>
+      <button class="chip" data-zh="0" aria-pressed="true">不限</button>
+      <button class="chip" data-zh="1" aria-pressed="false">繁體中文</button>
+      <button class="chip" data-zh="2" aria-pressed="false">簡體中文</button>
+      <button class="chip" data-zh="3" aria-pressed="false">任一中文</button>
+    </div>
+    <div class="chips" id="fPl"><span class="lbl">人數</span>
+      <button class="chip" data-pl="0" aria-pressed="true">不限</button>
+      <button class="chip" data-pl="2" aria-pressed="false">2 人以上</button>
+      <button class="chip" data-pl="4" aria-pressed="false">4 人以上</button>
+      <button class="chip" data-pl="8" aria-pressed="false">8 人以上</button>
+    </div>
+    <div class="chips" id="fGenre"><span class="lbl">類型</span></div>
+    <p class="fnote">類型、中文、人數篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
   </div>
 </div>
 <p class="count" id="count"></p>
@@ -193,10 +270,11 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </section>
 
 <div id="sheet" hidden></div>
+<div id="lightbox" hidden></div>
 
 <footer>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自港區商品頁（與台區共用）。<br>
-  「史低價」是本站開始追蹤（2026-10-13）以來的最低價。「名稱待補」是只在台灣區販售、港區沒有頁面的商品。<br>
+  價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。「名稱待補」是只在台灣區販售、港區沒有頁面的商品。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏存在這台裝置的瀏覽器裡。想收到降價通知，可把收藏編號貼到 GitHub 的 <code>data/wishlist.txt</code>：
   <button class="chip" id="copyFav" style="margin-top:6px">複製收藏編號</button> <span id="copyMsg"></span>
@@ -206,17 +284,19 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <script>
 const IMG = h => h ? `https://img-eshop.cdn.nintendo.net/i/${h}.jpg` : "";
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const nf = n => (n ?? 0).toLocaleString("zh-TW");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const full = id6 => "70010000" + id6;
+const full = id => id.length === 14 ? id : "70010000" + id;   // 遊戲用後 6 碼、DLC 用完整 14 碼
 const store = {
   get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
 
-let GAMES = [], BY = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "";
-let favs = new Set(store.get("favs", []));
+let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "";
+let favs = new Set(store.get("favs", []).map(String));
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
+let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
 let favOnly = false, lowOnly = false, shown = 60;
 const today = new Date(); today.setHours(0, 0, 0, 0);
 
@@ -224,33 +304,22 @@ function daysLeft(end){
   if (!end) return null;
   return Math.floor((new Date(end + "T23:59:59+08:00") - today) / 864e5);
 }
-function toGame(r){
-  const [id, name, s2, img, reg, sale, end, low, lowDate, nPrices, status, firstSeen, hasDetail] = r;
-  const price = sale ?? reg;
-  return {
-    id, name, s2: !!s2, img, reg, sale, end, low, lowDate, nPrices, status, firstSeen, hasDetail: !!hasDetail,
-    price, onSale: sale != null,
-    pct: sale != null && reg ? Math.round((1 - sale / reg) * 100) : 0,
-    save: sale != null ? reg - sale : 0,
-    days: daysLeft(end),
-    isLow: sale != null && nPrices > 1 && low != null && sale <= low,
-  };
+function common(o){
+  o.price = o.sale ?? o.reg;
+  o.onSale = o.sale != null;
+  o.pct = o.onSale && o.reg ? Math.round((1 - o.sale / o.reg) * 100) : 0;
+  o.save = o.onSale ? o.reg - o.sale : 0;
+  o.days = daysLeft(o.end);
+  o.isLow = o.onSale && o.nPrices > 1 && o.low != null && o.sale <= o.low;
+  return o;
+}
+function fromRow(fields, r, extra){
+  const o = {};
+  fields.forEach((f, i) => o[f] = r[i]);
+  return common(Object.assign(o, extra));
 }
 
-const SORTS = {
-  deals: [["pct","折扣最多"],["low","價格最低"],["save","省最多錢"],["end","最快結束"],["new","最新上架"]],
-  all:   [["new","最新上架"],["low","價格最低"],["high","價格最高"],["name","名稱"]],
-};
-const sorters = {
-  pct:  (a,b) => b.pct - a.pct || b.save - a.save,
-  low:  (a,b) => (a.price ?? 1e9) - (b.price ?? 1e9) || b.pct - a.pct,
-  high: (a,b) => (b.price ?? -1) - (a.price ?? -1),
-  save: (a,b) => b.save - a.save,
-  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.pct - a.pct,
-  new:  (a,b) => b.id.localeCompare(a.id),
-  name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
-};
-
+// ── 清單列 ──
 const thumb = g => `<div class="thumb" data-open="${g.id}">${g.img ? `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}${g.s2 ? '<span class="s2mark" aria-hidden="true">Switch 2</span>' : ""}`;
 function endText(g){
   if (g.status === 1) return "預購中";
@@ -263,10 +332,11 @@ function endText(g){
   return `${+m}/${+d} 結束`;
 }
 function badges(g){
-  return (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
+  return (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
+    + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
     + (HOT_IDS.has(g.id) ? '<span class="hot-badge">熱門</span>' : "")
-    + (g.firstSeen && g.firstSeen > "2026-10-13" && (today - new Date(g.firstSeen)) < 7 * 864e5 ? '<span class="new-badge">新上架</span>' : "");
+    + (g.firstSeen && g.firstSeen > "2026-10-14" && (today - new Date(g.firstSeen)) < 7 * 864e5 ? '<span class="new-badge">新上架</span>' : "");
 }
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
@@ -274,51 +344,85 @@ function priceHTML(g){
   if (g.onSale) return `<s>NT$${nf(g.reg)}</s><b><small>NT$</small>${nf(g.sale)}</b>`;
   return `<b class="full"><small>NT$</small>${nf(g.reg)}</b>`;
 }
+function metaLine(g){
+  const parts = [badges(g) + endText(g)];
+  if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
+  else if (g.dlcN) parts.push(`${g.dlcN} 個 DLC`);
+  return parts.filter(Boolean).join(" · ");
+}
 function row(g, rank){
-  const meta = [badges(g) + endText(g), rank ? esc(rank) : ""].filter(Boolean).join(" · ");
   return `<li${g.s2 ? ' class="s2"' : ""}>
-    ${thumb(g)}${rank ? `<div class="rank">#${rank.match(/第 (\d+) 名/)?.[1] ?? ""}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
+    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補（台區限定）</button>`}
-      <div class="meta">${meta || "&nbsp;"}</div>
+      <div class="meta">${metaLine(g) || "&nbsp;"}</div>
     </div>
     <div class="price">${priceHTML(g)}</div>
     <button class="star" data-id="${g.id}" aria-pressed="${favs.has(g.id)}" aria-label="收藏">★</button>
   </li>`;
 }
 
+// ── 篩選與排序 ──
+const SORTS = {
+  deals: [["pct","折扣最多"],["low","價格最低"],["save","省最多錢"],["end","最快結束"],["new","最新上架"]],
+  all:   [["new","最新上架"],["low","價格最低"],["high","價格最高"],["name","名稱"]],
+};
+const sorters = {
+  pct:  (a,b) => b.pct - a.pct || b.save - a.save,
+  low:  (a,b) => (a.price ?? 1e9) - (b.price ?? 1e9) || b.pct - a.pct,
+  high: (a,b) => (b.price ?? -1) - (a.price ?? -1),
+  save: (a,b) => b.save - a.save,
+  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.pct - a.pct,
+  new:  (a,b) => (b.firstSeen || "").localeCompare(a.firstSeen || "") || full(b.id).localeCompare(full(a.id)),
+  name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
+};
 function inTier(g){
   if (tier === "all") return true;
   if (g.price == null) return false;
   return tier === "lt100" ? g.price < 100 : g.price >= +tier;
 }
+function gameFilters(g){
+  if (g.isDlc) return true;
+  if (zhF && !(zhF === 3 ? g.zh : (g.zh & zhF))) return false;
+  if (plF && !(g.pmax >= plF)) return false;
+  if (genresF.size && !(g.genres || []).some(x => genresF.has(x))) return false;
+  return true;
+}
 function filtered(){
   const q = $("#q").value.trim().toLowerCase();
-  return GAMES.filter(g =>
+  return ITEMS.filter(g =>
+    (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
     (tab === "all" || g.onSale) &&
     (plat === "all" || +g.s2 === +plat) &&
-    inTier(g) &&
+    inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
     (!favOnly || favs.has(g.id)) &&
-    (!q || (g.name || "").toLowerCase().includes(q) || full(g.id).includes(q))
+    (!q || (g.name || "").toLowerCase().includes(q) || full(g.id).includes(q)
+        || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
 function render(){
   const rows = filtered();
   $("#count").textContent = `顯示 ${nf(Math.min(shown, rows.length))} / ${nf(rows.length)} 件`;
   $("#list").innerHTML = rows.length ? rows.slice(0, shown).map(g => row(g)).join("")
-    : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${favOnly ? "還沒有收藏。點遊戲右邊的 ★ 加入收藏。" : "沒有符合條件的遊戲。"}</li>`;
+    : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${favOnly ? "還沒有收藏。點右邊的 ★ 加入收藏。" : "沒有符合條件的項目。"}</li>`;
   $("#more").hidden = rows.length <= shown;
+  const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
+  $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
 }
 function renderHot(){
-  const mk = (list, label) => list.map(h => {
-    const g = BY.get(h.id.slice(-6));
-    return g ? row(g, `日本${h.src} ${label}第 ${h.rank} 名`) : "";
-  }).join("");
-  $("#hotS2").innerHTML = mk(HOT.s2, "");
-  $("#hotSw").innerHTML = mk(HOT.sw, "");
+  const mk = list => list.map(h => { const g = BY.get(h.id.slice(-6)); return g ? row(g, h.rank) : ""; }).join("");
+  $("#hotS2").innerHTML = mk(HOT.s2);
+  $("#hotSw").innerHTML = mk(HOT.sw);
   $("#secS2").hidden = $("#hotS2").hidden = plat === "0";
   $("#secSw").hidden = $("#hotSw").hidden = plat === "1";
+}
+function buildGenreChips(){
+  const cnt = new Map();
+  ITEMS.forEach(g => (g.genres || []).forEach(x => cnt.set(x, (cnt.get(x) || 0) + 1)));
+  const list = [...cnt].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]);
+  $("#fGenre").innerHTML = '<span class="lbl">類型</span>' +
+    list.map(([x]) => `<button class="chip" data-g="${esc(x)}" aria-pressed="${genresF.has(x)}">${esc(x)}</button>`).join("");
 }
 function setSortOptions(){
   const key = tab === "all" ? "all" : "deals";
@@ -328,36 +432,123 @@ function setSortOptions(){
 }
 function showTab(t){
   tab = t; store.set("tab", t);
-  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
-  $("#q").placeholder = t === "all" ? "搜尋全部遊戲（名稱或編號）" : "搜尋特價遊戲（名稱或編號）";
+  $("#q").placeholder = t === "all" ? "搜尋全部（名稱或編號）" : "搜尋特價（名稱或編號）";
   shown = 60;
   if (t === "hot") renderHot(); else { setSortOptions(); render(); }
 }
 function setChips(){
-  document.querySelectorAll(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
-  document.querySelectorAll("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
+  $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
+  $$("[data-k]").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
+  $$("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
+  $$("#fZh [data-zh]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.zh === zhF));
+  $$("#fPl [data-pl]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.pl === plF));
+  $$("#fGenre [data-g]").forEach(b => b.setAttribute("aria-pressed", genresF.has(b.dataset.g)));
   $("#favOnly").setAttribute("aria-pressed", favOnly);
   $("#lowOnly").setAttribute("aria-pressed", lowOnly);
 }
 function rerender(){ shown = 60; setChips(); tab === "hot" ? renderHot() : render(); }
 
+// ── 價格走勢圖 ──
+const RANGES = [["6m", "半年", 182], ["1y", "一年", 365], ["2y", "兩年", 730]];
+let chartRange = store.get("chartRange", "1y");
+function chartSVG(series, g, days){
+  const W = 400, H = 190, L = 40, R = 10, T = 16, B = 24;
+  const end = new Date(today); end.setDate(end.getDate() + 1);
+  const start = new Date(end); start.setDate(start.getDate() - days);
+  const first = series.length ? new Date(series[0][0]) : end;
+  const from = first > start ? first : start;
+  // 起點之前的最後價格
+  let pts = [], last = null;
+  for (const [d, p] of series) {
+    const t = new Date(d);
+    if (t < from) { last = p; continue; }
+    if (!pts.length && last != null) pts.push([from, last]);
+    pts.push([t, p]);
+  }
+  if (!pts.length && last != null) pts.push([from, last]);
+  if (!pts.length) return "";
+  pts.push([end, pts[pts.length - 1][1]]);
+  const prices = pts.map(p => p[1]).concat(g.reg ?? []);
+  let lo = Math.min(...prices), hi = Math.max(...prices);
+  if (hi === lo) { hi = hi * 1.1 + 1; lo = Math.max(0, lo * 0.8); }
+  const pad = (hi - lo) * 0.12; hi += pad; lo = Math.max(0, lo - pad);
+  const span = Math.max(end - from, 864e5);
+  const x = t => L + (W - L - R) * ((t - from) / span);
+  const y = p => T + (H - T - B) * (1 - (p - lo) / (hi - lo));
+  let d = `M${x(pts[0][0]).toFixed(1)},${y(pts[0][1]).toFixed(1)}`;
+  for (let i = 1; i < pts.length; i++) d += `H${x(pts[i][0]).toFixed(1)}V${y(pts[i][1]).toFixed(1)}`;
+  const area = d + `V${H - B}H${x(pts[0][0]).toFixed(1)}Z`;
+  const ticks = [lo + (hi - lo) * 0.15, (lo + hi) / 2, hi - (hi - lo) * 0.15].map(v => Math.round(v));
+  const grid = ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 3}" text-anchor="end">${nf(v)}</text>`).join("");
+  const short = span < 150 * 864e5;
+  const fmt = t => short ? `${t.getMonth() + 1}/${t.getDate()}` : `${String(t.getFullYear()).slice(2)}/${t.getMonth() + 1}`;
+  const xt = [0, 0.5, 1].map(f => new Date(+from + span * f));
+  const seen = new Set();
+  const xl = xt.map((t, i) => { const l = fmt(t); if (seen.has(l)) return ""; seen.add(l);
+    return `<text class="axis" x="${x(t)}" y="${H - 7}" text-anchor="${["start","middle","end"][i]}">${l}</text>`; }).join("");
+  const lowP = Math.min(...pts.map(p => p[1]));
+  const lowPt = pts.find(p => p[1] === lowP);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="價格走勢圖">${grid}${xl}
+    <path class="area-tw" d="${area}"/><path class="line-tw" d="${d}"/>
+    <circle class="pt-low" cx="${x(lowPt[0])}" cy="${y(lowP)}" r="4"/>
+    <text class="lbl-low" x="${Math.min(x(lowPt[0]) + 6, W - R - 70)}" y="${Math.max(y(lowP) - 8, 12)}">最低 ${nf(lowP)}</text></svg>`;
+}
+function chartStats(series, g){
+  if (!series.length) return "";
+  const prices = series.map(s => s[1]);
+  const low = Math.min(...prices);
+  const lowDate = [...series].reverse().find(s => s[1] === low)[0];
+  const reg = g.reg ?? Math.max(...prices);
+  let sales = [], inSale = false;
+  series.forEach(([d, p]) => { const s = p < reg; if (s && !inSale) sales.push(d); inSale = s; });
+  let gap = "—";
+  if (sales.length >= 2) {
+    const ds = sales.map(d => new Date(d));
+    const avg = (ds[ds.length - 1] - ds[0]) / (ds.length - 1) / 864e5;
+    gap = `約 ${Math.round(avg)} 天`;
+  }
+  return `<div class="cstats">
+    <div><b>NT$${nf(low)}</b><span>史低（${lowDate}）</span></div>
+    <div><b>${sales.length} 次</b><span>記錄期間打折次數</span></div>
+    <div><b>${gap}</b><span>平均打折間隔</span></div></div>`;
+}
+async function loadChart(id){
+  const box = $("#chart"); if (!box) return;
+  let h = {tw: []};
+  try { const r = await fetch(`h/${full(id)}.json`, {cache: "no-cache"}); if (r.ok) h = await r.json(); } catch (e) {}
+  const g = BY.get(id);
+  const draw = () => {
+    const days = RANGES.find(r => r[0] === chartRange)[2];
+    const since = h.tw.length ? h.tw[0][0] : "";
+    box.innerHTML = `<div class="chart-head"><h3>價格走勢</h3><div class="seg">${RANGES.map(([k, t]) =>
+        `<button data-range="${k}" aria-pressed="${k === chartRange}">${t}</button>`).join("")}</div></div>
+      ${h.tw.length ? chartSVG(h.tw, g, days) + chartStats(h.tw, g) : '<p class="cnote">還沒有價格紀錄。</p>'}
+      ${h.tw.length === 1 ? '<p class="cnote">開始記錄以來價格沒有變動過。</p>' : ""}
+      <p class="cnote">${since ? `從 ${since} 開始記錄，資料會每天累積。` : ""}</p>`;
+  };
+  box._redraw = draw;
+  draw();
+}
+
 // ── 詳情 ──
-let lastFocus = null;
+let lastFocus = null, SHOTS = [];
 async function openDetail(id){
   const g = BY.get(id); if (!g) return;
+  const parent = g.isDlc ? BY.get(g.parent) : null;
   let det = {};
-  if (g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
+  if (!g.isDlc && g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
   const hot = [...HOT.s2.map(h => [h, "Switch 2"]), ...HOT.sw.map(h => [h, "Switch"])].find(([h]) => h.id.slice(-6) === id);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
     : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b><small>NT$</small>${nf(g.sale)}</b></div>
-       <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}</div>`
+       <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}${g.isLow ? "　<b style='color:#178a4c;font-size:13px'>目前是史低價</b>" : ""}</div>`
     : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"
     : `<b><small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
-  const lowLine = g.low != null && g.nPrices > 1
-    ? `<div class="lowline">${g.isLow ? "<b>目前就是史低價</b>" : `史低價 NT$${nf(g.low)}（${g.lowDate}）`}</div>` : "";
   const rows = [
     ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
+    parent && ["本體", `<button class="parent-link" data-open="${parent.id}">${esc(parent.name || "名稱待補")}</button>`],
+    g.isDlc && g.membersOnly && ["條件", "需加入 Nintendo Switch Online"],
     det.publisher && ["發行商", esc(det.publisher)],
     det.release && ["發售日", esc(det.release)],
     det.genres?.length && ["類型", esc(det.genres.join("、"))],
@@ -368,29 +559,41 @@ async function openDetail(id){
     hot && ["熱門", `日本${esc(hot[0].src)} ${hot[1]} 下載排行第 ${hot[0].rank} 名`],
     ["編號", full(id)],
   ].filter(Boolean);
+  SHOTS = det.shots || [];
   const vids = det.vids || [];
+  const dlcs = (DLC_BY_PARENT.get(id) || []).slice().sort((a, b) => (b.onSale - a.onSale) || (a.price ?? 0) - (b.price ?? 0));
   $("#sheet").innerHTML = `<div class="sheet-bg" data-close>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
       <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
       <div class="body">
         <h2 id="dTitle">${esc(g.name || "名稱待補（台區限定）")}</h2>
         <div class="pricebox">${priceBox}</div>
-        ${lowLine}
+        <div class="chart" id="chart"></div>
         <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
         ${det.catch ? `<p class="catch">${esc(det.catch)}</p>` : ""}
-        ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : `<p class="pending">${g.name ? "這款遊戲沒有介紹資料。" : "只在台灣區販售，港區沒有頁面，暫無介紹。"}</p>`}
-        ${det.shots?.length ? `<div class="shots">${det.shots.map(u => `<img src="${esc(u)}" alt="遊戲截圖" loading="lazy">`).join("")}</div>` : ""}
-        ${vids.length ? `<div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
-          ${vids.length > 1 ? `<div class="vids-more">${vids.map((v, i) => `<button class="chip" data-yt="${v}">影片 ${i + 1}</button>`).join("")}</div>` : ""}` : ""}
+        ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : g.isDlc ? "" : `<p class="pending">${g.name ? (g.hasDetail ? "這款遊戲沒有介紹資料。" : "介紹資料準備中，之後的自動更新會補上。") : "只在台灣區販售，港區沒有頁面，暫無介紹。"}</p>`}
+        ${SHOTS.length ? `<div class="shots">${SHOTS.map((u, i) => `<img src="${esc(u)}" alt="遊戲截圖 ${i + 1}" loading="lazy" data-shot="${i}">`).join("")}</div>` : ""}
+        ${vids.length ? `<div class="vid-list">
+          <div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
+          <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}
+            <a class="yt-link" id="ytOpen" href="https://www.youtube.com/watch?v=${vids[0]}" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></div>
+        </div>` : ""}
+        ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li>
+            ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
+            <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
+              <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
+            <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
-        ${g.name ? `<div class="ref">港區商品頁內容與台區相同。注意：該頁顯示的是港幣價格，與台灣區價格不同。
+        ${g.name && !g.isDlc ? `<div class="ref">港區商品頁內容與台區相同。注意：該頁顯示的是港幣價格，與台灣區價格不同。
           <a href="https://ec.nintendo.com/HK/zh/titles/${full(id)}" target="_blank" rel="noopener">開啟港區商品頁（參考用）↗</a></div>` : ""}
       </div>
     </div></div>`;
-  lastFocus = document.activeElement;
+  if ($("#sheet").hidden) lastFocus = document.activeElement;
   $("#sheet").hidden = false;
   document.body.style.overflow = "hidden";
+  $("#sheet .sheet").scrollTop = 0;
   $("#sheet .x").focus();
+  loadChart(id);
 }
 function closeDetail(){
   $("#sheet").hidden = true; $("#sheet").innerHTML = "";
@@ -399,32 +602,79 @@ function closeDetail(){
 }
 function playYT(v){
   const box = $("#vid"); if (!box) return;
-  box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v)}?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="遊戲影片"></iframe>`;
+  box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v)}?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="遊戲影片"></iframe>`;
+  $$(".vid-row [data-yt]").forEach(b => b.setAttribute("aria-pressed", b.dataset.yt === v));
+  const a = $("#ytOpen"); if (a) a.href = `https://www.youtube.com/watch?v=${encodeURIComponent(v)}`;
 }
+
+// ── 截圖放大 ──
+let lbIdx = 0, touchX = null;
+function openLightbox(i){
+  lbIdx = i;
+  const lb = $("#lightbox");
+  lb.innerHTML = `<img alt="遊戲截圖"><button class="lb-btn lb-x" data-lb="x" aria-label="關閉">×</button>
+    ${SHOTS.length > 1 ? '<button class="lb-btn lb-prev" data-lb="prev" aria-label="上一張">‹</button><button class="lb-btn lb-next" data-lb="next" aria-label="下一張">›</button>' : ""}
+    <div class="lb-count"></div>`;
+  lb.hidden = false;
+  showShot();
+}
+function showShot(){
+  const lb = $("#lightbox");
+  lb.querySelector("img").src = SHOTS[lbIdx];
+  lb.querySelector(".lb-count").textContent = `${lbIdx + 1} / ${SHOTS.length}　（左右滑動切換）`;
+}
+function stepShot(d){ lbIdx = (lbIdx + d + SHOTS.length) % SHOTS.length; showShot(); }
+function closeLightbox(){ $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; }
+$("#lightbox").addEventListener("click", e => {
+  const b = e.target.closest("[data-lb]");
+  if (b) { b.dataset.lb === "x" ? closeLightbox() : stepShot(b.dataset.lb === "next" ? 1 : -1); }
+  else if (e.target.id === "lightbox") closeLightbox();
+});
+$("#lightbox").addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, {passive: true});
+$("#lightbox").addEventListener("touchend", e => {
+  if (touchX == null) return;
+  const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+  if (Math.abs(dx) > 40) stepShot(dx < 0 ? 1 : -1);
+});
+
 function toggleFav(id){
   favs.has(id) ? favs.delete(id) : favs.add(id);
   store.set("favs", [...favs]);
-  document.querySelectorAll(`.star[data-id="${id}"]`).forEach(s => s.setAttribute("aria-pressed", favs.has(id)));
+  $$(`.star[data-id="${id}"]`).forEach(s => s.setAttribute("aria-pressed", favs.has(id)));
 }
 
 // ── 事件 ──
 document.addEventListener("click", e => {
   const t = e.target;
+  if (t.closest("#lightbox")) return;
   const star = t.closest(".star");
   if (star) { toggleFav(star.dataset.id); if (favOnly && tab !== "hot") render(); return; }
+  const shot = t.closest("[data-shot]");
+  if (shot) { openLightbox(+shot.dataset.shot); return; }
   const o = t.closest("[data-open]");
   if (o) { openDetail(o.dataset.open); return; }
   if (t.matches("[data-close]")) { closeDetail(); return; }
   const yt = t.closest("[data-yt]");
   if (yt) { playYT(yt.dataset.yt); return; }
+  const rg = t.closest("[data-range]");
+  if (rg) { chartRange = rg.dataset.range; store.set("chartRange", chartRange); $("#chart")?._redraw?.(); return; }
   const f = t.closest("[data-fav]");
   if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; if (favOnly) render(); return; }
   const tb = t.closest(".tab");
   if (tb) { showTab(tb.dataset.tab); return; }
   const p = t.closest(".plats [data-p]");
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
+  const k = t.closest("[data-k]");
+  if (k) { kind = k.dataset.k; store.set("kind", kind); rerender(); return; }
   const ti = t.closest("#tiers [data-t]");
   if (ti) { tier = ti.dataset.t; store.set("tier", tier); rerender(); return; }
+  const zh = t.closest("[data-zh]");
+  if (zh) { zhF = +zh.dataset.zh; store.set("zh", zhF); rerender(); return; }
+  const pl = t.closest("[data-pl]");
+  if (pl) { plF = +pl.dataset.pl; store.set("pl", plF); rerender(); return; }
+  const ge = t.closest("[data-g]");
+  if (ge) { const x = ge.dataset.g; genresF.has(x) ? genresF.delete(x) : genresF.add(x); store.set("genres", [...genresF]); rerender(); return; }
+  if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
   if (t.id === "favOnly") { favOnly = !favOnly; rerender(); return; }
   if (t.id === "lowOnly") { lowOnly = !lowOnly; rerender(); return; }
   if (t.id === "more") { shown += 60; render(); return; }
@@ -434,7 +684,15 @@ document.addEventListener("click", e => {
     navigator.clipboard?.writeText(text).then(done, () => { prompt("複製下面的編號：", text); });
   }
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#sheet").hidden) closeDetail(); });
+document.addEventListener("keydown", e => {
+  if (!$("#lightbox").hidden) {
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowRight") stepShot(1);
+    else if (e.key === "ArrowLeft") stepShot(-1);
+    return;
+  }
+  if (e.key === "Escape" && !$("#sheet").hidden) closeDetail();
+});
 $("#q").addEventListener("input", () => { shown = 60; render(); });
 $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (tab === "all" ? "all" : "deals"), $("#sort").value); render(); });
 
@@ -442,24 +700,37 @@ $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (t
 (async () => {
   $("#list").innerHTML = '<li class="loading" style="display:block">載入中…</li>';
   try {
-    const [data, hot] = await Promise.all([
+    const [data, dlc, hot] = await Promise.all([
       fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
+      fetch("dlc.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : {fields: [], rows: []}).catch(() => ({fields: [], rows: []})),
       fetch("hot.json").then(r => r.json()).catch(() => ({s2: [], sw: []})),
     ]);
     ASOF = data.asof;
-    GAMES = data.rows.map(toGame);
-    GAMES.forEach(g => BY.set(g.id, g));
+    const games = data.rows.map(r => fromRow(data.fields, r, {isDlc: false}));
+    games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; BY.set(g.id, g); });
+    const dlcs = (dlc.rows || []).map(r => fromRow(dlc.fields, r, {isDlc: true}));
+    dlcs.forEach(d => {
+      const p = BY.get(d.parent);
+      d.s2 = !!p?.s2; d.membersOnly = !!d.membersOnly;
+      BY.set(d.id, d);
+      if (!DLC_BY_PARENT.has(d.parent)) DLC_BY_PARENT.set(d.parent, []);
+      DLC_BY_PARENT.get(d.parent).push(d);
+    });
+    games.forEach(g => { g.dlcN = (DLC_BY_PARENT.get(g.id) || []).length || g.dlcN || 0; });
+    ITEMS = games.concat(dlcs);
     HOT = hot;
     HOT_IDS = new Set([...hot.s2, ...hot.sw].map(h => h.id.slice(-6)));
     $("#asof").textContent = ASOF;
-    const deals = GAMES.filter(g => g.onSale);
+    const deals = games.filter(g => g.onSale);
     $("#sTotal").textContent = nf(deals.length);
     $("#sDeep").textContent = nf(deals.filter(g => g.pct >= 50).length);
     $("#sLow").textContent = nf(deals.filter(g => g.isLow).length);
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
+    buildGenreChips();
     setChips();
     showTab(["deals", "hot", "all"].includes(tab) ? tab : "deals");
   } catch (e) {
+    console.error(e);
     $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
   }
 })();
