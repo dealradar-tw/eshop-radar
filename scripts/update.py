@@ -519,6 +519,18 @@ def update_hk_history(items, hist):
             h.append([TODAY, p])
 
 
+def update_jp_history(games, hist):
+    """日本區價格歷史（日圓），以日本區編號記錄。"""
+    for g in games.values():
+        jp, n = g.get("jp"), g.get("jpId")
+        if not jp or not n or jp.get("reg") is None:
+            continue
+        p = jp["sale"] if jp.get("sale") is not None else jp["reg"]
+        h = hist.setdefault(n, [])
+        if not h or h[-1][1] != p:
+            h.append([TODAY, p])
+
+
 # ───────────── 5. 網站資料 ─────────────
 def low_info(h):
     prices = [x[1] for x in h]
@@ -593,7 +605,7 @@ def fetch_fx(prev):
     return out
 
 
-def build_site(games, dlcs, hist, hist_hk, asof, fx=None):
+def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
     backfill_filters(games)
     dlc_count = {}
     for d in dlcs.values():
@@ -641,9 +653,13 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None):
     hdir = os.path.join(DOCS, "h")
     os.makedirs(hdir, exist_ok=True)
     changed = 0
+    hist_jp = hist_jp or {}
     for nsuid in set(hist) | set(hist_hk):
-        changed += save_if_changed(os.path.join(hdir, nsuid + ".json"),
-                                   {"tw": hist.get(nsuid, []), "hk": hist_hk.get(nsuid, [])})
+        obj = {"tw": hist.get(nsuid, []), "hk": hist_hk.get(nsuid, [])}
+        jid = (games.get(nsuid) or {}).get("jpId")
+        if jid and hist_jp.get(jid):
+            obj["jp"] = hist_jp[jid]
+        changed += save_if_changed(os.path.join(hdir, nsuid + ".json"), obj)
     log(f"網站資料：遊戲 {len(rows)} 筆、DLC {len(drows)} 筆、價格歷史檔更新 {changed} 個")
 
 
@@ -771,6 +787,8 @@ def main():
     items = {**games, **dlcs}
     drops = update_history(items, hist)
     update_hk_history(items, hist_hk)
+    hist_jp = load("history_jp.json", {})
+    update_jp_history(games, hist_jp)
 
     asof = now.strftime("%Y-%m-%d %H:%M")
     cat["asof"] = asof
@@ -780,7 +798,8 @@ def main():
     save(os.path.join(DATA, "history.json"), hist)
     save(os.path.join(DATA, "history_hk.json"), hist_hk)
     save(os.path.join(DATA, "jp.json"), jp)
-    build_site(games, dlcs, hist, hist_hk, asof, cat["fx"])
+    save(os.path.join(DATA, "history_jp.json"), hist_jp)
+    build_site(games, dlcs, hist, hist_hk, asof, cat["fx"], hist_jp)
     log(f"今日降價：{len(drops)} 筆")
     notify(items, drops, cat.get("fx") or {})
 

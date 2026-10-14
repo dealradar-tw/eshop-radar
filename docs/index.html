@@ -184,6 +184,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .chart .grid{stroke:var(--line);stroke-width:1}
 .chart .line-tw{fill:none;stroke:var(--accent);stroke-width:2}
 .chart .area-tw{fill:var(--accent);opacity:.12}
+.chart .line-hk{fill:none;stroke:var(--hk,#b4530b);stroke-width:1.5;stroke-dasharray:5 3}
+.chart .line-jp{fill:none;stroke:#d6336c;stroke-width:1.5;stroke-dasharray:2 2}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid;vertical-align:middle;margin-right:5px}
+.line-tw-k{border-color:var(--accent)!important}.line-hk-k{border-color:var(--hk,#b4530b)!important;border-top-style:dashed!important}.line-jp-k{border-color:#d6336c!important;border-top-style:dotted!important}
+.others{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .chart .pt-low{fill:#178a4c}
 .chart .lbl-low{font-size:11px;fill:#178a4c;font-weight:700;font-family:var(--body)}
 .cstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -524,33 +530,38 @@ function rerender(){ shown = 60; setChips(); tab === "hot" ? renderHot() : rende
 // ── 價格走勢圖 ──
 const RANGES = [["6m", "半年", 182], ["1y", "一年", 365], ["2y", "兩年", 730]];
 let chartRange = store.get("chartRange", "1y");
-function chartSVG(series, g, days){
+let chartOthers = store.get("chartOthers", false);
+// series: [{data:[[日期, 台幣]], cls, label, main}]，第一條是台區（有面積與最低點）
+function chartSVG(list, g, days){
   const W = 400, H = 190, L = 40, R = 10, T = 16, B = 24;
   const end = new Date(today); end.setDate(end.getDate() + 1);
   const start = new Date(end); start.setDate(start.getDate() - days);
-  const first = series.length ? new Date(series[0][0]) : end;
+  const firsts = list.filter(s => s.data.length).map(s => new Date(s.data[0][0]));
+  const first = firsts.length ? new Date(Math.min(...firsts)) : end;
   const from = first > start ? first : start;
-  // 起點之前的最後價格
-  let pts = [], last = null;
-  for (const [d, p] of series) {
-    const t = new Date(d);
-    if (t < from) { last = p; continue; }
+  const steps = data => {  // 起點之前的最後價格也要畫進來
+    let pts = [], last = null;
+    for (const [d, p] of data) {
+      const t = new Date(d);
+      if (t < from) { last = p; continue; }
+      if (!pts.length && last != null) pts.push([from, last]);
+      pts.push([t, p]);
+    }
     if (!pts.length && last != null) pts.push([from, last]);
-    pts.push([t, p]);
-  }
-  if (!pts.length && last != null) pts.push([from, last]);
-  if (!pts.length) return "";
-  pts.push([end, pts[pts.length - 1][1]]);
-  const prices = pts.map(p => p[1]).concat(g.reg ?? []);
+    if (pts.length) pts.push([end, pts[pts.length - 1][1]]);
+    return pts;
+  };
+  const all = list.map(s => ({...s, pts: steps(s.data)})).filter(s => s.pts.length);
+  if (!all.length || !all[0].main) return "";
+  const prices = all.flatMap(s => s.pts.map(p => p[1])).concat(g.reg ?? []);
   let lo = Math.min(...prices), hi = Math.max(...prices);
   if (hi === lo) { hi = hi * 1.1 + 1; lo = Math.max(0, lo * 0.8); }
   const pad = (hi - lo) * 0.12; hi += pad; lo = Math.max(0, lo - pad);
   const span = Math.max(end - from, 864e5);
   const x = t => L + (W - L - R) * ((t - from) / span);
   const y = p => T + (H - T - B) * (1 - (p - lo) / (hi - lo));
-  let d = `M${x(pts[0][0]).toFixed(1)},${y(pts[0][1]).toFixed(1)}`;
-  for (let i = 1; i < pts.length; i++) d += `H${x(pts[i][0]).toFixed(1)}V${y(pts[i][1]).toFixed(1)}`;
-  const area = d + `V${H - B}H${x(pts[0][0]).toFixed(1)}Z`;
+  const path = pts => { let d = `M${x(pts[0][0]).toFixed(1)},${y(pts[0][1]).toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) d += `H${x(pts[i][0]).toFixed(1)}V${y(pts[i][1]).toFixed(1)}`; return d; };
   const ticks = [lo + (hi - lo) * 0.15, (lo + hi) / 2, hi - (hi - lo) * 0.15].map(v => Math.round(v));
   const grid = ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 3}" text-anchor="end">${nf(v)}</text>`).join("");
   const short = span < 150 * 864e5;
@@ -559,12 +570,16 @@ function chartSVG(series, g, days){
   const seen = new Set();
   const xl = xt.map((t, i) => { const l = fmt(t); if (seen.has(l)) return ""; seen.add(l);
     return `<text class="axis" x="${x(t)}" y="${H - 7}" text-anchor="${["start","middle","end"][i]}">${l}</text>`; }).join("");
-  const lowP = Math.min(...pts.map(p => p[1]));
-  const lowPt = pts.find(p => p[1] === lowP);
+  const main = all[0], d = path(main.pts);
+  const area = d + `V${H - B}H${x(main.pts[0][0]).toFixed(1)}Z`;
+  const lowP = Math.min(...main.pts.map(p => p[1]));
+  const lowPt = main.pts.find(p => p[1] === lowP);
+  const others = all.slice(1).map(s => `<path class="${s.cls}" d="${path(s.pts)}"/>`).join("");
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="價格走勢圖">${grid}${xl}
-    <path class="area-tw" d="${area}"/><path class="line-tw" d="${d}"/>
+    <path class="area-tw" d="${area}"/>${others}<path class="line-tw" d="${d}"/>
     <circle class="pt-low" cx="${x(lowPt[0])}" cy="${y(lowP)}" r="4"/>
-    <text class="lbl-low" x="${Math.min(x(lowPt[0]) + 6, W - R - 70)}" y="${Math.max(y(lowP) - 8, 12)}">最低 ${nf(lowP)}</text></svg>`;
+    <text class="lbl-low" x="${Math.min(x(lowPt[0]) + 6, W - R - 70)}" y="${Math.max(y(lowP) - 8, 12)}">最低 ${nf(lowP)}</text></svg>`
+    + (all.length > 1 ? `<div class="legend">${all.map(s => `<span><i class="${s.cls}-k"></i>${s.label}</span>`).join("")}</div>` : "");
 }
 function chartStats(series, g){
   if (!series.length) return "";
@@ -590,12 +605,18 @@ async function loadChart(id){
   let h = {tw: []};
   try { const r = await fetch(`h/${full(id)}.json`, {cache: "no-cache"}); if (r.ok) h = await r.json(); } catch (e) {}
   const g = BY.get(id);
+  const conv = (data, rate) => (data || []).map(([d, p]) => [d, Math.round(p * rate)]);
+  const hasOthers = (h.hk?.length && FX.HKD) || (h.jp?.length && FX.JPY);
+  const series = () => [{data: h.tw, cls: "line-tw", label: "台灣", main: true}].concat(chartOthers ? [
+    h.hk?.length && FX.HKD ? {data: conv(h.hk, FX.HKD), cls: "line-hk", label: "香港"} : null,
+    h.jp?.length && FX.JPY ? {data: conv(h.jp, FX.JPY), cls: "line-jp", label: "日本"} : null] : []).filter(Boolean);
   const draw = () => {
     const days = RANGES.find(r => r[0] === chartRange)[2];
     const since = h.tw.length ? h.tw[0][0] : "";
     box.innerHTML = `<div class="chart-head"><h3>價格走勢</h3><div class="seg">${RANGES.map(([k, t]) =>
         `<button data-range="${k}" aria-pressed="${k === chartRange}">${t}</button>`).join("")}</div></div>
-      ${h.tw.length ? chartSVG(h.tw, g, days) + chartStats(h.tw, g) : '<p class="cnote">還沒有價格紀錄。</p>'}
+      ${h.tw.length ? chartSVG(series(), g, days) + chartStats(h.tw, g) : '<p class="cnote">還沒有價格紀錄。</p>'}
+      ${hasOthers ? `<label class="others"><input type="checkbox" id="chartOthers" ${chartOthers ? "checked" : ""}> 一起顯示港區／日區（以今天匯率換算台幣）</label>` : ""}
       ${h.tw.length === 1 ? '<p class="cnote">開始記錄以來價格沒有變動過。</p>' : ""}
       <p class="cnote">${since ? `從 ${since} 開始記錄，資料會每天累積。` : ""}</p>`;
   };
@@ -761,6 +782,9 @@ document.addEventListener("click", e => {
     const done = () => $("#copyMsg").textContent = favs.size ? `已複製 ${favs.size} 個編號` : "還沒有收藏";
     navigator.clipboard?.writeText(text).then(done, () => { prompt("複製下面的編號：", text); });
   }
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "chartOthers") { chartOthers = e.target.checked; store.set("chartOthers", chartOthers); $("#chart")?._redraw?.(); }
 });
 document.addEventListener("input", e => {
   const t = e.target.closest("[data-target]");

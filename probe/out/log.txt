@@ -1,6 +1,0 @@
-aocs page 200 len=249436
-scripts 26
-hits: https?://[a-z0-9.\-]+nintendo[a-z0-9.\-]*[^"\'`\s]{0,80}=25, /api/[^"\'`\s]{1,80}=3, graphql=3, persistedQuery=8, operationName=1, sha256Hash=1, aocs=11, dlcItems=5, offsetInfo=4
-payload len=134466 nsUid7005=0
-tw_title 200 html=250889 payload=135385 formalName=False
-hk_dlc 200 html=246979 payload=134067 formalName=False
