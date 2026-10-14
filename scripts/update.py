@@ -378,7 +378,7 @@ def list_jp_games():
             for it in r.get("items", []):
                 ns = str(it.get("nsuid") or "")
                 if ns.startswith("7001"):
-                    found[ns] = s(it.get("title"))
+                    found[ns] = [s(it.get("title")), "BEE" if "BEE" in str(it.get("hard")) else "HAC"]
             if page * 300 >= r.get("total", 0) or not r.get("items"):
                 break
             page += 1
@@ -421,21 +421,17 @@ def refresh_jp(games, jp, limit=6000):
                 time.sleep(1.0)
         except Blocked as e:
             log(f"  日本區資料介面暫時無法使用（{e}），下次再繼續")
-    # applicationId → 日本 nsuid（同一款有多個商品時取編號最大的，通常是現行版本）
+    # applicationId → 日本 nsuid 候選（同一款可能有本體、同捆組合、Switch 2 版等多個商品）
     by_app = {}
     for n, a in apps.items():
-        if a and (a not in by_app or int(n) > int(by_app[a])):
-            by_app[a] = n
-    matched = 0
-    for g in games.values():
+        if a:
+            by_app.setdefault(a, []).append(n)
+    cands = {}
+    for nid, g in games.items():
         a = (g.get("app") or "").lower()
-        if a and a in by_app:
-            g["jpId"] = by_app[a]
-            matched += 1
-        else:
-            g.pop("jpId", None)
-    log(f"  台日對應：{matched} 款")
-    ids = sorted({g["jpId"]: 1 for g in games.values() if g.get("jpId") and g.get("status") in SELLING})
+        if a in by_app and g.get("status") in SELLING:
+            cands[nid] = by_app[a]
+    ids = sorted({n for c in cands.values() for n in c})
     prices = {}
     try:
         for b in batches(ids):
@@ -447,9 +443,20 @@ def refresh_jp(games, jp, limit=6000):
     except RuntimeError as e:
         log(f"  日本區查價失敗，略過：{e}")
         return
-    for g in games.values():
-        g["jp"] = prices.get(g.get("jpId")) if g.get("jpId") else None
-    log(f"  日本區價格：{len(prices)} 款")
+    # 選對應商品：同平台優先，再取原價最低的（通常是單買本體，不是同捆組合）
+    matched = 0
+    for nid, g in games.items():
+        c = [n for n in cands.get(nid, []) if n in prices]
+        if not c:
+            g["jp"] = None
+            g.pop("jpId", None)
+            continue
+        plat = g.get("plat") or "HAC"
+        c.sort(key=lambda n: ((titles.get(n) or ["", "HAC"])[1] != plat if isinstance(titles.get(n), list) else 0,
+                              prices[n]["reg"], -int(n)))
+        g["jpId"], g["jp"] = c[0], prices[c[0]]
+        matched += 1
+    log(f"  台日對應（有價格）：{matched} 款")
 
 
 def refresh_all_dlc_lists(games, dlcs):
