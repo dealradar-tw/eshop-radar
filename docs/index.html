@@ -6,6 +6,11 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#151a21">
 <title>台區特價雷達</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="特價雷達">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -144,6 +149,12 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 footer code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 .loading{text-align:center;color:var(--muted);padding:40px 0}
 .chips .sep{width:10px}
+.install{float:right;margin-top:4px;font-weight:700;background:var(--tag);color:var(--tag-ink);border-color:var(--tag)}
+.target{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--bg);border-radius:10px;padding:10px 12px}
+.target label{font-size:13px;font-weight:700}
+.target .tin{font-size:14px;color:var(--muted)}
+.target input{font:inherit;width:8em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.target .cnote{flex-basis:100%;margin:0}
 .hk-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--hk,#b4530b);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
 .region h3{font-size:15px;margin:0 0 6px}
 .region table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
@@ -211,6 +222,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <div class="wrap">
 <header>
   <h1>台區特價雷達</h1>
+  <button class="chip install" id="installBtn" hidden>＋ 安裝到手機桌面</button>
   <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time></p>
   <div class="stats">
     <div><b id="sTotal">–</b><span>件特價中</span></div>
@@ -301,7 +313,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。「名稱待補」是商店暫時查不到資料的商品，之後的自動更新會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
-  收藏存在這台裝置的瀏覽器裡。想收到降價通知，可把收藏編號貼到 GitHub 的 <code>data/wishlist.txt</code>：
+  收藏和目標價存在這台裝置的瀏覽器裡。想收到 Telegram 通知（降價、達到目標價、特價快結束），把下面複製的內容貼到 GitHub 的 <code>data/wishlist.txt</code>：
   <button class="chip" id="copyFav" style="margin-top:6px">複製收藏編號</button> <span id="copyMsg"></span>
 </footer>
 </div>
@@ -320,6 +332,7 @@ const store = {
 
 let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "", FX = {};
 let favs = new Set(store.get("favs", []).map(String));
+let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
 let favOnly = false, lowOnly = false, shown = 60;
@@ -644,6 +657,11 @@ async function openDetail(id){
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
+        <div class="target" id="targetBox" ${favs.has(id) ? "" : "hidden"}>
+          <label for="targetIn">目標價（選填）</label>
+          <span class="tin">NT$ <input id="targetIn" type="number" inputmode="numeric" min="0" step="1" placeholder="例如 ${g.reg ? Math.round(g.reg * 0.5) : 300}" value="${targets[id] ?? ""}" data-target="${id}"></span>
+          <p class="cnote">價格降到這個數字以下時通知你。沒填的話，只要降價就通知。</p>
+        </div>
       </div>
     </div></div>`;
   if ($("#sheet").hidden) lastFocus = document.activeElement;
@@ -717,7 +735,7 @@ document.addEventListener("click", e => {
   const rg = t.closest("[data-range]");
   if (rg) { chartRange = rg.dataset.range; store.set("chartRange", chartRange); $("#chart")?._redraw?.(); return; }
   const f = t.closest("[data-fav]");
-  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; if (favOnly) render(); return; }
+  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; const tb2 = $("#targetBox"); if (tb2) tb2.hidden = !favs.has(f.dataset.fav); if (favOnly) render(); return; }
   const tb = t.closest(".tab");
   if (tb) { showTab(tb.dataset.tab); return; }
   const p = t.closest(".plats [data-p]");
@@ -739,10 +757,17 @@ document.addEventListener("click", e => {
   if (t.id === "lowOnly") { lowOnly = !lowOnly; rerender(); return; }
   if (t.id === "more") { shown += 60; render(); return; }
   if (t.id === "copyFav") {
-    const text = [...favs].map(full).join("\n");
+    const text = [...favs].map(id => `${full(id)}${targets[id] ? " " + targets[id] : ""}  # ${(BY.get(id)?.name || "").replace(/[\r\n#]/g, " ")}`).join("\n");
     const done = () => $("#copyMsg").textContent = favs.size ? `已複製 ${favs.size} 個編號` : "還沒有收藏";
     navigator.clipboard?.writeText(text).then(done, () => { prompt("複製下面的編號：", text); });
   }
+});
+document.addEventListener("input", e => {
+  const t = e.target.closest("[data-target]");
+  if (!t) return;
+  const v = parseInt(t.value, 10);
+  if (v > 0) targets[t.dataset.target] = v; else delete targets[t.dataset.target];
+  store.set("targets", targets);
 });
 document.addEventListener("keydown", e => {
   if (!$("#lightbox").hidden) {
@@ -796,6 +821,18 @@ $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (t
   }
 })();
 
+
+// ── 安裝成 App（PWA） ──
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; $("#installBtn").hidden = false; });
+window.addEventListener("appinstalled", () => { $("#installBtn").hidden = true; installEvt = null; });
+$("#installBtn").addEventListener("click", async () => {
+  if (!installEvt) return;
+  installEvt.prompt();
+  await installEvt.userChoice.catch(() => {});
+  installEvt = null; $("#installBtn").hidden = true;
+});
 </script>
 </body>
 </html>

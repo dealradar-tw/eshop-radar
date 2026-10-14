@@ -648,33 +648,99 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None):
 
 
 # ───────────── 6. Telegram 通知（選用） ─────────────
-def notify(items, drops):
+def read_wishlist():
+    """data/wishlist.txt：一行一個商品編號（14 碼），後面可加目標價，例如「70010000035483 500」。"""
+    p = os.path.join(DATA, "wishlist.txt")
+    wl = {}
+    if not os.path.exists(p):
+        return wl
+    with open(p, encoding="utf-8") as f:
+        for line in f:
+            line = line.split("#", 1)[0]
+            m = re.match(r"\s*(\d{14})(?:\D+(\d+))?", line)
+            if m:
+                wl[m.group(1)] = int(m.group(2)) if m.group(2) else None
+    return wl
+
+
+def cheaper_region(g, fx):
+    """港／日區換算台幣後比台區便宜 10% 以上時，回傳說明文字。"""
+    now = g.get("sale") if g.get("sale") is not None else g.get("reg")
+    if not now:
+        return ""
+    best = None
+    for name, key, cur in (("港區", "hk", "HKD"), ("日區", "jp", "JPY")):
+        r = g.get(key) or {}
+        p = r.get("sale") if r.get("sale") is not None else r.get("reg")
+        if p is not None and fx.get(cur):
+            twd = round(p * fx[cur])
+            if twd <= now * 0.9 and (best is None or twd < best[1]):
+                best = (name, twd)
+    return f"\n　{best[0]}約 NT${best[1]:,}（便宜 {round((1 - best[1] / now) * 100)}%）" if best else ""
+
+
+def notify(items, drops, fx):
+    """Telegram 通知：收藏降價、達到目標價、特價快結束（同一件事只通知一次）。"""
     token, chat = os.environ.get("TELEGRAM_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
-    wl_path = os.path.join(DATA, "wishlist.txt")
-    if not (token and chat and os.path.exists(wl_path)):
+    wl = read_wishlist()
+    if not (token and chat and wl):
+        log("未設定 Telegram 或收藏清單是空的，略過通知")
         return
-    with open(wl_path, encoding="utf-8") as f:
-        text = "\n".join(l for l in f if not l.lstrip().startswith("#"))
-        wl = set(re.findall(r"\d{14}", text))
-    hits = [d for d in drops if d[0] in wl]
-    if not hits:
-        log("收藏清單沒有降價")
+    sent = load("notified.json", {})
+    sent = {k: v for k, v in sent.items() if v >= (datetime.now(TW) - timedelta(days=60)).strftime("%Y-%m-%d")}
+    name = lambda n: items[n].get("name") or n
+    price = lambda g: g.get("sale") if g.get("sale") is not None else g.get("reg")
+    drop_lines, target_lines, end_lines = [], [], []
+    drop_ids = {d[0]: d for d in drops}
+    for nsuid, target in wl.items():
+        g = items.get(nsuid)
+        if not g or g.get("status") not in SELLING or price(g) is None:
+            continue
+        now = price(g)
+        end = (g.get("end") or "")[:10]
+        extra = cheaper_region(g, fx)
+        # 達到目標價（價格變動後第一次低於等於目標價才通知）
+        if target is not None and now <= target:
+            key = f"t:{nsuid}:{now}"
+            if key not in sent:
+                target_lines.append(f"🎯 {name(nsuid)}\n　NT${now:,}（目標 NT${target:,}）"
+                                    + (f"，特價到 {end[5:].replace('-', '/')}" if end else "") + extra)
+                sent[key] = TODAY
+                continue
+        # 任何降價
+        if nsuid in drop_ids:
+            _, prev, p, is_low = drop_ids[nsuid]
+            drop_lines.append(f"⬇️ {name(nsuid)}\n　NT${prev:,} → NT${p:,}" + ("（史低）" if is_low else "")
+                              + (f"，特價到 {end[5:].replace('-', '/')}" if end else "") + extra)
+        # 特價 2 天內結束（每次特價只提醒一次）
+        if g.get("sale") is not None and end:
+            left = (datetime.strptime(end, "%Y-%m-%d").date() - datetime.now(TW).date()).days
+            key = f"e:{nsuid}:{end}"
+            if 0 <= left <= 2 and key not in sent:
+                end_lines.append(f"⏰ {name(nsuid)}\n　NT${now:,}，" + ("今天" if left == 0 else f"{left} 天後") + "結束" + extra)
+                sent[key] = TODAY
+    save(os.path.join(DATA, "notified.json"), sent)
+    parts = []
+    if target_lines:
+        parts.append("【達到目標價】\n" + "\n".join(target_lines))
+    if drop_lines:
+        parts.append("【收藏降價】\n" + "\n".join(drop_lines))
+    if end_lines:
+        parts.append("【特價快結束】\n" + "\n".join(end_lines))
+    if not parts:
+        log("收藏清單沒有需要通知的事")
         return
-    lines = ["🎮 收藏的遊戲降價了"]
-    for nsuid, prev, now, is_low in hits:
-        g = items[nsuid]
-        lines.append(f"\n{g.get('name') or nsuid}\nNT${prev} → NT${now}"
-                     + ("（史低）" if is_low else "")
-                     + (f"，特價到 {g['end'][:10]}" if g.get("end") else ""))
     site = os.environ.get("SITE_URL", "")
-    if site:
-        lines.append(f"\n{site}")
-    body = urllib.parse.urlencode({"chat_id": chat, "text": "\n".join(lines)}).encode()
-    try:
-        urllib.request.urlopen(f"https://api.telegram.org/bot{token}/sendMessage", body, timeout=20)
-        log(f"已發送 Telegram 通知：{len(hits)} 筆")
-    except Exception as e:
-        log(f"Telegram 發送失敗：{e}")
+    text = "\n\n".join(parts) + (f"\n\n{site}" if site else "")
+    for k in range(0, len(text), 3800):  # Telegram 單則上限 4096 字
+        body = urllib.parse.urlencode({"chat_id": chat, "text": text[k:k + 3800],
+                                       "disable_web_page_preview": "true"}).encode()
+        try:
+            urllib.request.urlopen(f"https://api.telegram.org/bot{token}/sendMessage", body, timeout=20)
+        except Exception as e:
+            log(f"Telegram 發送失敗：{e}")
+            return
+    log(f"已發送 Telegram 通知：目標價 {len(target_lines)}、降價 {len(drop_lines)}、快結束 {len(end_lines)}")
 
 
 def main():
@@ -716,7 +782,7 @@ def main():
     save(os.path.join(DATA, "jp.json"), jp)
     build_site(games, dlcs, hist, hist_hk, asof, cat["fx"])
     log(f"今日降價：{len(drops)} 筆")
-    notify(items, drops)
+    notify(items, drops, cat.get("fx") or {})
 
 
 TODAY = ""
