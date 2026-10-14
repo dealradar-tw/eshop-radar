@@ -1,47 +1,43 @@
-## APP TW-only 102139 min HTTP 200
-{"data":{"item":{"applicationItem":{"nsUid":70010000102139,"formalName":"1-2-Switch","labelPlatform":"HAC","heroBannerUrl":"https://img-eshop.cdn.nintendo.net/i/c89fc56322dc255a441176c5e1561bfd0a2c1509481295db4a4ab1162f01177b.jpg","releaseDateOnEshop":"2025-09-09"}}}}
-
-ITEMS=1
-
-## APP TW-only 102139 text HTTP 200
-{"data":{"item":{"applicationItem":{"catchCopy":"四目交投1-2-Switch","description":"要看著的不是畫面，而是「對手的眼睛」？\n從Nintendo Switch取出Joy-Con，\n將它交給對手且對上眼的瞬間，\n這個地方就搖身一變成為遊戲的世界。\n互相盯著看，和誰都能一同享受，\n活用Joy-Con豐富多彩功能的全新遊戲。\n這就是『1-2-Switch』。"}}}}
+## APP 027622 genre HTTP 200
+{"data":{"item":{"applicationItem":{"genre":"交流"}}}}
 
 ITEMS=0
 
-## APP TW-only 102139 pub HTTP 200
-{"data":{"item":{"applicationItem":{"publisher":{"name":"Nintendo"}}}}}
+## APP 027622 genres HTTP 400
+{"errors":[{"message":"error","locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"57872a9af6a39678eca409944176aecd"}}]}
+
+
+## APP 027622 tags HTTP 200
+{"errors":[{"message":"error","path":["item","applicationItem","tags"],"locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/diddy/forbidden","status":403,"module":"DIDDY","title":"FORBIDDEN","errorCode":"5203","traceId":"8809fb3e79aaf50bcc3e9253d2be0431","additionalInfo":{"request_id":"b7dfe87f5fd021075b9acd5e2e06c758","message":"You cannot consume this service"}}}],"data":{"item":{"applicationItem":{"tags":null}}}}
 
 ITEMS=0
 
-## APP TW-only 102139 shots HTTP 200
-{"data":{"item":{"applicationItem":{"screenshotUrls":["https://img-eshop.cdn.nintendo.net/i/8e519865dc09c4652acff7ac07dd74c45a2fe6725ca7c8bd3fbcff97fde7b066.jpg","https://img-eshop.cdn.nintendo.net/i/a5f2d92b42e81a5b87e9027b4e215724f07090da0faf678708173e5881edd736.jpg","https://img-eshop.cdn.nintendo.net/i/ddeb20044ac433693153d9f8ca38acb82dd4bc487000791cd8e8e10ded2b4068.jpg","https://img-eshop.cdn.nintendo.net/i/7d365b275733d8910c0e69cf320401a2c4d977055540b6e443ce7aa3a7644630.jpg"]}}}}
+## APP 027622 playStyles HTTP 200
+{"data":{"item":{"applicationItem":{"playStyles":[{"name":"TV_MODE"},{"name":"TABLETOP_MODE"},{"name":"HANDHELD_MODE"}]}}}}
 
 ITEMS=0
 
-## APP TW-only 102139 movies HTTP 200
-{"data":{"item":{"applicationItem":{"movies":[]}}}}
+## APP 027622 romSizes HTTP 200
+{"data":{"item":{"applicationItem":{"romSizes":{"hac":{"totalRomSize":{"rawValue":11356078080}},"bee":{"totalRomSize":{"rawValue":11618222080}}}}}}}
 
 ITEMS=0
 
-## APP TW-only 102139 langs HTTP 200
-{"data":{"item":{"applicationItem":{"languages":[{"name":"日文"},{"name":"英文"},{"name":"西班牙文"},{"name":"法文"},{"name":"德文"},{"name":"義大利文"},{"name":"荷蘭文"},{"name":"俄文"}]}}}}
+## APP 027622 players6 HTTP 200
+{"data":{"item":{"applicationItem":{"playerNumber":{"offlineMin":1,"offlineMax":4,"localMin":1,"localMax":8,"onlineMin":1,"onlineMax":8}}}}}
 
 ITEMS=0
 
-## APP TW-only 102139 players HTTP 200
-{"data":{"item":{"applicationItem":{"playerNumber":{"offlineMax":2,"localMax":null,"onlineMax":null}}}}}
+## APP 027622 rating HTTP 200
+{"data":{"item":{"applicationItem":{"ratingInfo":{"rating":{"name":"保護級","age":6}}}}}}
 
 ITEMS=0
 
-## APP TW-only 102139 dlc HTTP 400
-{"errors":[{"message":"error","locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f6466832b07f1eed2e8d3f4872b7ab1c"}},{"message":"error","locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f6466832b07f1eed2e8d3f4872b7ab1c"}},{"message":"error","locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f6466832b07f1eed2e8d3f4872b7ab1c"}},{"message":"error","locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f6466832b07f1eed2e8d3f4872b7ab1c"}},{"message":"error","locations":[{"line":2,"column":111}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f6466832b07f1eed2e8d3f4872b7ab1c"}}]}
+## APP 027622 apps HTTP 200
+{"data":{"item":{"applicationItem":{"applications":[{"id":"01006f8002326000"}]}}}}
 
+ITEMS=0
 
-## APP TW 027622 min HTTP 200
-{"data":{"item":{"applicationItem":{"nsUid":70010000027622,"formalName":"集合啦！動物森友會"}}}}
+## MULTI alias HTTP 200
+{"data":{"item":{"a":{"nsUid":70010000027622,"formalName":"集合啦！動物森友會"},"b":{"nsUid":70010000102139,"formalName":"1-2-Switch"},"c":null}}}
 
-ITEMS=1
-
-## DLC TW 035483 count HTTP 200
-{"data":{"item":{"dlcItemsByApplicationItem":{"items":[{"__typename":"DlcItem","nsUid":70050000081464,"formalName":"2000系列Pack Vol. 2","labelPlatform":"HAC","heroBannerUrl":"https://img-eshop.cdn.nintendo.net/i/e0a9750a644fd7e5e72cfa0fc8ae4608168f28babc4cd3037c9d30ba48897554.jpg","releaseDateOnEshop":"2026-10-01","isMembershipRequired":false},{"__typename":"DlcItem","nsUid":70050000078951,"formalName":"1990年代流行音樂Pack","labelPlatform":"HAC","heroBannerUrl":"https://img-eshop.cdn.nintendo.net/i/2e5fa18966a018346a8ca87e1ad450bbb8bb1e7b459982f44278b1db60f7cda4.jpg","releaseDateOnEshop":"2026-09-03","isMembershipRequired":false},{"__typename":"DlcItem","nsUid":70050000077435,"formalName":"卡通動畫音樂Pack Vol. 7","labelPlatform":"HAC","heroBannerUrl":"https://img-eshop.cdn.nintendo.net/i/29c6b007b081f3481b8e108e51adf36e54b2b1730aa355d399926b2dcc23b305.jpg","releaseDateOnEshop":"2026-08-06","isMembershipRequired":false},{"__typename":"DlcItem","nsUid":70050000075603,"formalName":"初音未來Pack Vol. 7","labelPlatform":"HAC","heroBannerUrl":"https://img-eshop.cdn.nintendo.net/i/ba8662cd36c7385211797292663ea5357fa3ab5ff7315e732d678da9164aa67b.jpg","releaseDateOnEshop":"2026-07-02","isMembershipRequired":false},{"__typename":"DlcItem","nsUid":70050000075221,"formalName":"「動畫版『吉伊卡哇』」合作Pack","labelPlatform":"HAC","heroBannerUrl":"https://img-eshop.cdn.nintendo.net/i/f31783a203b2e8b26c4a8e4b9846d484454c0538858ba1c675d18f367d2cf606.jpg","releaseDateOnEshop":"2026-06-25","isMembershipRequired":false},
-ITEMS=77
+ITEMS=2
