@@ -16,10 +16,27 @@ def q(label, body):
             t = r.read().decode(); out.append(f"## {label} OK {t[:1500]}"); return t
     except urllib.error.HTTPError as e:
         out.append(f"## {label} HTTP {e.code} {e.read().decode('utf-8','replace')[:300]}")
-ids = [70010000027622, 70010000035483, 70010000041428, 70010000034469, 70010000022954]
-q("typenames", " ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid movies {{ __typename }} }}" for i, n in enumerate(ids)))
-for tn in ["Movie", "EshopMovie", "NintendoMovie", "HostedMovie", "VideoMovie", "UrlMovie", "BrightcoveMovie", "EcMovie", "MovieItem"]:
-    for f in ["url", "movieUrl", "thumbnailUrl", "hlsUrl", "mp4Url", "id"]:
-        q(f"{tn}.{f}", f"a0: applicationItem(nsUid: 70010000027622) {{ movies {{ __typename ... on {tn} {{ {f} }} }} }}")
+ids = [70010000038615, 70010000039948, 70010000041270, 70010000042927, 70010000038620]
+MV = "movies { __typename ... on YoutubeMovie { youtubeId } ... on EshopMovie { movieUrl thumbnailUrl } }"
+for cc in ("TW", "HK"):
+    body = " ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid {MV} }}" for i, n in enumerate(ids))
+    query = ("query Q($shopId: Int!, $country: CountryCode!, $language: LanguageCode!) "
+             "@inContext(shopId: $shopId, country: $country, language: $language) { item { %s } }" % body)
+    try:
+        req = urllib.request.Request(URL, json.dumps({"query": query, "variables": {"shopId": 3, "country": cc, "language": "zh"}}).encode(), H)
+        out.append(f"## {cc} " + urllib.request.urlopen(req, timeout=30).read().decode()[:2500])
+    except urllib.error.HTTPError as e:
+        out.append(f"## {cc} HTTP {e.code} {e.read().decode('utf-8','replace')[:300]}")
+for f in ["promotionMovies { __typename }", "trailers { __typename }", "movieUrls", "youtubeIds", "videos { __typename }", "mainMovie { __typename }"]:
+    q("TW " + f, f"a0: applicationItem(nsUid: 70010000038615) {{ {f} }}")
+# 港區商品頁原始內容裡的 YouTube 編號
+try:
+    req = urllib.request.Request("https://ec.nintendo.com/HK/zh/titles/70010000038615", headers={"User-Agent": UA})
+    t = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
+    import re
+    out.append("## HK page yt " + str(sorted(set(re.findall(r"youtube(?:-nocookie)?\.com/(?:embed/|watch\?v=)([\w-]{11})|\\?\"youtubeId\\?\":\\?\"([\w-]{11})", t)))[:10]) + f" len={len(t)}")
+    k = t.find("ovie"); out.append("## HK page movie ctx " + t[max(0,k-300):k+300])
+except Exception as e:
+    out.append(f"## HK page ERR {e}")
 os.makedirs(os.path.join(os.path.dirname(__file__), "out"), exist_ok=True)
-open(os.path.join(os.path.dirname(__file__), "out", "movies.txt"), "w", encoding="utf-8").write("\n".join(out))
+open(os.path.join(os.path.dirname(__file__), "out", "movies2.txt"), "w", encoding="utf-8").write("\n".join(out))
