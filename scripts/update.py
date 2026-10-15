@@ -24,7 +24,7 @@ UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.3
 PRICE_API = "https://api.ec.nintendo.com/v1/price?country={cc}&lang=zh&ids={ids}"
 BASE = 70010000000000
 SELLING = ("onsale", "preorder", "unreleased")
-DETAIL_VERSION = 3   # 詳細資料格式版本；舊版會在之後的排程中重抓
+DETAIL_VERSION = 4   # 詳細資料格式版本；舊版會在之後的排程中重抓
 
 
 def log(*a):
@@ -176,7 +176,7 @@ GQL_VARS = {"shopId": 3, "country": "TW", "language": "zh"}
 APP_FIELDS = ("nsUid formalName labelPlatform heroBannerUrl releaseDateOnEshop catchCopy description genre "
               "publisher { name } screenshotUrls movies { __typename ... on YoutubeMovie { youtubeId } } "
               "languages { name } playerNumber { offlineMin offlineMax localMin localMax onlineMin onlineMax } "
-              "playStyles { name } ratingInfo { rating { name age } } applications { id } "
+              "playStyles { name } ratingInfo { rating { name age } } applications { id } demoItems { nsUid } "
               "romSizes { hac { totalRomSize { rawValue } estimatedRomSize { rawValue } } "
               "bee { totalRomSize { rawValue } estimatedRomSize { rawValue } } }")
 DLC_FIELDS = ("items { __typename ... on DlcItem { nsUid formalName labelPlatform heroBannerUrl releaseDateOnEshop "
@@ -262,7 +262,8 @@ def build_detail(f):
            "genres": genres, "players": players, "langs": langs,
            "pmax": max([pn.get(k) or 0 for k in ("offlineMax", "localMax", "onlineMax")] or [0]),
            "poff": pn.get("offlineMax") or 0, "rating": s(rating.get("name")),
-           "size": size, "modes": modes, "shots": shots, "vids": vids, "titleId": apps[0] if apps else ""}
+           "size": size, "modes": modes, "shots": shots, "vids": vids, "titleId": apps[0] if apps else "",
+           "demo": [str(d.get("nsUid")) for d in (f.get("demoItems") or []) if d and d.get("nsUid")]}
     return {k: v for k, v in rec.items() if v not in ("", [], None, 0) or k == "v"}
 
 
@@ -342,7 +343,7 @@ def refresh_meta(games, dlcs, limit, retry_missing):
                 det = build_detail(f)
                 g.update(name=s(f["formalName"]), plat=f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else "HAC",
                          img=img_hash(f.get("heroBannerUrl")) or g.get("img", ""), meta=True, nodata=False,
-                         dv=DETAIL_VERSION, app=det.get("titleId", ""), rel=det.get("release", ""), genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
+                         dv=DETAIL_VERSION, app=det.get("titleId", ""), rel=det.get("release", ""), demo=1 if det.get("demo") else 0, genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
                          zh=zh_code(det), zv=2)
                 g.pop("hk404", None)
                 done.append((nid, det))
@@ -666,14 +667,14 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
                      n, STATUS_CODE[g["status"]], g.get("first_seen", ""), 1 if g.get("meta") else 0,
                      g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0),
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
-                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10]])
+                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0)])
     rows.sort(key=lambda r: r[0])
     save(os.path.join(DOCS, "data.json"), {
         "asof": asof,
         "fx": fx or {},
         "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                   "jpReg", "jpSale", "jpId", "rel"],
+                   "jpReg", "jpSale", "jpId", "rel", "demo"],
         "rows": rows})
 
     drows = []

@@ -157,6 +157,9 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .zh.zs{background:#1f5fd1;color:#fff}
 .zh.zp{background:#e8a317;color:#1b1600}
 .zh.zn{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.demo-badge{display:inline-block;font-size:11px;font-weight:700;color:#0e7490;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px;white-space:nowrap}
+:root[data-theme="dark"] .demo-badge{color:#5ec8e0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .demo-badge{color:#5ec8e0}}
 .zh-line{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
@@ -294,6 +297,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <div class="chips">
     <button class="chip more-f" id="moreF" aria-expanded="false">更多篩選 ▾</button>
     <span id="fSummary" class="fsum"></span>
+    <button class="chip clear-f" id="clearF" style="margin-left:auto" hidden>✕ 清除篩選</button>
   </div>
   <div id="filters" class="filters" hidden>
     <div class="chips" id="fZh"><span class="lbl">中文</span>
@@ -308,8 +312,11 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
       <button class="chip" data-pl="4" aria-pressed="false">4 人以上</button>
       <button class="chip" data-pl="8" aria-pressed="false">8 人以上</button>
     </div>
+    <div class="chips" id="fDemo"><span class="lbl">體驗版</span>
+      <button class="chip" id="demoOnly" aria-pressed="false">只看有體驗版</button>
+    </div>
     <div class="chips" id="fGenre"><span class="lbl">類型</span></div>
-    <p class="fnote">類型、中文、人數篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
+    <p class="fnote">類型、中文、人數、體驗版篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
   </div>
 </div>
 <p class="count" id="count"></p>
@@ -359,7 +366,7 @@ let favs = new Set(store.get("favs", []).map(String));
 let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
-let favOnly = false, lowOnly = false, shown = 60;
+let favOnly = false, lowOnly = false, shown = 60, demoOnly = store.get("demoOnly", false);
 const today = new Date(); today.setHours(0, 0, 0, 0);
 
 function daysLeft(end){
@@ -409,9 +416,10 @@ function zhInfo(g){
   const z = g.zh || 0;
   return z & 4 ? ["zp", "部分中文"] : z & 1 ? ["zt", "繁體中文"] : z & 2 ? ["zs", "簡體中文"] : ["zn", "無中文"];
 }
+const demoBadge = g => g.demo ? '<span class="demo-badge">有體驗版</span>' : "";
 const zhBadge = g => { const z = zhInfo(g); return z ? `<span class="zh ${z[0]}">${z[1]}</span>` : ""; };
 function badges(g){
-  return zhBadge(g) + (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
+  return zhBadge(g) + demoBadge(g) + (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
     + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
     + (g.cheapPct ? `<span class="hk-badge">${g.cheapRegion}便宜 ${g.cheapPct}%</span>` : "")
@@ -504,6 +512,7 @@ function filtered(){
     (plat === "all" || +g.s2 === +plat) &&
     inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
+    (!demoOnly || g.demo) &&
     (!favOnly || favs.has(g.id)) &&
     (!q || (g.name || "").toLowerCase().includes(q) || full(g.id).includes(q)
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
@@ -515,10 +524,11 @@ function render(){
   $("#list").innerHTML = rows.length ? rows.slice(0, shown).map(g => row(g)).join("")
     : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${favOnly ? "還沒有收藏。點右邊的 ★ 加入收藏。" : "沒有符合條件的項目。"}</li>`;
   $("#more").hidden = rows.length <= shown;
-  const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
+  const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size + (demoOnly ? 1 : 0);
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
   const m = n + (plat !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0);
   $("#fBadge").textContent = m ? ` · ${m}` : "";
+  $("#clearF").hidden = !(m || $("#q").value);
 }
 function renderHot(){
   const mk = list => list.map(h => { const g = BY.get(h.id.slice(-6)); return g ? row(g, h.rank) : ""; }).join("");
@@ -557,6 +567,13 @@ function setChips(){
   $$("#fGenre [data-g]").forEach(b => b.setAttribute("aria-pressed", genresF.has(b.dataset.g)));
   $("#favOnly").setAttribute("aria-pressed", favOnly);
   $("#lowOnly").setAttribute("aria-pressed", lowOnly);
+  $("#demoOnly").setAttribute("aria-pressed", demoOnly);
+}
+function clearFilters(){
+  plat = "all"; kind = "game"; tier = "all"; zhF = 0; plF = 0; genresF.clear(); lowOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
+  $("#q").value = "";
+  Object.entries({plat, kind, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
+  rerender();
 }
 function rerender(){ shown = 60; setChips(); tab === "hot" ? renderHot() : render(); }
 
@@ -684,6 +701,7 @@ async function openDetail(id, fromHistory){
     det.langs?.length && ["語言", det.langs.map(l => /中文/.test(l) ? `<b>${esc(l)}</b>` : esc(l)).join("、")],
     det.modes?.length && ["遊玩模式", esc(det.modes.join("、"))],
     det.size && ["容量", esc(det.size)],
+    !g.isDlc && g.hasDetail && ["體驗版", g.demo ? "<b>有</b>，可在主機的 eShop 免費下載試玩" : "沒有"],
     det.rating && ["分級", esc(det.rating)],
     hot && ["熱門", `日本${esc(hot[0].src)} ${hot[1]} 下載排行第 ${hot[0].rank} 名`],
     ["編號", full(id)],
@@ -820,6 +838,8 @@ document.addEventListener("click", e => {
   if (ge) { const x = ge.dataset.g; genresF.has(x) ? genresF.delete(x) : genresF.add(x); store.set("genres", [...genresF]); rerender(); return; }
   const ft = t.closest("#fToggle");
   if (ft) { const open = $(".bar").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? " ▴" : " ▾"; return; }
+  if (t.id === "demoOnly") { demoOnly = !demoOnly; store.set("demoOnly", demoOnly); rerender(); return; }
+  if (t.id === "clearF") { clearFilters(); return; }
   if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
   if (t.id === "favOnly") { favOnly = !favOnly; rerender(); return; }
   if (t.id === "lowOnly") { lowOnly = !lowOnly; rerender(); return; }
@@ -918,6 +938,16 @@ $("#themeBtn").addEventListener("click", () => {
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
 applyTheme();
+
+// 篩選面板打開時，手指在清單上滑動（或滑鼠滾輪）就自動收起；在篩選面板裡滑動不會收
+function collapseBar(e){
+  const bar = $(".bar");
+  if (!bar.classList.contains("open") || e.target.closest?.(".bar")) return;
+  bar.classList.remove("open");
+  const ft = $("#fToggle"); ft.setAttribute("aria-expanded", false); ft.lastChild.textContent = " ▾";
+}
+document.addEventListener("touchmove", collapseBar, {passive: true});
+document.addEventListener("wheel", collapseBar, {passive: true});
 </script>
 </body>
 </html>
