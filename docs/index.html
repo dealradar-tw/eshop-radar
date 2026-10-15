@@ -47,6 +47,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line)}
+@media (max-width:480px){.tabs{overflow-x:auto;scrollbar-width:none;gap:0}.tab{font-size:14px;padding:8px 10px 9px;white-space:nowrap}}
 .tab{font:inherit;font-weight:700;font-size:15px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 14px 9px;cursor:pointer;margin-bottom:-1px}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
 .bar{margin-top:0!important}
@@ -246,6 +247,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <nav class="tabs" role="tablist">
   <button class="tab" role="tab" data-tab="deals" aria-selected="true">特價中</button>
   <button class="tab" role="tab" data-tab="hot" aria-selected="false">熱門排行</button>
+  <button class="tab" role="tab" data-tab="new" aria-selected="false">近期發售</button>
   <button class="tab" role="tab" data-tab="all" aria-selected="false">全部遊戲</button>
 </nav>
 
@@ -425,6 +427,7 @@ function priceHTML(g){
 }
 function metaLine(g){
   const parts = [badges(g) + endText(g)];
+  if (tab === "new" && g.rel) { const [, m, d] = g.rel.split("-"); parts.push(`${+m}/${+d} 發售`); }
   if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
   else if (g.dlcN) parts.push(`${g.dlcN} 個 DLC`);
   return parts.filter(Boolean).join(" · ");
@@ -444,6 +447,7 @@ function row(g, rank){
 // ── 篩選與排序 ──
 const SORTS = {
   deals: [["pct","折扣最多"],["low","價格最低"],["save","省最多錢"],["end","最快結束"],["new","最新上架"]],
+  new:   [["rel","最新發售"],["pct","折扣最多"],["low","價格最低"],["high","價格最高"]],
   all:   [["new","最新上架"],["low","價格最低"],["high","價格最高"],["name","名稱"]],
 };
 const sorters = {
@@ -453,8 +457,13 @@ const sorters = {
   save: (a,b) => b.save - a.save,
   end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.pct - a.pct,
   new:  (a,b) => (b.firstSeen || "").localeCompare(a.firstSeen || "") || full(b.id).localeCompare(full(a.id)),
+  rel:  (a,b) => (b.rel || "").localeCompare(a.rel || "") || full(b.id).localeCompare(full(a.id)),
   name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
 };
+// 近期發售：發售日在今天往前 6 個月內（不含尚未發售）
+const RECENT_FROM = (() => { const d = new Date(today); d.setMonth(d.getMonth() - 6); return d.toISOString().slice(0, 10); })();
+const TODAY_STR = new Date(today.getTime() - today.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const isRecent = g => !!g.rel && g.rel >= RECENT_FROM && g.rel <= TODAY_STR;
 function inTier(g){
   if (tier === "all") return true;
   if (g.price == null) return false;
@@ -471,7 +480,7 @@ function filtered(){
   const q = $("#q").value.trim().toLowerCase();
   return ITEMS.filter(g =>
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
-    (tab === "all" || g.onSale) &&
+    (tab === "all" || (tab === "new" ? isRecent(g) : g.onSale)) &&
     (plat === "all" || +g.s2 === +plat) &&
     inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
@@ -506,7 +515,7 @@ function buildGenreChips(){
     list.map(([x]) => `<button class="chip" data-g="${esc(x)}" aria-pressed="${genresF.has(x)}">${esc(x)}</button>`).join("");
 }
 function setSortOptions(){
-  const key = tab === "all" ? "all" : "deals";
+  const key = tab === "all" || tab === "new" ? tab : "deals";
   const saved = store.get("sort_" + key, SORTS[key][0][0]);
   $("#sort").innerHTML = SORTS[key].map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
   $("#sort").value = SORTS[key].some(([v]) => v === saved) ? saved : SORTS[key][0][0];
@@ -515,7 +524,7 @@ function showTab(t){
   tab = t; store.set("tab", t);
   $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
-  $("#q").placeholder = t === "all" ? "搜尋全部（名稱或編號）" : "搜尋特價（名稱或編號）";
+  $("#q").placeholder = t === "all" ? "搜尋全部（名稱或編號）" : t === "new" ? "搜尋近期發售" : "搜尋特價（名稱或編號）";
   shown = 60;
   if (t === "hot") renderHot(); else { setSortOptions(); render(); }
 }
@@ -820,7 +829,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !$("#sheet").hidden) closeDetail();
 });
 $("#q").addEventListener("input", () => { shown = 60; render(); });
-$("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (tab === "all" ? "all" : "deals"), $("#sort").value); render(); });
+$("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (tab === "all" || tab === "new" ? tab : "deals"), $("#sort").value); render(); });
 
 // ── 載入資料 ──
 (async () => {

@@ -331,7 +331,7 @@ def refresh_meta(games, dlcs, limit, retry_missing):
                 det = build_detail(f)
                 g.update(name=s(f["formalName"]), plat=f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else "HAC",
                          img=img_hash(f.get("heroBannerUrl")) or g.get("img", ""), meta=True, nodata=False,
-                         dv=DETAIL_VERSION, app=det.get("titleId", ""), genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
+                         dv=DETAIL_VERSION, app=det.get("titleId", ""), rel=det.get("release", ""), genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
                          zh=(1 if any("繁體" in l for l in det.get("langs", [])) else 0)
                             | (2 if any("簡體" in l for l in det.get("langs", [])) else 0))
                 g.pop("hk404", None)
@@ -552,6 +552,12 @@ def backfill_app_ids(games):
         if os.path.exists(p):
             with open(p, encoding="utf-8") as f:
                 g["app"] = json.load(f).get("titleId", "")
+    for nsuid, g in games.items():  # 發售日（近期發售分頁用）
+        if g.get("meta") and "rel" not in g:
+            p = os.path.join(DOCS, "d", nsuid[-6:] + ".json")
+            if os.path.exists(p):
+                with open(p, encoding="utf-8") as f:
+                    g["rel"] = json.load(f).get("release", "")
 
 
 def backfill_filters(games):
@@ -622,14 +628,14 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
                      n, STATUS_CODE[g["status"]], g.get("first_seen", ""), 1 if g.get("meta") else 0,
                      g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0),
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
-                     g.get("jpId", "") if g.get("jp") else ""])
+                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10]])
     rows.sort(key=lambda r: r[0])
     save(os.path.join(DOCS, "data.json"), {
         "asof": asof,
         "fx": fx or {},
         "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                   "jpReg", "jpSale", "jpId"],
+                   "jpReg", "jpSale", "jpId", "rel"],
         "rows": rows})
 
     drows = []
@@ -641,12 +647,12 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
         drows.append([nsuid, d.get("name", ""), d.get("parent", "")[-6:], d.get("img", ""),
                       d.get("reg"), d.get("sale"), (d.get("end") or "")[:10], low, low_date, n,
                       STATUS_CODE[d["status"]], d.get("first_seen", ""), 1 if d.get("mem") else 0,
-                      hk.get("reg"), hk.get("sale")])
+                      hk.get("reg"), hk.get("sale"), (d.get("date") or "")[:10]])
     drows.sort(key=lambda r: r[0])
     save(os.path.join(DOCS, "dlc.json"), {
         "asof": asof,
         "fields": ["id", "name", "parent", "img", "reg", "sale", "end", "low", "lowDate", "nPrices",
-                   "status", "firstSeen", "membersOnly", "hkReg", "hkSale"],
+                   "status", "firstSeen", "membersOnly", "hkReg", "hkSale", "rel"],
         "rows": drows})
 
     # 每個商品一個價格歷史檔，給價格走勢圖用（只在有變動時寫入）
