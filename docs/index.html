@@ -245,7 +245,6 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <header>
   <div class="hdr-btns">
     <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
-    <button class="chip install" id="installBtn" hidden>＋ 安裝到手機桌面</button>
   </div>
   <h1>台區特價雷達</h1>
   <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time></p>
@@ -901,15 +900,7 @@ if ("serviceWorker" in navigator) {
   let reloaded = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadSW && !reloaded) { reloaded = true; location.reload(); } });
 }
-let installEvt = null;
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; $("#installBtn").hidden = false; });
-window.addEventListener("appinstalled", () => { $("#installBtn").hidden = true; installEvt = null; });
-$("#installBtn").addEventListener("click", async () => {
-  if (!installEvt) return;
-  installEvt.prompt();
-  await installEvt.userChoice.catch(() => {});
-  installEvt = null; $("#installBtn").hidden = true;
-});
+
 
 // ── 顯示模式：跟隨系統 → 淺色 → 深色 ──
 const THEMES = [["auto", "◐ 跟隨系統"], ["light", "☀ 淺色"], ["dark", "☾ 深色"]];
