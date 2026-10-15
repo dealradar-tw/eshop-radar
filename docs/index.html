@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#151a21">
 <title>台區特價雷達</title>
+<script>try{var t=JSON.parse(localStorage.getItem("theme"));if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -27,6 +28,7 @@
 :root[data-theme="dark"]{
   --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
   --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
@@ -161,7 +163,9 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .fav-top{flex:0 0 auto;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
 .fav-top[aria-pressed="true"]{background:var(--star);border-color:var(--star);color:#1b1600}
 .favonly{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 12px}
-.install{float:right;margin-top:4px;font-weight:700;background:var(--tag);color:var(--tag-ink);border-color:var(--tag)}
+.hdr-btns{float:right;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:6px 0 0 8px}
+.theme-btn{white-space:nowrap}
+.install{font-weight:700;background:var(--tag);color:var(--tag-ink);border-color:var(--tag)}
 .target{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--bg);border-radius:10px;padding:10px 12px}
 .target label{font-size:13px;font-weight:700}
 .target .tin{font-size:14px;color:var(--muted)}
@@ -239,8 +243,11 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <body>
 <div class="wrap">
 <header>
+  <div class="hdr-btns">
+    <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
+    <button class="chip install" id="installBtn" hidden>＋ 安裝到手機桌面</button>
+  </div>
   <h1>台區特價雷達</h1>
-  <button class="chip install" id="installBtn" hidden>＋ 安裝到手機桌面</button>
   <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time></p>
   <div class="stats">
     <div><b id="sTotal">–</b><span>件特價中</span></div>
@@ -903,6 +910,22 @@ $("#installBtn").addEventListener("click", async () => {
   await installEvt.userChoice.catch(() => {});
   installEvt = null; $("#installBtn").hidden = true;
 });
+
+// ── 顯示模式：跟隨系統 → 淺色 → 深色 ──
+const THEMES = [["auto", "◐ 跟隨系統"], ["light", "☀ 淺色"], ["dark", "☾ 深色"]];
+let theme = store.get("theme", "auto");
+function applyTheme(){
+  if (theme === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
+  $("#themeBtn").textContent = THEMES.find(t => t[0] === theme)[1];
+  const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.querySelector('meta[name="theme-color"]').content = dark ? "#11151b" : "#eef1f4";
+}
+$("#themeBtn").addEventListener("click", () => {
+  theme = THEMES[(THEMES.findIndex(t => t[0] === theme) + 1) % THEMES.length][0];
+  store.set("theme", theme); applyTheme(); $("#chart")?._redraw?.();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
+applyTheme();
 </script>
 </body>
 </html>
