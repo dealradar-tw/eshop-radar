@@ -336,7 +336,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 
 <footer>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
-  價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。「名稱待補」是商店暫時查不到資料的商品，之後的自動更新會再試。<br>
+  價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏存在這台裝置的瀏覽器裡。
 </footer>
@@ -455,7 +455,7 @@ function row(g, rank){
   return `<li${g.s2 ? ' class="s2"' : ""}>
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
     <div class="info">
-      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補（台區限定）</button>`}
+      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
       <div class="meta">${metaLine(g) || "&nbsp;"}</div>
     </div>
     <div class="price">${priceHTML(g)}</div>
@@ -498,6 +498,7 @@ function gameFilters(g){
 function filtered(){
   const q = $("#q").value.trim().toLowerCase();
   return ITEMS.filter(g =>
+    (g.name || (q && full(g.id).includes(q))) &&  // 還查不到名稱的商品先不列出（用編號搜尋仍找得到）
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
     (tab === "all" || (tab === "new" ? isRecent(g) : g.onSale)) &&
     (plat === "all" || +g.s2 === +plat) &&

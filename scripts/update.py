@@ -266,18 +266,29 @@ def build_detail(f):
     return {k: v for k, v in rec.items() if v not in ("", [], None, 0) or k == "v"}
 
 
-def fetch_apps(ids):
-    """一次查多款遊戲（每款一個別名）。回傳 {nsuid: 資料或 None}。"""
+HK_VARS = {"shopId": 3, "country": "HK", "language": "zh"}
+
+
+def fetch_apps(ids, variables=None):
+    """一次查多款遊戲（每款一個別名）。回傳 {nsuid: 資料或 None}。
+    台灣區商店還沒公開頁面的（常見於剛上架、尚未發售的遊戲），改查港區（同一編號、同樣是中文）。"""
     fields = " ".join(f"a{i}: applicationItem(nsUid: {nid}) {{ {APP_FIELDS} }}" for i, nid in enumerate(ids))
-    item = gql(fields)
+    item = gql(fields, variables)
     if item is None:  # 整批被拒，改成一款一款查，找出問題的那款
         out = {}
         for nid in ids:
-            one = gql(f"a0: applicationItem(nsUid: {nid}) {{ {APP_FIELDS} }}")
+            one = gql(f"a0: applicationItem(nsUid: {nid}) {{ {APP_FIELDS} }}", variables)
             out[nid] = (one or {}).get("a0")
             time.sleep(0.5)
-        return out
-    return {nid: item.get(f"a{i}") for i, nid in enumerate(ids)}
+    else:
+        out = {nid: item.get(f"a{i}") for i, nid in enumerate(ids)}
+    missing = [n for n, f in out.items() if not f]
+    if missing and variables is None:
+        time.sleep(0.5)
+        for n, f in fetch_apps(missing, HK_VARS).items():
+            if f:
+                out[n] = f
+    return out
 
 
 def fetch_dlc_lists(ids):
@@ -312,7 +323,7 @@ def refresh_meta(games, dlcs, limit, retry_missing):
     """用任天堂商店的資料介面（台灣區）補齊名稱、平台、介紹與 DLC 清單。"""
     selling = lambda g: g.get("status") in SELLING
     need = [i for i, g in games.items() if selling(g) and (
-            not g.get("meta") or g.get("dv", 1) < DETAIL_VERSION) and (retry_missing or not g.get("nodata"))]
+            not g.get("meta") or g.get("dv", 1) < DETAIL_VERSION) ]  # 查無資料的每天都再試（多半是剛上架、商店頁還沒公開）
     need.sort(key=lambda i: (games[i].get("meta", False), games[i].get("sale") is None, -int(i)))
     todo = need[:limit]
     log(f"抓商品資料：本次 {len(todo)} 筆（待處理 {len(need)}）")
