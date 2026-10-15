@@ -149,6 +149,11 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 footer code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 .loading{text-align:center;color:var(--muted);padding:40px 0}
 .chips .sep{width:10px}
+.title-row{display:flex;align-items:flex-start;gap:10px}
+.title-row h2{flex:1;min-width:0}
+.fav-top{flex:0 0 auto;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+.fav-top[aria-pressed="true"]{background:var(--star);border-color:var(--star);color:#1b1600}
+.favonly{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 12px}
 .install{float:right;margin-top:4px;font-weight:700;background:var(--tag);color:var(--tag-ink);border-color:var(--tag)}
 .target{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--bg);border-radius:10px;padding:10px 12px}
 .target label{font-size:13px;font-weight:700}
@@ -249,6 +254,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <div class="row1">
     <input id="q" type="search" placeholder="搜尋遊戲名稱或編號" aria-label="搜尋遊戲名稱或編號">
     <select id="sort" aria-label="排序方式"></select>
+    <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏">★ 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge"></span> ▾</button>
   </div>
   <div class="chips plats" role="group" aria-label="主機">
@@ -274,7 +280,6 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <div class="chips">
     <button class="chip more-f" id="moreF" aria-expanded="false">更多篩選 ▾</button>
     <span id="fSummary" class="fsum"></span>
-    <button class="chip" id="favOnly" aria-pressed="false" style="margin-left:auto">★ 只看收藏</button>
   </div>
   <div id="filters" class="filters" hidden>
     <div class="chips" id="fZh"><span class="lbl">中文</span>
@@ -658,7 +663,8 @@ async function openDetail(id){
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
       <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
       <div class="body">
-        <h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
+        <div class="title-row"><h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
+          <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favs.has(id) ? "★ 已收藏" : "☆ 收藏"}</button></div>
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
         ${regionBox(g, id)}
@@ -676,17 +682,21 @@ async function openDetail(id){
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
-        <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
       </div>
     </div></div>`;
-  if ($("#sheet").hidden) lastFocus = document.activeElement;
+  if ($("#sheet").hidden) { lastFocus = document.activeElement; history.pushState({ov: "sheet"}, ""); }
   $("#sheet").hidden = false;
   document.body.style.overflow = "hidden";
   $("#sheet .sheet").scrollTop = 0;
   $("#sheet .x").focus();
   loadChart(id);
 }
+// 手機「返回」：打開詳細頁／截圖時記一筆瀏覽紀錄，按返回就只關掉它，不會離開網站
 function closeDetail(){
+  if (history.state?.ov === "sheet") { history.back(); return; }
+  closeDetailNow();
+}
+function closeDetailNow(){
   $("#sheet").hidden = true; $("#sheet").innerHTML = "";
   document.body.style.overflow = "";
   lastFocus?.focus();
@@ -706,6 +716,7 @@ function openLightbox(i){
   lb.innerHTML = `<img alt="遊戲截圖"><button class="lb-btn lb-x" data-lb="x" aria-label="關閉">×</button>
     ${SHOTS.length > 1 ? '<button class="lb-btn lb-prev" data-lb="prev" aria-label="上一張">‹</button><button class="lb-btn lb-next" data-lb="next" aria-label="下一張">›</button>' : ""}
     <div class="lb-count"></div>`;
+  if (lb.hidden) history.pushState({ov: "lb"}, "");
   lb.hidden = false;
   showShot();
 }
@@ -715,7 +726,15 @@ function showShot(){
   lb.querySelector(".lb-count").textContent = `${lbIdx + 1} / ${SHOTS.length}　（左右滑動切換）`;
 }
 function stepShot(d){ lbIdx = (lbIdx + d + SHOTS.length) % SHOTS.length; showShot(); }
-function closeLightbox(){ $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; }
+function closeLightbox(){
+  if (history.state?.ov === "lb") { history.back(); return; }
+  closeLightboxNow();
+}
+function closeLightboxNow(){ $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; }
+window.addEventListener("popstate", () => {
+  if (!$("#lightbox").hidden) closeLightboxNow();
+  else if (!$("#sheet").hidden) closeDetailNow();
+});
 $("#lightbox").addEventListener("click", e => {
   const b = e.target.closest("[data-lb]");
   if (b) { b.dataset.lb === "x" ? closeLightbox() : stepShot(b.dataset.lb === "next" ? 1 : -1); }
@@ -750,7 +769,7 @@ document.addEventListener("click", e => {
   const rg = t.closest("[data-range]");
   if (rg) { chartRange = rg.dataset.range; store.set("chartRange", chartRange); $("#chart")?._redraw?.(); return; }
   const f = t.closest("[data-fav]");
-  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; if (favOnly) render(); return; }
+  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏" : "☆ 收藏"; f.setAttribute("aria-pressed", favs.has(f.dataset.fav)); if (favOnly) render(); return; }
   const tb = t.closest(".tab");
   if (tb) { showTab(tb.dataset.tab); return; }
   const p = t.closest(".plats [data-p]");
