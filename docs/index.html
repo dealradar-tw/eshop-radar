@@ -150,6 +150,12 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 footer code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 .loading{text-align:center;color:var(--muted);padding:40px 0}
 .chips .sep{width:10px}
+.zh{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;white-space:nowrap}
+.zh.zt{background:#178a4c;color:#fff}
+.zh.zs{background:#1f5fd1;color:#fff}
+.zh.zp{background:#e8a317;color:#1b1600}
+.zh.zn{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.zh-line{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
 .fav-top{flex:0 0 auto;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
@@ -391,8 +397,15 @@ function endText(g){
   const [, m, d] = g.end.split("-");
   return `${+m}/${+d} 結束`;
 }
+// 中文支援標籤：繁體中文／簡體中文／部分中文／無中文（沒有介紹資料的不標）
+function zhInfo(g){
+  if (g.isDlc || !g.hasDetail) return null;
+  const z = g.zh || 0;
+  return z & 4 ? ["zp", "部分中文"] : z & 1 ? ["zt", "繁體中文"] : z & 2 ? ["zs", "簡體中文"] : ["zn", "無中文"];
+}
+const zhBadge = g => { const z = zhInfo(g); return z ? `<span class="zh ${z[0]}">${z[1]}</span>` : ""; };
 function badges(g){
-  return (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
+  return zhBadge(g) + (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
     + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
     + (g.cheapPct ? `<span class="hk-badge">${g.cheapRegion}便宜 ${g.cheapPct}%</span>` : "")
@@ -677,6 +690,7 @@ async function openDetail(id, fromHistory){
       <div class="body">
         <div class="title-row"><h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favs.has(id) ? "★ 已收藏" : "☆ 收藏"}</button></div>
+        ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
         ${regionBox(g, id)}

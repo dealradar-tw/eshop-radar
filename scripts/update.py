@@ -332,8 +332,7 @@ def refresh_meta(games, dlcs, limit, retry_missing):
                 g.update(name=s(f["formalName"]), plat=f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else "HAC",
                          img=img_hash(f.get("heroBannerUrl")) or g.get("img", ""), meta=True, nodata=False,
                          dv=DETAIL_VERSION, app=det.get("titleId", ""), rel=det.get("release", ""), genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
-                         zh=(1 if any("繁體" in l for l in det.get("langs", [])) else 0)
-                            | (2 if any("簡體" in l for l in det.get("langs", [])) else 0))
+                         zh=zh_code(det), zv=2)
                 g.pop("hk404", None)
                 done.append((nid, det))
                 ok += 1
@@ -560,6 +559,33 @@ def backfill_app_ids(games):
                     g["rel"] = json.load(f).get("release", "")
 
 
+PARTIAL_ZH = re.compile(
+    r"(部分|部份)(的)?(繁體|簡體|繁簡)?中文|中文[^。\n]{0,4}(部分|部份)|僅[^。\n]{0,12}中文|只(有|包含)[^。\n]{0,12}中文"
+    r"|(選單|菜單|介面|UI|說明)[^。\n]{0,12}(對應|支援|提供)[^。\n]{0,6}中文|中文[^。\n]{0,4}(介面|選單|菜單)")
+
+
+def zh_code(det):
+    """中文支援：1=繁體、2=簡體、4=部分中文（介紹裡寫只有選單／部分內容是中文）。"""
+    langs = det.get("langs", [])
+    code = (1 if any("繁體" in l for l in langs) else 0) | (2 if any("簡體" in l for l in langs) else 0)
+    text = (det.get("desc") or "") + "\n" + (det.get("catch") or "")
+    if PARTIAL_ZH.search(text):
+        code |= 4
+    return code
+
+
+def backfill_zh(games):
+    """用已存的 d/<編號>.json 重新判斷中文支援（含「部分中文」）。"""
+    for nsuid, g in games.items():
+        if not g.get("meta") or g.get("zv") == 2:
+            continue
+        p = os.path.join(DOCS, "d", nsuid[-6:] + ".json")
+        if os.path.exists(p):
+            with open(p, encoding="utf-8") as f:
+                g["zh"] = zh_code(json.load(f))
+            g["zv"] = 2
+
+
 def backfill_filters(games):
     """舊版抓到的詳細資料沒存篩選欄位；先從已有的 d/<編號>.json 補上。"""
     for nsuid, g in games.items():
@@ -613,6 +639,7 @@ def fetch_fx(prev):
 
 def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
     backfill_filters(games)
+    backfill_zh(games)
     dlc_count = {}
     for d in dlcs.values():
         if d.get("status") in SELLING and d.get("parent"):
