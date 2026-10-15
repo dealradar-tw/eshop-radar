@@ -11,6 +11,10 @@ on:
         description: "完整重掃全部編號（約 30 分鐘）"
         type: boolean
         default: false
+      test_notify:
+        description: "只發一則測試通知（不更新價格）"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -34,9 +38,12 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           SITE_URL: ${{ vars.SITE_URL }}
         run: |
-          if [ "${{ github.event.schedule }}" = "40 19 * * 0" ] || [ "${{ inputs.full }}" = "true" ]; then
+          if [ "${{ inputs.test_notify }}" = "true" ]; then
+            python scripts/update.py --test-notify
+          elif [ "${{ github.event.schedule }}" = "40 19 * * 0" ] || [ "${{ inputs.full }}" = "true" ]; then
             python scripts/update.py --full
           else
             python scripts/update.py

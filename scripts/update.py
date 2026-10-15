@@ -695,12 +695,36 @@ def cheaper_region(g, fx):
     return f"\n　{best[0]}約 NT${best[1]:,}（便宜 {round((1 - best[1] / now) * 100)}%）" if best else ""
 
 
+# ntfy 推播：手機裝 ntfy App、訂閱這個主題名稱就能收到。可用 GitHub 密鑰 NTFY_TOPIC 改成別的名稱。
+NTFY_TOPIC = "eshop-radar-pw0ssnkn6ggo"
+SITE = "https://jackie-1002.github.io/eshop-radar/"
+
+
+def send_ntfy(topic, title, lines, tags):
+    """ntfy 單則上限約 4KB，超過就拆成多則。"""
+    chunks, cur = [], ""
+    for line in lines:
+        if cur and len((cur + "\n" + line).encode()) > 3500:
+            chunks.append(cur)
+            cur = line
+        else:
+            cur = (cur + "\n" + line) if cur else line
+    if cur:
+        chunks.append(cur)
+    for i, c in enumerate(chunks):
+        body = json.dumps({"topic": topic, "title": title + (f"（{i + 1}/{len(chunks)}）" if len(chunks) > 1 else ""),
+                           "message": c, "tags": tags, "click": os.environ.get("SITE_URL") or SITE}).encode()
+        req = urllib.request.Request("https://ntfy.sh/", data=body, headers={"Content-Type": "application/json", **UA})
+        urllib.request.urlopen(req, timeout=20).read()
+
+
 def notify(items, drops, fx):
-    """Telegram 通知：收藏降價、達到目標價、特價快結束（同一件事只通知一次）。"""
+    """推播通知（ntfy，另可加 Telegram）：收藏降價、達到目標價、特價快結束（同一件事只通知一次）。"""
     token, chat = os.environ.get("TELEGRAM_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
+    topic = os.environ.get("NTFY_TOPIC") or NTFY_TOPIC
     wl = read_wishlist()
-    if not (token and chat and wl):
-        log("未設定 Telegram 或收藏清單是空的，略過通知")
+    if not wl:
+        log("收藏清單是空的，略過通知")
         return
     sent = load("notified.json", {})
     sent = {k: v for k, v in sent.items() if v >= (datetime.now(TW) - timedelta(days=60)).strftime("%Y-%m-%d")}
@@ -746,17 +770,28 @@ def notify(items, drops, fx):
     if not parts:
         log("收藏清單沒有需要通知的事")
         return
-    site = os.environ.get("SITE_URL") or "https://jackie-1002.github.io/eshop-radar/"
-    text = "\n\n".join(parts) + (f"\n\n{site}" if site else "")
-    for k in range(0, len(text), 3800):  # Telegram 單則上限 4096 字
-        body = urllib.parse.urlencode({"chat_id": chat, "text": text[k:k + 3800],
-                                       "disable_web_page_preview": "true"}).encode()
+    site = os.environ.get("SITE_URL") or SITE
+    ok = []
+    if topic:
         try:
-            urllib.request.urlopen(f"https://api.telegram.org/bot{token}/sendMessage", body, timeout=20)
+            for lines, title, tag in ((target_lines, "達到目標價", "dart"), (drop_lines, "收藏的遊戲降價了", "chart_with_downwards_trend"),
+                                      (end_lines, "特價快結束", "alarm_clock")):
+                if lines:
+                    send_ntfy(topic, title, [l for x in lines for l in (x + "\n").split("\n")][:-1], [tag])
+            ok.append("ntfy")
+        except Exception as e:
+            log(f"ntfy 發送失敗：{e}")
+    if token and chat:
+        text = "\n\n".join(parts) + f"\n\n{site}"
+        try:
+            for k in range(0, len(text), 3800):  # Telegram 單則上限 4096 字
+                body = urllib.parse.urlencode({"chat_id": chat, "text": text[k:k + 3800],
+                                               "disable_web_page_preview": "true"}).encode()
+                urllib.request.urlopen(f"https://api.telegram.org/bot{token}/sendMessage", body, timeout=20)
+            ok.append("Telegram")
         except Exception as e:
             log(f"Telegram 發送失敗：{e}")
-            return
-    log(f"已發送 Telegram 通知：目標價 {len(target_lines)}、降價 {len(drop_lines)}、快結束 {len(end_lines)}")
+    log(f"已發送通知（{'、'.join(ok) or '無'}）：目標價 {len(target_lines)}、降價 {len(drop_lines)}、快結束 {len(end_lines)}")
 
 
 def main():
@@ -764,7 +799,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--full", action="store_true", help="從頭掃描全部編號，並重試查不到資料的商品")
     ap.add_argument("--meta-limit", type=int, default=5000)
+    ap.add_argument("--test-notify", action="store_true", help="只發一則測試通知")
     args = ap.parse_args()
+    if args.test_notify:
+        send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "台區特價雷達：測試通知",
+                  ["收到這則訊息，代表通知設定成功了 🎉", "之後收藏的遊戲降價、達到目標價、特價快結束時，都會在這裡通知你。"], ["tada"])
+        log("已發送測試通知")
+        return
     now = datetime.now(TW)
     TODAY = now.strftime("%Y-%m-%d")
 
