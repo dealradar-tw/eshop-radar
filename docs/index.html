@@ -34,7 +34,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(5.5em,1fr));gap:8px 16px;margin-top:16px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
+.stats div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+@media (max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .stats div{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
@@ -134,11 +136,11 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 .ftoggle{display:none}
 @media (max-width:600px){
   .bar{padding-block:8px;gap:8px}
-  /* 字放大時搜尋框太窄就自動換到上一行，按鈕排在下一行 */
-  .row1{flex-wrap:wrap}
-  input[type=search]{flex:1 1 0;min-width:6em;padding:8px 10px}
-  .row1 select{flex:0 1 auto;min-width:4.5em;max-width:34vw;padding:8px 6px}
-  .row1 .favonly,.row1 .ftoggle{flex:0 0 auto;padding:8px 10px}
+  /* 手機：第一行搜尋框（整行），第二行 排序／收藏／篩選 */
+  .row1{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px}
+  .row1 input[type=search]{grid-column:1/-1;width:100%;min-width:0;padding:8px 10px}
+  .row1 select{min-width:0;max-width:none;width:100%;padding:8px 6px}
+  .row1 .favonly,.row1 .ftoggle{padding:8px 12px;white-space:nowrap}
   .ftoggle{display:inline-block;flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 10px}
   .fpanel:not(.open){display:none}
   .fpanel.open{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px) + var(--bar-h,0px));z-index:5;background:var(--bg);max-height:calc(100dvh - var(--tabs-h,0px) - var(--bar-h,0px));overflow-y:auto;padding-top:0}
