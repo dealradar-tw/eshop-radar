@@ -195,6 +195,29 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .prange .pin{color:var(--muted);font-size:13px;white-space:nowrap}
 .prange input{font:inherit;font-size:14px;width:6.5em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
+.mine-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0 12px}
+.mine-sum div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column}
+.mine-sum b{font-family:var(--display);font-size:20px;font-weight:800}
+.mine-sum span{font-size:12px;color:var(--muted)}
+@media (max-width:600px){.mine-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mine-info{grid-column:1/-1;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px;margin-top:2px}
+.mine-info b{color:var(--ink)}
+.lows h3,.mine-box h3{font-size:15px;margin:0 0 6px}
+.lows table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.lows td{padding:6px;border-bottom:1px solid var(--line)}
+.lows tr.best td{background:color-mix(in srgb,#178a4c 10%,transparent)}
+.muted{color:var(--muted)}
+.mine-box{display:flex;flex-direction:column;gap:8px;background:var(--bg);border-radius:10px;padding:12px}
+.buys{display:flex;flex-direction:column;gap:6px;margin:0;padding:0}
+.buys li{display:flex!important;flex-wrap:wrap;gap:4px 12px;align-items:center;font-size:13px;background:var(--surface);border:1px solid var(--line)!important;box-shadow:none!important;border-radius:8px;padding:8px 10px;cursor:default}
+.buys li small{color:var(--muted);margin-left:4px}
+.buys li .chip{margin-left:auto;font-size:12px;padding:3px 10px}
+.addbuy summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent)}
+.buyform{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:8px;align-items:end}
+.buyform label,.note-lbl{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.buyform input,.buyform select,.note-lbl textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px;width:100%}
+.buyform .save{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;padding:9px}
+#visits{display:inline-block;margin-top:6px}
 .zh-line{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
@@ -300,6 +323,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <button class="tab" role="tab" data-tab="hot" aria-selected="false">熱門排行</button>
   <button class="tab" role="tab" data-tab="new" aria-selected="false">近期發售</button>
   <button class="tab" role="tab" data-tab="all" aria-selected="false">全部遊戲</button>
+  <button class="tab" role="tab" data-tab="mine" aria-selected="false">我的收藏</button>
 </nav>
 
 <section id="pList">
@@ -370,6 +394,22 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <nav class="pager" id="pager" aria-label="換頁" hidden></nav>
 </section>
 
+<section id="pMine" hidden>
+  <div class="mine-sum" id="mineSum"></div>
+  <div class="chips" id="mineSeg" role="group" aria-label="顯示">
+    <button class="chip" data-ms="all" aria-pressed="true">全部</button>
+    <button class="chip" data-ms="want" aria-pressed="false">還沒買</button>
+    <button class="chip" data-ms="bought" aria-pressed="false">已購買</button>
+    <span style="margin-left:auto;display:flex;gap:6px">
+      <button class="chip" id="mineExport">匯出備份</button>
+      <button class="chip" id="mineImport">匯入備份</button>
+      <input type="file" id="mineFile" accept="application/json,.json" hidden>
+    </span>
+  </div>
+  <p class="cnote" style="margin:8px 0 0">收藏和購買紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先「匯出備份」，之後再「匯入備份」就能還原。</p>
+  <ul id="mineList" style="margin-top:12px"></ul>
+</section>
+
 <section id="pHot" hidden>
   <p class="note">台灣與港區沒有公開下載排行，這裡用任天堂日本官方公布的下載排行，挑出台灣區有賣的遊戲，左邊數字是日本排行的名次。日本玩家的口味和台灣不完全一樣，請當作參考。</p>
   <div class="chips plats" role="group" aria-label="主機" style="margin-top:14px">
@@ -392,7 +432,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
-  收藏存在這台裝置的瀏覽器裡。
+  收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
+  <span id="visits"></span>
 </footer>
 </div>
 
@@ -615,10 +656,10 @@ function showTab(t){
   if (tab !== t && window.scrollY > tabsTop) window.scrollTo(0, tabsTop);
   tab = t; store.set("tab", t);
   $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
-  $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
+  $("#pList").hidden = t === "hot" || t === "mine"; $("#pHot").hidden = t !== "hot"; $("#pMine").hidden = t !== "mine";
   $("#q").placeholder = t === "all" ? "搜尋全部（名稱或編號）" : t === "new" ? "搜尋近期發售" : "搜尋特價（名稱或編號）";
   page = 1;
-  if (t === "hot") renderHot(); else { setSortOptions(); render(); }
+  if (t === "hot") renderHot(); else if (t === "mine") renderMine(); else { setSortOptions(); render(); }
 }
 function setChips(){
   $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
@@ -650,7 +691,7 @@ document.addEventListener("change", e => {
   if (e.target.id === "pgSel") goPage(+e.target.value);
   if (e.target.id === "pgSize") { pageSize = +e.target.value; store.set("pageSize", pageSize); goPage(1); }
 });
-function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : render(); }
+function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : tab === "mine" ? renderMine() : render(); }
 
 // ── 價格走勢圖 ──
 const RANGES = [["6m", "半年", 182], ["1y", "一年", 365], ["2y", "兩年", 730]];
@@ -747,6 +788,7 @@ async function loadChart(id){
   };
   box._redraw = draw;
   draw();
+  renderLows(h, g);
 }
 
 // ── 詳情 ──
@@ -794,6 +836,8 @@ async function openDetail(id, fromHistory){
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
         ${regionBox(g, id)}
+        <div class="lows" id="lowBox"></div>
+        ${mineBox(id)}
         <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
         ${det.catch ? `<p class="catch">${esc(det.catch)}</p>` : ""}
         ${det.desc ? `<p class="desc">${esc(det.desc)}</p>` : g.isDlc ? "" : `<p class="pending">${g.name ? (g.hasDetail ? "這款遊戲沒有介紹資料。" : "介紹資料準備中，之後的自動更新會補上。") : "暫無介紹資料。"}</p>`}
@@ -877,6 +921,7 @@ function toggleFav(id){
   favs.has(id) ? favs.delete(id) : favs.add(id);
   store.set("favs", [...favs]);
   $$(`.star[data-id="${id}"]`).forEach(s => s.setAttribute("aria-pressed", favs.has(id)));
+  if (tab === "mine" && $("#sheet").hidden) renderMine();
 }
 
 // ── 事件 ──
@@ -988,7 +1033,7 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
     buildGenreChips();
     setChips();
-    showTab(["deals", "hot", "new", "all"].includes(tab) ? tab : "deals");
+    showTab(["deals", "hot", "new", "all", "mine"].includes(tab) ? tab : "deals");
   } catch (e) {
     console.error(e);
     $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
@@ -1037,6 +1082,133 @@ new ResizeObserver(() => document.documentElement.style.setProperty("--tabs-h", 
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", $(".bar").offsetHeight + "px")).observe($(".bar"));
 window.addEventListener("scroll", () => { $("#toTop").hidden = window.scrollY < 1200; }, {passive: true});
 $("#toTop").addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
+
+// ── 我的收藏：購買紀錄、筆記、各區史低（只存在這台裝置） ──
+let MINE = store.get("mine", {});   // {編號: {p: [{q, d, t, r, c, a}], n: "筆記"}}
+let mineSeg = "all";
+const TYPES = {dl: "數位版", pk: "實體版", key: "金鑰卡"};
+const REGIONS = {tw: "台灣", hk: "香港", jp: "日本", us: "美國", other: "其他"};
+const CURS = {TWD: "NT$", HKD: "HK$", JPY: "¥", USD: "US$"};
+const saveMine = () => { for (const k in MINE) if (!MINE[k].p?.length && !MINE[k].n) delete MINE[k]; store.set("mine", MINE); };
+const toTwd = (a, c) => c === "TWD" ? a : FX[c] ? Math.round(a * FX[c]) : null;
+function mineSpent(id){
+  let twd = 0, unknown = false, qty = 0;
+  for (const x of MINE[id]?.p || []) { qty += x.q || 1; const v = toTwd(x.a || 0, x.c); v == null ? unknown = true : twd += v; }
+  return {twd, unknown, qty};
+}
+function mineBox(id){
+  const m = MINE[id] || {p: [], n: ""};
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+  const opt = (o, v) => Object.entries(o).map(([k, t]) => `<option value="${k}"${k === v ? " selected" : ""}>${t}</option>`).join("");
+  return `<div class="mine-box" id="mineBox" data-id="${id}">
+    <h3>我的紀錄</h3>
+    ${m.p.length ? `<ul class="buys">${m.p.map((x, i) => `<li>
+        <span><b>${CURS[x.c] || x.c + " "}${nf(x.a)}</b>${x.c !== "TWD" && toTwd(x.a, x.c) != null ? `<small>（約 NT$${nf(toTwd(x.a, x.c))}）</small>` : ""}</span>
+        <span>${TYPES[x.t] || ""} · ${REGIONS[x.r] || ""} · ${x.q || 1} 份</span>
+        <span class="muted">${esc(x.d || "")}</span>
+        <button class="chip" data-delbuy="${i}" aria-label="刪除這筆紀錄">刪除</button></li>`).join("")}</ul>`
+      : '<p class="cnote">還沒有購買紀錄。</p>'}
+    <details class="addbuy"><summary>＋ 新增購買紀錄</summary>
+      <div class="buyform">
+        <label>購買日期<input type="date" id="bDate" value="${today}"></label>
+        <label>數量<input type="number" id="bQty" min="1" step="1" value="1" inputmode="numeric"></label>
+        <label>版本<select id="bType">${opt(TYPES, "dl")}</select></label>
+        <label>地區<select id="bReg">${opt(REGIONS, "tw")}</select></label>
+        <label>幣別<select id="bCur">${opt({TWD: "新台幣", HKD: "港幣", JPY: "日圓", USD: "美元"}, "TWD")}</select></label>
+        <label>金額<input type="number" id="bAmt" min="0" step="1" inputmode="decimal" placeholder="例如 990"></label>
+        <button class="chip save" id="bSave">儲存</button>
+      </div>
+    </details>
+    <label class="note-lbl">筆記<textarea id="mNote" rows="3" placeholder="例如：等降到 500 再買、和朋友一起玩…">${esc(m.n || "")}</textarea></label>
+  </div>`;
+}
+// 各區史低（從價格歷史算出來，換算台幣後標出最低的地區）
+function renderLows(h, g){
+  const box = $("#lowBox"); if (!box) return;
+  const low = (arr) => { if (!arr?.length) return null; let b = arr[0]; for (const x of arr) if (x[1] < b[1] || (x[1] === b[1] && x[0] > b[0])) b = x; return b; };
+  const rows = [["台灣", "NT$", low(h.tw), 1], ["香港", "HK$", low(h.hk), FX.HKD], ["日本", "¥", low(h.jp), FX.JPY]]
+    .filter(r => r[2] && r[3]).map(([n, c, [d, p], rate]) => ({n, c, d, p, twd: Math.round(p * rate)}));
+  if (!rows.length) { box.innerHTML = ""; return; }
+  const best = Math.min(...rows.map(r => r.twd));
+  box.innerHTML = `<h3>各區史低</h3><table><tbody>${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>
+      <td>${r.n}</td><td>${r.c}${nf(r.p)}</td><td>${r.c !== "NT$" ? `約 NT$${nf(r.twd)}` : ""}</td><td class="muted">${r.d}</td></tr>`).join("")}</tbody></table>
+    <p class="cnote">從開始記錄（2026-10-13 起）以來的最低價與日期；換算用今天的匯率。</p>`;
+}
+function renderMine(){
+  const ids = [...new Set([...[...favs].reverse(), ...Object.keys(MINE)])];
+  const items = ids.map(id => BY.get(id)).filter(Boolean);
+  const bought = items.filter(g => MINE[g.id]?.p?.length);
+  let spent = 0, unk = false;
+  bought.forEach(g => { const s = mineSpent(g.id); spent += s.twd; unk ||= s.unknown; });
+  $("#mineSum").innerHTML = `<div><b>${items.length}</b><span>收藏／紀錄</span></div>
+    <div><b>${bought.length}</b><span>已購買</span></div>
+    <div><b>NT$${nf(spent)}</b><span>總花費（約）${unk ? "＊" : ""}</span></div>
+    <div><b>${items.filter(g => g.onSale).length}</b><span>正在特價</span></div>`;
+  $$("#mineSeg [data-ms]").forEach(b => b.setAttribute("aria-pressed", b.dataset.ms === mineSeg));
+  const list = items.filter(g => mineSeg === "all" || (mineSeg === "bought") === !!MINE[g.id]?.p?.length);
+  $("#mineList").innerHTML = list.length ? list.map(g => {
+    const m = MINE[g.id], s = mineSpent(g.id);
+    const info = [
+      g.low != null ? `史低 NT$${nf(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "",
+      g.cheapPct ? `${g.cheapRegion}現在便宜 ${g.cheapPct}%` : "",
+      m?.p?.length ? `<b>已購 ${s.qty} 份</b>（${[...new Set(m.p.map(x => TYPES[x.t]))].join("、")}）約 NT$${nf(s.twd)}` : "",
+      m?.n ? `📝 ${esc(m.n.slice(0, 40))}${m.n.length > 40 ? "…" : ""}` : "",
+    ].filter(Boolean).join(" · ");
+    return row(g).replace(/<\/li>\s*$/, `<div class="mine-info">${info}</div></li>`);
+  }).join("") : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${favs.size || Object.keys(MINE).length ? "沒有符合的項目。" : "還沒有收藏。點遊戲卡片右上角的星號加入收藏，或在遊戲介紹頁新增購買紀錄。"}</li>`;
+}
+document.addEventListener("click", e => {
+  const t = e.target;
+  const ms = t.closest("#mineSeg [data-ms]");
+  if (ms) { mineSeg = ms.dataset.ms; renderMine(); return; }
+  if (t.id === "bSave") {
+    const id = $("#mineBox").dataset.id, amt = parseFloat($("#bAmt").value);
+    if (!(amt >= 0)) { $("#bAmt").focus(); $("#bAmt").placeholder = "請輸入金額"; return; }
+    (MINE[id] ||= {p: [], n: ""}).p.push({q: Math.max(1, parseInt($("#bQty").value, 10) || 1), d: $("#bDate").value,
+      t: $("#bType").value, r: $("#bReg").value, c: $("#bCur").value, a: amt});
+    saveMine(); refreshMineBox(id); return;
+  }
+  const del = t.closest("[data-delbuy]");
+  if (del && confirm("確定刪除這筆購買紀錄？")) { const id = $("#mineBox").dataset.id; MINE[id].p.splice(+del.dataset.delbuy, 1); saveMine(); refreshMineBox(id); return; }
+  if (t.id === "mineExport") {
+    const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 1, at: new Date().toISOString(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = `特價雷達收藏備份-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); return;
+  }
+  if (t.id === "mineImport") { $("#mineFile").click(); return; }
+});
+function refreshMineBox(id){
+  const old = $("#mineBox"); if (!old) return;
+  old.outerHTML = mineBox(id);
+  if (tab === "mine") renderMine();
+}
+$("#mineFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (d.app !== "eshop-radar") throw new Error("格式不符");
+    if (!confirm(`備份內有收藏 ${d.favs?.length || 0} 款、紀錄 ${Object.keys(d.mine || {}).length} 款。\n按「確定」合併到目前的資料（同一款遊戲以備份為準）。`)) return;
+    (d.favs || []).forEach(x => favs.add(String(x))); store.set("favs", [...favs]);
+    Object.assign(MINE, d.mine || {}); saveMine(); renderMine();
+    alert("匯入完成");
+  } catch (err) { alert("這個檔案不是特價雷達的備份檔。"); }
+});
+document.addEventListener("input", e => {
+  if (e.target.id !== "mNote") return;
+  const id = $("#mineBox").dataset.id;
+  (MINE[id] ||= {p: [], n: ""}).n = e.target.value; saveMine();
+});
+
+// ── 瀏覽次數（每次打開網站算一次；同一個分頁重新整理不重複計算） ──
+(async () => {
+  const base = "https://abacus.jasoncameron.dev";
+  let first = false; try { first = !sessionStorage.getItem("counted"); sessionStorage.setItem("counted", "1"); } catch (e) {}
+  try {
+    const r = await fetch(`${base}/${first ? "hit" : "get"}/eshop-radar-jackie/visits`);
+    const d = await r.json();
+    if (d.value != null) $("#visits").textContent = `累計瀏覽 ${nf(d.value)} 次`;
+  } catch (e) {}
+})();
 </script>
 </body>
 </html>

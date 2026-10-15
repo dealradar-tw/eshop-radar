@@ -645,7 +645,7 @@ def backfill_filters(games):
 
 
 # ───────────── 匯率（台灣銀行即期賣出，失敗時改用 open.er-api.com，再失敗沿用上次） ─────────────
-FX_CODES = ("HKD", "JPY")
+FX_CODES = ("HKD", "JPY", "USD")
 
 
 def fetch_fx(prev):
