@@ -39,6 +39,7 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
 .bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px));z-index:5;background:var(--bg);padding-block:14px 10px;margin-top:18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.fpanel{display:flex;flex-direction:column;gap:10px;padding-block:10px;border-bottom:1px solid var(--line)}
 .row1{display:flex;gap:8px;flex-wrap:wrap}
 input[type=search],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;min-width:0}
 input[type=search]{flex:1 1 220px}
@@ -127,11 +128,11 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
   input[type=search]{flex:1 1 0;padding:8px 10px}
   select{max-width:34vw;padding:8px 6px}
   .ftoggle{display:inline-block;flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 10px}
-  .bar:not(.open) > .chips,.bar:not(.open) > .filters{display:none!important}
-  .bar.open{max-height:calc(100dvh - 60px);overflow-y:auto}
-  .bar .chips:not(.filters .chips){flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-  .bar .chips .chip{flex:0 0 auto;white-space:nowrap}
-  .bar .chips .lbl{flex:0 0 auto;white-space:nowrap}
+  .fpanel:not(.open){display:none}
+  .fpanel.open{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px) + var(--bar-h,0px));z-index:5;background:var(--bg);max-height:calc(100dvh - var(--tabs-h,0px) - var(--bar-h,0px));overflow-y:auto;padding-top:0}
+  .fpanel .chips:not(.filters .chips){flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .fpanel .chips .chip{flex:0 0 auto;white-space:nowrap}
+  .fpanel .chips .lbl{flex:0 0 auto;white-space:nowrap}
 }
 @media (max-width:480px){
   li{grid-template-columns:96px minmax(0,1fr) auto;gap:10px}
@@ -280,6 +281,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏">★ 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge"></span> ▾</button>
   </div>
+</div>
+<div class="fpanel">
   <div class="chips plats" role="group" aria-label="主機">
     <span class="lbl">主機</span>
     <button class="chip" data-p="all" aria-pressed="true">全部</button>
@@ -864,7 +867,7 @@ document.addEventListener("click", e => {
   const ge = t.closest("[data-g]");
   if (ge) { const x = ge.dataset.g; genresF.has(x) ? genresF.delete(x) : genresF.add(x); store.set("genres", [...genresF]); rerender(); return; }
   const ft = t.closest("#fToggle");
-  if (ft) { const open = $(".bar").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? " ▴" : " ▾"; return; }
+  if (ft) { const open = $(".fpanel").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? " ▴" : " ▾"; return; }
   if (t.id === "demoOnly") { demoOnly = !demoOnly; store.set("demoOnly", demoOnly); rerender(); return; }
   if (t.id === "clearF") { clearFilters(); return; }
   if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
@@ -969,8 +972,8 @@ applyTheme();
 
 // 篩選面板打開時，手指在清單上滑動（或滑鼠滾輪）就自動收起；在篩選面板裡滑動不會收
 function collapseBar(e){
-  const bar = $(".bar");
-  if (!bar.classList.contains("open") || e.target.closest?.(".bar")) return;
+  const bar = $(".fpanel");
+  if (!bar.classList.contains("open") || e.target.closest?.(".bar, .fpanel")) return;
   bar.classList.remove("open");
   const ft = $("#fToggle"); ft.setAttribute("aria-expanded", false); ft.lastChild.textContent = " ▾";
 }
@@ -979,6 +982,7 @@ document.addEventListener("wheel", collapseBar, {passive: true});
 
 // ── 分頁列固定在上方；回頂端按鈕 ──
 new ResizeObserver(() => document.documentElement.style.setProperty("--tabs-h", $(".tabs").offsetHeight + "px")).observe($(".tabs"));
+new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", $(".bar").offsetHeight + "px")).observe($(".bar"));
 window.addEventListener("scroll", () => { $("#toTop").hidden = window.scrollY < 1200; }, {passive: true});
 $("#toTop").addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
 </script>
