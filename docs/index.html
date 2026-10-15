@@ -166,6 +166,11 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .demo-badge{display:inline-block;font-size:11px;font-weight:700;color:#0e7490;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px;white-space:nowrap}
 :root[data-theme="dark"] .demo-badge{color:#5ec8e0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .demo-badge{color:#5ec8e0}}
+.prange{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:14px}
+.prange .lbl{font-size:12px;color:var(--muted)}
+.prange .pin{color:var(--muted);font-size:13px;white-space:nowrap}
+.prange input{font:inherit;font-size:14px;width:6.5em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
 .zh-line{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
@@ -301,7 +306,15 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-t="lt100" aria-pressed="false">NT$100 以下</button>
     <button class="chip" data-t="100" aria-pressed="true">NT$100 以上</button>
     <button class="chip" data-t="500" aria-pressed="false">NT$500 以上</button>
+    <button class="chip" data-t="custom" aria-pressed="false">自訂</button>
     <button class="chip" id="lowOnly" aria-pressed="false">史低價</button>
+  </div>
+  <div class="prange" id="prange" hidden>
+    <span class="lbl">自訂價格</span>
+    <span class="pin">NT$ <input id="pMin" type="number" inputmode="numeric" min="0" step="1" placeholder="最低" aria-label="最低價格"></span>
+    <span>～</span>
+    <span class="pin">NT$ <input id="pMax" type="number" inputmode="numeric" min="0" step="1" placeholder="最高" aria-label="最高價格"></span>
+    <span class="cnote">只填一邊也可以，例如只填最高 300</span>
   </div>
   <div class="chips">
     <button class="chip more-f" id="moreF" aria-expanded="false">更多篩選 ▾</button>
@@ -501,9 +514,11 @@ const sorters = {
 const RECENT_FROM = (() => { const d = new Date(today); d.setMonth(d.getMonth() - 6); return d.toISOString().slice(0, 10); })();
 const TODAY_STR = new Date(today.getTime() - today.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
 const isRecent = g => !!g.rel && g.rel >= RECENT_FROM && g.rel <= TODAY_STR;
+let pMin = store.get("pMin", null), pMax = store.get("pMax", null);
 function inTier(g){
   if (tier === "all") return true;
   if (g.price == null) return false;
+  if (tier === "custom") return (pMin == null || g.price >= pMin) && (pMax == null || g.price <= pMax);
   return tier === "lt100" ? g.price < 100 : g.price >= +tier;
 }
 function gameFilters(g){
@@ -583,6 +598,9 @@ function setChips(){
   $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
   $$("[data-k]").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
   $$("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
+  $("#prange").hidden = tier !== "custom";
+  if (document.activeElement !== $("#pMin")) $("#pMin").value = pMin ?? "";
+  if (document.activeElement !== $("#pMax")) $("#pMax").value = pMax ?? "";
   $$("#fZh [data-zh]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.zh === zhF));
   $$("#fPl [data-pl]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.pl === plF));
   $$("#fGenre [data-g]").forEach(b => b.setAttribute("aria-pressed", genresF.has(b.dataset.g)));
@@ -591,7 +609,7 @@ function setChips(){
   $("#demoOnly").setAttribute("aria-pressed", demoOnly);
 }
 function clearFilters(){
-  plat = "all"; kind = "game"; tier = "all"; zhF = 0; plF = 0; genresF.clear(); lowOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
+  plat = "all"; kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
   $("#q").value = "";
   Object.entries({plat, kind, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
   rerender();
@@ -884,7 +902,15 @@ document.addEventListener("click", e => {
 document.addEventListener("change", e => {
   if (e.target.id === "chartOthers") { chartOthers = e.target.checked; store.set("chartOthers", chartOthers); $("#chart")?._redraw?.(); }
 });
+let prTimer = null;
 document.addEventListener("input", e => {
+  if (e.target.id === "pMin" || e.target.id === "pMax") {
+    const v = x => { const n = parseInt(x, 10); return Number.isFinite(n) && n >= 0 ? n : null; };
+    pMin = v($("#pMin").value); pMax = v($("#pMax").value);
+    store.set("pMin", pMin); store.set("pMax", pMax);
+    clearTimeout(prTimer); prTimer = setTimeout(() => { page = 1; render(); }, 300);
+    return;
+  }
   const t = e.target.closest("[data-target]");
   if (!t) return;
   const v = parseInt(t.value, 10);
