@@ -731,8 +731,7 @@ async function openDetail(id, fromHistory){
         ${SHOTS.length ? `<div class="shots">${SHOTS.map((u, i) => `<img src="${esc(u)}" alt="遊戲截圖 ${i + 1}" loading="lazy" data-shot="${i}">`).join("")}</div>` : ""}
         ${vids.length ? `<div class="vid-list">
           <div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
-          <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}
-            <a class="yt-link" id="ytOpen" href="https://www.youtube.com/watch?v=${vids[0]}" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></div>
+          <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}</div>
         </div>` : ""}
         ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li>
             ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
