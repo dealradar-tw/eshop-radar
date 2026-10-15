@@ -632,6 +632,9 @@ async function loadChart(id){
 let lastFocus = null, SHOTS = [];
 async function openDetail(id, fromHistory){
   const g = BY.get(id); if (!g) return;
+  // 每打開一頁（遊戲 → DLC → …）記一筆，按返回就回到上一頁。要在點擊當下記錄，Chrome 才不會跳過這筆
+  if ($("#sheet").hidden) lastFocus = document.activeElement;
+  if (!fromHistory) history.pushState({ov: "sheet", id, d: (history.state?.ov === "sheet" ? history.state.d : 0) + 1}, "");
   const parent = g.isDlc ? BY.get(g.parent) : null;
   let det = {};
   if (!g.isDlc && g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
@@ -684,9 +687,6 @@ async function openDetail(id, fromHistory){
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
       </div>
     </div></div>`;
-  if ($("#sheet").hidden) lastFocus = document.activeElement;
-  // 每打開一頁（遊戲 → DLC → …）記一筆，按返回就回到上一頁
-  if (!fromHistory) history.pushState({ov: "sheet", id, d: (history.state?.ov === "sheet" ? history.state.d : 0) + 1}, "");
   $("#sheet").hidden = false; $("#sheet").dataset.id = id;
   document.body.style.overflow = "hidden";
   $("#sheet .sheet").scrollTop = 0;
@@ -864,7 +864,13 @@ $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (t
 
 
 // ── 安裝成 App（PWA） ──
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+if ("serviceWorker" in navigator) {
+  const hadSW = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+  // 網站有新版本時自動重新載入一次，不用手動清快取
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadSW && !reloaded) { reloaded = true; location.reload(); } });
+}
 let installEvt = null;
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; $("#installBtn").hidden = false; });
 window.addEventListener("appinstalled", () => { $("#installBtn").hidden = true; installEvt = null; });

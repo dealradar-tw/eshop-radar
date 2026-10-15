@@ -1,6 +1,6 @@
 // 台區特價雷達：離線快取
 // 頁面與價格資料：先上網拿最新的，沒網路時用上次存的；圖示與遊戲圖片：先用存的。
-const VER = "v1";
+const VER = "v2";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open("core-" + VER).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
@@ -32,7 +32,8 @@ self.addEventListener("fetch", e => {
     e.respondWith(caches.match(req).then(h => h || fetch(req)));
     return;
   }
-  e.respondWith(fetch(req).then(res => {
+  // 頁面與資料一律向伺服器確認最新版（避開瀏覽器自己的 10 分鐘快取）
+  e.respondWith(fetch(req.url, {cache: "no-cache", credentials: "same-origin"}).then(res => {
     if (res.ok) { const copy = res.clone(); caches.open("data-" + VER).then(c => c.put(req, copy)); }
     return res;
   }).catch(() => caches.match(req, {ignoreSearch: true}).then(h => h || caches.match("./index.html"))));
