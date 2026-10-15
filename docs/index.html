@@ -23,11 +23,11 @@
   --body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
-  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; --card-shadow:none; color-scheme:dark}}
+  --bg:#0a0d12; --surface:#1f2631; --ink:#e9edf2; --muted:#9ea9b7; --line:#343e4c;
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; --card-shadow:0 1px 3px rgb(0 0 0 / .5); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11151b; --surface:#1a2029; --ink:#e9edf2; --muted:#98a3b1; --line:#2a323d;
-  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; --card-shadow:none; color-scheme:dark}
+  --bg:#0a0d12; --surface:#1f2631; --ink:#e9edf2; --muted:#9ea9b7; --line:#343e4c;
+  --tag:#ffd23f; --tag-ink:#1b1600; --accent:#7aa7ff; --urgent:#ff7a5c; --star:#ffc93a; --s2:#a57dff; --s2-ink:#140726; --s2-soft:#251a3d; --hk:#ffa45c; --card-shadow:0 1px 3px rgb(0 0 0 / .5); color-scheme:dark}
 :root[data-theme="light"]{color-scheme:light}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
@@ -987,7 +987,7 @@ function applyTheme(){
   if (theme === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
   $("#themeBtn").textContent = THEMES.find(t => t[0] === theme)[1];
   const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
-  document.querySelector('meta[name="theme-color"]').content = dark ? "#11151b" : "#dce2e9";
+  document.querySelector('meta[name="theme-color"]').content = dark ? "#0a0d12" : "#dce2e9";
 }
 $("#themeBtn").addEventListener("click", () => {
   theme = THEMES[(THEMES.findIndex(t => t[0] === theme) + 1) % THEMES.length][0];
