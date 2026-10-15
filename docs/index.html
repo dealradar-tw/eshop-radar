@@ -365,7 +365,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <section id="pList">
 <div class="bar">
   <div class="row1">
-    <input id="q" type="search" placeholder="搜尋遊戲名稱或編號" aria-label="搜尋遊戲名稱或編號">
+    <input id="q" type="search" placeholder="搜尋遊戲名稱" aria-label="搜尋遊戲名稱">
     <select id="sort" aria-label="排序方式"></select>
     <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏"><svg class="ico-star on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg> 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge"></span> ▾</button>
@@ -636,7 +636,7 @@ function gameFilters(g){
 function filtered(){
   const q = $("#q").value.trim().toLowerCase();
   return ITEMS.filter(g =>
-    (g.name || (q && full(g.id).includes(q))) &&  // 還查不到名稱的商品先不列出（用編號搜尋仍找得到）
+    !!g.name &&  // 還查不到名稱的商品先不列出
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
     (tab === "all" || (tab === "new" ? isRecent(g) : g.onSale)) &&
     (plat === "all" || +g.s2 === +plat) &&
@@ -644,7 +644,7 @@ function filtered(){
     (!lowOnly || g.isLow) &&
     (!demoOnly || g.demo) &&
     (!favOnly || favs.has(g.id)) &&
-    (!q || (g.name || "").toLowerCase().includes(q) || full(g.id).includes(q)
+    (!q || (g.name || "").toLowerCase().includes(q)
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
@@ -695,7 +695,7 @@ function showTab(t){
   tab = t; store.set("tab", t);
   $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
-  $("#q").placeholder = t === "all" ? "搜尋全部（名稱或編號）" : t === "new" ? "搜尋近期發售" : "搜尋特價（名稱或編號）";
+  $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : "搜尋特價遊戲名稱";
   page = 1;
   if (t === "hot") renderHot(); else { setSortOptions(); render(); }
 }
