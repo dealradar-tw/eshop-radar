@@ -133,9 +133,11 @@ li{display:grid;grid-template-columns:112px minmax(0,1fr) auto 36px;align-items:
 /* 收藏星號：沒有外圈，未收藏是空心星（粗框），收藏後是亮黃實心星（粗框） */
 .star{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;background:none;border:0;cursor:pointer;padding:0}
 .star svg{width:30px;height:30px;overflow:visible}
-.star path{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round}
-.star[aria-pressed="true"] path{fill:var(--tag);stroke:var(--tag)}
-@media (hover:hover){.star:hover path{stroke:var(--tag)}}
+.star path{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.star[aria-pressed="true"] path,.ico-star.on path{fill:var(--tag);stroke:var(--ink);stroke-width:1.8}
+.ico-star{width:1.25em;height:1.25em;vertical-align:-.25em;overflow:visible}
+.ico-star path{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+@media (hover:hover){.star:not([aria-pressed="true"]):hover path{fill:var(--tag);fill-opacity:.35}}
 .more{display:block;margin:16px auto 0;font:inherit;font-weight:500;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 20px;cursor:pointer}
 .empty{text-align:center;color:var(--muted);padding:40px 0}
 footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
@@ -197,7 +199,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
 .fav-top{flex:0 0 auto;font:inherit;font-size:15px;font-weight:700;border:2.5px solid var(--ink);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer;white-space:nowrap}
-.fav-top[aria-pressed="true"]{background:var(--tag);border-color:var(--tag);color:var(--tag-ink);box-shadow:none}
+.fav-top{display:inline-flex;align-items:center;gap:4px}
 .favonly{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 12px}
 .hdr-btns{float:right;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:6px 0 0 8px}
 .theme-btn{white-space:nowrap}
@@ -305,7 +307,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <div class="row1">
     <input id="q" type="search" placeholder="搜尋遊戲名稱或編號" aria-label="搜尋遊戲名稱或編號">
     <select id="sort" aria-label="排序方式"></select>
-    <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏">★ 收藏</button>
+    <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏"><svg class="ico-star on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg> 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge"></span> ▾</button>
   </div>
 </div>
@@ -505,6 +507,7 @@ function metaLine(g){
   return parts.filter(Boolean).join(" · ");
 }
 const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg>';
+const favLabel = on => STAR_SVG.replace("<svg", `<svg class="ico-star${on ? " on" : ""}"`) + (on ? " 已收藏" : " 收藏");
 function row(g, rank){
   return `<li data-card="${g.id}"${g.s2 ? ' class="s2"' : ""}>
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
@@ -786,7 +789,7 @@ async function openDetail(id, fromHistory){
       <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
       <div class="body">
         <div class="title-row"><h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
-          <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favs.has(id) ? "★ 已收藏" : "☆ 收藏"}</button></div>
+          <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button></div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
@@ -892,7 +895,7 @@ document.addEventListener("click", e => {
   const rg = t.closest("[data-range]");
   if (rg) { chartRange = rg.dataset.range; store.set("chartRange", chartRange); $("#chart")?._redraw?.(); return; }
   const f = t.closest("[data-fav]");
-  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏" : "☆ 收藏"; f.setAttribute("aria-pressed", favs.has(f.dataset.fav)); if (favOnly) render(); return; }
+  if (f) { toggleFav(f.dataset.fav); f.innerHTML = favLabel(favs.has(f.dataset.fav)); f.setAttribute("aria-pressed", favs.has(f.dataset.fav)); if (favOnly) render(); return; }
   const tb = t.closest(".tab");
   if (tb) { showTab(tb.dataset.tab); return; }
   const p = t.closest(".plats [data-p]");
