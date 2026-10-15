@@ -206,13 +206,19 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .prange .pin{color:var(--muted);font-size:13px;white-space:nowrap}
 .prange input{font:inherit;font-size:14px;width:6.5em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
+.mine-break{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mine-sum .mine-break .chips{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;background:none;border:0;border-radius:0;padding:0}
+.mine-break .lbl{font-size:12px;color:var(--muted);margin-right:2px}
+.mine-break .chip b{font-family:var(--display)}
+.mine-break .cnote{margin:0}
 .mine-btn{font-weight:700;border-color:var(--ink)}
 .mine-page{position:fixed;inset:0;z-index:15;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .mine-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:var(--bg);border-bottom:1px solid var(--line)}
 .mine-head h2{font-family:var(--display);font-size:20px;margin:0;flex:1}
 .mine-tools{display:flex;gap:6px}
 .mine-tools .chip{font-size:12px;padding:4px 10px}
-.mine-tabs{position:static;margin-top:8px}
+.mine-tabs{position:static;margin-top:4px!important}
+.mine-page .wrap{padding-top:0!important}
 .mine-info .memo{display:flex;align-items:center;gap:8px;margin-top:6px;color:var(--ink);white-space:pre-wrap;word-break:break-word}
 .mine-info .memo .chip{margin-left:auto;flex:0 0 auto;font-size:12px;padding:4px 10px}
 .dlg-bg{position:fixed;inset:0;z-index:30;background:rgb(0 0 0 / .5);display:flex;align-items:flex-end;justify-content:center}
@@ -1137,7 +1143,7 @@ function renderLows(h, g){
 // MINE = {編號: {b: 已購買, p: [{q 數量, d 日期, t 版本, r 地區, c 幣別, a 金額}], n: 購買備忘, fn: 收藏備忘}}
 let MINE = store.get("mine", {});
 for (const k in MINE) if (MINE[k].p?.length && MINE[k].b == null) MINE[k].b = true;  // 舊資料：有紀錄就算已購買
-let mineTab = "fav";
+let mineTab = "fav", mineF = "";  // mineF：已購買頁的分類篩選（dl/pk/key/sw/s2）
 const BAG_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bag" d="M5 8h14l-1.2 12.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path class="bag" d="M9 8V6.5a3 3 0 0 1 6 0V8" style="fill:none"/><path class="chk" d="M9 14.2l2.2 2.2 4-4.4"/></svg>';
 const isBought = id => !!MINE[id]?.b;
 const buyLabel = on => BAG_SVG.replace("<svg", `<svg class="ico-bag${on ? " on" : ""}"`) + (on ? " 已購買" : " 未購買");
@@ -1212,7 +1218,9 @@ function renderMine(){
     .sort((a, b) => ((MINE[b].p?.at(-1)?.d) || "").localeCompare((MINE[a].p?.at(-1)?.d) || ""));
   $$("[data-mt]").forEach(b => { b.setAttribute("aria-selected", b.dataset.mt === mineTab);
     b.textContent = (b.dataset.mt === "fav" ? "收藏" : "已購買") + `（${b.dataset.mt === "fav" ? favIds.length : boughtIds.length}）`; });
-  const ids = mineTab === "fav" ? favIds : boughtIds;
+  let ids = mineTab === "fav" ? favIds : boughtIds;
+  const listIds = mineTab === "bought" && mineF ? ids.filter(id => mineF === "sw" ? !BY.get(id).s2 : mineF === "s2" ? BY.get(id).s2
+    : (MINE[id].p || []).some(x => x.t === mineF)) : ids;
   const items = ids.map(id => BY.get(id));
   if (mineTab === "fav") {
     $("#mineSum").innerHTML = `<div><b>${items.length}</b><span>收藏</span></div>
@@ -1226,8 +1234,18 @@ function renderMine(){
       <div><b>${qty}</b><span>總份數</span></div>
       <div><b>NT$${nf(spent)}</b><span>總花費（約）${unk ? "＊" : ""}</span></div>
       <div><b>${ids.filter(id => !MINE[id].p?.length).length}</b><span>未填明細</span></div>`;
+    // 分類統計：版本以份數計，主機以遊戲數計；點一下可篩選
+    const byType = {dl: 0, pk: 0, key: 0};
+    ids.forEach(id => (MINE[id].p || []).forEach(x => { if (x.t in byType) byType[x.t] += x.q || 1; }));
+    const sw = ids.filter(id => !BY.get(id).s2).length, s2 = ids.length - sw;
+    const chip = (k, label, n, unit) => `<button class="chip" data-mf="${k}" aria-pressed="${mineF === k}">${label} <b>${n}</b> ${unit}</button>`;
+    $("#mineSum").innerHTML += `<div class="mine-break">
+      <div class="chips"><span class="lbl">版本</span>${chip("dl", "數位版", byType.dl, "份")}${chip("pk", "實體版", byType.pk, "份")}${chip("key", "金鑰卡", byType.key, "份")}</div>
+      <div class="chips"><span class="lbl">主機</span>${chip("sw", "Switch", sw, "款")}${chip("s2", "Switch 2", s2, "款")}</div>
+      ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
   }
-  $("#mineList").innerHTML = items.length ? items.map(g => {
+  const listItems = listIds.map(id => BY.get(id));
+  $("#mineList").innerHTML = listItems.length ? listItems.map(g => {
     const m = MINE[g.id] || {};
     let info;
     if (mineTab === "fav") {
@@ -1243,7 +1261,7 @@ function renderMine(){
     }
     return row(g).replace(/<\/li>\s*$/, `<div class="mine-info">${info}</div></li>`);
   }).join("") : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${mineTab === "fav"
-      ? "還沒有收藏。點遊戲卡片右上角的 ☆ 加入收藏。" : "還沒有已購買的遊戲。點遊戲卡片星號下方的購物袋圖示，就能標記已購買並記錄明細。"}</li>`;
+      ? "還沒有收藏。點遊戲卡片右上角的 ☆ 加入收藏。" : mineF ? "沒有符合這個分類的遊戲。" : "還沒有已購買的遊戲。點遊戲卡片星號下方的購物袋圖示，就能標記已購買並記錄明細。"}</li>`;
 }
 
 // ── 事件 ──
@@ -1251,7 +1269,8 @@ document.addEventListener("click", e => {
   const t = e.target;
   if (t.id === "openMine") { openMine(); return; }
   if (t.id === "closeMine") { history.state?.ov === "mine" ? history.back() : closeMineNow(); return; }
-  const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; renderMine(); $("#minePage").scrollTop = 0; return; }
+  const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; mineF = ""; renderMine(); $("#minePage").scrollTop = 0; return; }
+  const mf = t.closest("[data-mf]"); if (mf) { mineF = mineF === mf.dataset.mf ? "" : mf.dataset.mf; renderMine(); return; }
   if (t.closest("[data-dlgclose]") || t.id === "dlg") { closeDlg(); return; }
   const by = t.closest("[data-buy]");
   if (by) {  // 購物袋：未購買 → 標記已購買並打開明細；已購買 → 打開明細
