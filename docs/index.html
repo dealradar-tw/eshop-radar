@@ -38,7 +38,7 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats div{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;margin-top:18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px));z-index:5;background:var(--bg);padding-block:14px 10px;margin-top:18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
 .row1{display:flex;gap:8px;flex-wrap:wrap}
 input[type=search],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;min-width:0}
 input[type=search]{flex:1 1 220px}
@@ -48,7 +48,8 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .chips .lbl{font-size:12px;color:var(--muted);margin-right:2px}
 .chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg)}
+.to-top{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:7;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:10px 16px;box-shadow:0 4px 14px rgb(0 0 0 / .18);cursor:pointer}
 @media (max-width:480px){.tabs{overflow-x:auto;scrollbar-width:none;gap:0}.tab{font-size:14px;padding:8px 10px 9px;white-space:nowrap}}
 .tab{font:inherit;font-weight:700;font-size:15px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 14px 9px;cursor:pointer;margin-bottom:-1px}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
@@ -259,6 +260,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   </div>
 </header>
 
+<div id="tabsAnchor"></div>
 <nav class="tabs" role="tablist">
   <button class="tab" role="tab" data-tab="deals" aria-selected="true">特價中</button>
   <button class="tab" role="tab" data-tab="hot" aria-selected="false">熱門排行</button>
@@ -339,6 +341,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </section>
 
 <div id="sheet" hidden></div>
+<button class="to-top" id="toTop" hidden aria-label="回到最上面">↑ 回頂端</button>
 <div id="lightbox" hidden></div>
 
 <footer>
@@ -551,6 +554,9 @@ function setSortOptions(){
   $("#sort").value = SORTS[key].some(([v]) => v === saved) ? saved : SORTS[key][0][0];
 }
 function showTab(t){
+  // 切換分頁時，若已經捲到下面，就回到分頁列的位置（不用一路滑回頂端）
+  const tabsTop = $("#tabsAnchor").getBoundingClientRect().top + window.scrollY + 22;
+  if (tab !== t && window.scrollY > tabsTop) window.scrollTo(0, tabsTop);
   tab = t; store.set("tab", t);
   $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
@@ -905,7 +911,8 @@ $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (t
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
     buildGenreChips();
     setChips();
-    showTab(["deals", "hot", "all"].includes(tab) ? tab : "deals");
+    showTab(["deals", "hot", "new", "all"].includes(tab) ? tab : "deals");
+    restorePos();
   } catch (e) {
     console.error(e);
     $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
@@ -948,6 +955,24 @@ function collapseBar(e){
 }
 document.addEventListener("touchmove", collapseBar, {passive: true});
 document.addEventListener("wheel", collapseBar, {passive: true});
+
+// ── 分頁列固定在上方；記住瀏覽位置；回頂端按鈕 ──
+new ResizeObserver(() => document.documentElement.style.setProperty("--tabs-h", $(".tabs").offsetHeight + "px")).observe($(".tabs"));
+let posTimer = null;
+function savePos(){ store.set("pos", {tab, shown, y: Math.round(window.scrollY), q: $("#q").value, sort: $("#sort").value}); }
+function restorePos(){
+  const p = store.get("pos", null);
+  if (!p || p.tab !== tab || $("#q").value !== (p.q || "")) return;
+  if (tab !== "hot" && p.sort && p.sort === $("#sort").value && p.shown > shown) { shown = p.shown; render(); }
+  requestAnimationFrame(() => window.scrollTo(0, p.y));
+}
+window.addEventListener("scroll", () => {
+  $("#toTop").hidden = window.scrollY < 1200;
+  clearTimeout(posTimer); posTimer = setTimeout(savePos, 300);
+}, {passive: true});
+window.addEventListener("pagehide", savePos);
+document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); });
+$("#toTop").addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
 </script>
 </body>
 </html>
