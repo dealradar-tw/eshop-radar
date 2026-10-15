@@ -1,0 +1,18 @@
+## TW {"data":{"item":{"a0":{"nsUid":70010000038615,"movies":[]},"a1":{"nsUid":70010000039948,"movies":[]},"a2":{"nsUid":70010000041270,"movies":[]},"a3":{"nsUid":70010000042927,"movies":[]},"a4":{"nsUid":70010000038620,"movies":[]}}}}
+
+## HK {"data":{"item":{"a0":{"nsUid":70010000038615,"movies":[{"__typename":"YoutubeMovie","youtubeId":"9exqQqC7WGw"},{"__typename":"YoutubeMovie","youtubeId":"nOaM72Q-HFY"},{"__typename":"YoutubeMovie","youtubeId":"nuEgLOi4kbY"}]},"a1":{"nsUid":70010000039948,"movies":[{"__typename":"YoutubeMovie","youtubeId":"H6Z-ZLnJWo0"},{"__typename":"YoutubeMovie","youtubeId":"NgZWsoEp1mA"},{"__typename":"YoutubeMovie","youtubeId":"i1PTa9_hJx0"},{"__typename":"YoutubeMovie","youtubeId":"Tg1tE2U0uuM"}]},"a2":{"nsUid":70010000041270,"movies":[{"__typename":"YoutubeMovie","youtubeId":"_JywiFwV9Dc"},{"__typename":"YoutubeMovie","youtubeId":"jDOj8dkkF3s"}]},"a3":{"nsUid":70010000042927,"movies":[{"__typename":"YoutubeMovie","youtubeId":"6CMnDuC0REQ"}]},"a4":{"nsUid":70010000038620,"movies":[{"__typename":"YoutubeMovie","youtubeId":"MonT14bmc4c"}]}}}}
+
+## TW promotionMovies { __typename } HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":196}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"8b841c39bc5657b2d46edae129b43d47"}}]}
+
+## TW trailers { __typename } HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":196}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"fd5f4efc0058b813a81bbe3b99b7f0e4"}}]}
+
+## TW movieUrls HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":196}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"e714d13268939c047cae750863742b3d"}}]}
+
+## TW youtubeIds HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":196}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"e71f91a1299583bdcb1a3d7a68f400f3"}}]}
+
+## TW videos { __typename } HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":196}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"e8119ea6534fe51f80f10979502b83ce"}}]}
+
+## TW mainMovie { __typename } HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":196}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"8c0d99bb4aebd50762f8288dbdf72c54"}}]}
+
+## HK page yt [('', '9exqQqC7WGw'), ('', 'nOaM72Q-HFY'), ('', 'nuEgLOi4kbY')] len=281580
+## HK page movie ctx 47f42c4e6dc71c5f52a841a7abf11aacbde4b1b3d.jpg\",\"https://img-eshop.cdn.nintendo.net/i/d4dd693c2f21c7f2843166caf6652103544cbf4d30bc87637f21691da5e8e796.jpg\",\"https://img-eshop.cdn.nintendo.net/i/7dad0487cfd5138379fb628ec1083eeb3b2a6aae368f6bfe347d4cb389f0631a.jpg\"],\"upgradeDescription\":null,\"movies\":[{\"youtubeId\":\"9exqQqC7WGw\",\"__typename\":\"YoutubeMovie\"},{\"youtubeId\":\"nOaM72Q-HFY\",\"__typename\":\"YoutubeMovie\"},{\"youtubeId\":\"nuEgLOi4kbY\",\"__typename\":\"YoutubeMovie\"}]},\"isTriangleUnavailable\":false}]}]\n16:null\n1a:[[\"$\",\"title\",\"0\",{\"children\":\"薩爾達傳說 禦天
