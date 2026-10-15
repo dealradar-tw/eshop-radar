@@ -81,6 +81,8 @@ li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var
 h2.sec{font-family:var(--display);font-size:20px;font-weight:800;margin:24px 0 10px}
 .count{font-size:13px;color:var(--muted);margin:12px 0 6px;font-variant-numeric:tabular-nums}
 ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+li[data-card]{cursor:pointer}
+@media (hover:hover){li[data-card]:hover{border-color:var(--accent)}}
 li{display:grid;grid-template-columns:112px minmax(0,1fr) auto 36px;align-items:center;gap:12px;background:var(--surface);border:2.5px solid var(--card-border,var(--line));border-radius:10px;padding:10px 8px 10px 10px;box-shadow:var(--card-shadow,none)}
 .tag{font-family:var(--display);font-weight:800;font-size:19px;background:var(--tag);color:var(--tag-ink);border-radius:6px;text-align:center;padding:8px 0 8px 9px;font-variant-numeric:tabular-nums;position:relative}
 .tag::before{content:"";position:absolute;left:5px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--bg);transform:translateY(-50%)}
@@ -497,7 +499,7 @@ function metaLine(g){
   return parts.filter(Boolean).join(" · ");
 }
 function row(g, rank){
-  return `<li${g.s2 ? ' class="s2"' : ""}>
+  return `<li data-card="${g.id}"${g.s2 ? ' class="s2"' : ""}>
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
@@ -790,7 +792,7 @@ async function openDetail(id, fromHistory){
           <div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
           <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}</div>
         </div>` : ""}
-        ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li>
+        ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li data-card="${d.id}">
             ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
@@ -875,8 +877,8 @@ document.addEventListener("click", e => {
   if (star) { toggleFav(star.dataset.id); if (favOnly && tab !== "hot") render(); return; }
   const shot = t.closest("[data-shot]");
   if (shot) { openLightbox(+shot.dataset.shot); return; }
-  const o = t.closest("[data-open]");
-  if (o) { openDetail(o.dataset.open); return; }
+  const o = t.closest("[data-open]") || t.closest("li[data-card]");
+  if (o) { openDetail(o.dataset.open || o.dataset.card); return; }
   if (t.matches("[data-close]")) { closeDetail(); return; }
   const yt = t.closest("[data-yt]");
   if (yt) { playYT(yt.dataset.yt); return; }
