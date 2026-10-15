@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-15 13:47",
+"asof":"2026-10-15 14:43",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -52622,23 +52622,41 @@
 "mv":1
 },
 "70010000099817":{
-"name":"",
-"plat":"",
-"img":"",
-"status":"unreleased",
+"name":"007 初露鋒芒 - 豪華版",
+"plat":"BEE",
+"img":"ff5a02783d591829c551bc7a4d39f481cfa09d33de1e8d0cda0f422ac1a1aff9",
+"status":"preorder",
 "reg":2090,
 "sale":null,
 "end":"",
-"meta":false,
-"hk404":true,
+"meta":true,
 "first_seen":"2026-10-13",
 "hk":{
 "reg":468,
 "sale":null,
 "end":""
 },
-"nodata":true,
-"jp":null
+"nodata":false,
+"jp":{
+"reg":8910,
+"sale":null,
+"end":""
+},
+"dv":4,
+"app":"040055a024036000",
+"rel":"2027-03-18",
+"demo":0,
+"genres":[
+"動作",
+"冒險"
+],
+"pmax":1,
+"poff":1,
+"zh":3,
+"zv":2,
+"mv":1,
+"dlc":[],
+"jpId":"70010000099815"
 },
 "70010000099827":{
 "name":"Machine Gun Fury",
@@ -163327,6 +163345,24 @@
 "nodata":true,
 "hk":{
 "reg":62,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000138531":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-15",
+"status":"unreleased",
+"reg":349,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":79,
 "sale":null,
 "end":""
 },
