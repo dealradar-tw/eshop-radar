@@ -49,6 +49,10 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg)}
+.pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin:16px 0 8px}
+.pager .chip{padding:8px 14px}
+.pager .chip:disabled{opacity:.4;cursor:default}
+.pager select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px}
 .to-top{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:7;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:10px 16px;box-shadow:0 4px 14px rgb(0 0 0 / .18);cursor:pointer}
 @media (max-width:480px){.tabs{overflow-x:auto;scrollbar-width:none;gap:0}.tab{font-size:14px;padding:8px 10px 9px;white-space:nowrap}}
 .tab{font:inherit;font-weight:700;font-size:15px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 14px 9px;cursor:pointer;margin-bottom:-1px}
@@ -323,7 +327,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </div>
 <p class="count" id="count"></p>
 <ul id="list"></ul>
-<button class="more" id="more" hidden>顯示更多</button>
+<nav class="pager" id="pager" aria-label="換頁" hidden></nav>
 </section>
 
 <section id="pHot" hidden>
@@ -369,7 +373,7 @@ let favs = new Set(store.get("favs", []).map(String));
 let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
-let favOnly = false, lowOnly = false, shown = 60, demoOnly = store.get("demoOnly", false);
+let favOnly = false, lowOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
 const today = new Date(); today.setHours(0, 0, 0, 0);
 
 function daysLeft(end){
@@ -523,10 +527,18 @@ function filtered(){
 }
 function render(){
   const rows = filtered();
-  $("#count").textContent = `顯示 ${nf(Math.min(shown, rows.length))} / ${nf(rows.length)} 件`;
-  $("#list").innerHTML = rows.length ? rows.slice(0, shown).map(g => row(g)).join("")
+  const pages = Math.max(1, Math.ceil(rows.length / pageSize));
+  if (page > pages) page = pages;
+  const from = (page - 1) * pageSize;
+  $("#count").textContent = rows.length ? `共 ${nf(rows.length)} 件 · 第 ${page} / ${pages} 頁（${nf(from + 1)}–${nf(Math.min(from + pageSize, rows.length))}）` : "共 0 件";
+  $("#list").innerHTML = rows.length ? rows.slice(from, from + pageSize).map(g => row(g)).join("")
     : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${favOnly ? "還沒有收藏。點右邊的 ★ 加入收藏。" : "沒有符合條件的項目。"}</li>`;
-  $("#more").hidden = rows.length <= shown;
+  $("#pager").innerHTML = `
+    <button class="chip" data-pg="${page - 1}" ${page <= 1 ? "disabled" : ""}>‹ 上一頁</button>
+    <select id="pgSel" aria-label="跳到第幾頁">${Array.from({length: pages}, (_, i) => `<option value="${i + 1}"${i + 1 === page ? " selected" : ""}>第 ${i + 1} / ${pages} 頁</option>`).join("")}</select>
+    <button class="chip" data-pg="${page + 1}" ${page >= pages ? "disabled" : ""}>下一頁 ›</button>
+    <select id="pgSize" aria-label="每頁顯示數量"><option value="50"${pageSize === 50 ? " selected" : ""}>每頁 50 項</option><option value="100"${pageSize === 100 ? " selected" : ""}>每頁 100 項</option></select>`;
+  $("#pager").hidden = !rows.length;
   const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size + (demoOnly ? 1 : 0);
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
   const m = n + (plat !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0);
@@ -561,7 +573,7 @@ function showTab(t){
   $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
   $("#q").placeholder = t === "all" ? "搜尋全部（名稱或編號）" : t === "new" ? "搜尋近期發售" : "搜尋特價（名稱或編號）";
-  shown = 60;
+  page = 1;
   if (t === "hot") renderHot(); else { setSortOptions(); render(); }
 }
 function setChips(){
@@ -581,7 +593,17 @@ function clearFilters(){
   Object.entries({plat, kind, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
   rerender();
 }
-function rerender(){ shown = 60; setChips(); tab === "hot" ? renderHot() : render(); }
+// 換頁後回到清單開頭
+function goPage(n){
+  page = n; render();
+  const top = $("#pList").getBoundingClientRect().top + window.scrollY - $(".tabs").offsetHeight;
+  window.scrollTo(0, Math.max(0, top));
+}
+document.addEventListener("change", e => {
+  if (e.target.id === "pgSel") goPage(+e.target.value);
+  if (e.target.id === "pgSize") { pageSize = +e.target.value; store.set("pageSize", pageSize); goPage(1); }
+});
+function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : render(); }
 
 // ── 價格走勢圖 ──
 const RANGES = [["6m", "半年", 182], ["1y", "一年", 365], ["2y", "兩年", 730]];
@@ -848,7 +870,8 @@ document.addEventListener("click", e => {
   if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
   if (t.id === "favOnly") { favOnly = !favOnly; rerender(); return; }
   if (t.id === "lowOnly") { lowOnly = !lowOnly; rerender(); return; }
-  if (t.id === "more") { shown += 60; render(); return; }
+  const pg = t.closest("[data-pg]");
+  if (pg && !pg.disabled) { goPage(+pg.dataset.pg); return; }
   if (t.id === "copyFav") {
     const text = [...favs].map(id => `${full(id)}${targets[id] ? " " + targets[id] : ""}  # ${(BY.get(id)?.name || "").replace(/[\r\n#]/g, " ")}`).join("\n");
     const done = () => $("#copyMsg").textContent = favs.size ? `已複製 ${favs.size} 個編號` : "還沒有收藏";
@@ -874,8 +897,8 @@ document.addEventListener("keydown", e => {
   }
   if (e.key === "Escape" && !$("#sheet").hidden) closeDetail();
 });
-$("#q").addEventListener("input", () => { shown = 60; render(); });
-$("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (tab === "all" || tab === "new" ? tab : "deals"), $("#sort").value); render(); });
+$("#q").addEventListener("input", () => { page = 1; render(); });
+$("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab === "all" || tab === "new" ? tab : "deals"), $("#sort").value); render(); });
 
 // ── 載入資料 ──
 (async () => {
@@ -911,7 +934,6 @@ $("#sort").addEventListener("change", () => { shown = 60; store.set("sort_" + (t
     buildGenreChips();
     setChips();
     showTab(["deals", "hot", "new", "all"].includes(tab) ? tab : "deals");
-    restorePos();
   } catch (e) {
     console.error(e);
     $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
@@ -955,22 +977,9 @@ function collapseBar(e){
 document.addEventListener("touchmove", collapseBar, {passive: true});
 document.addEventListener("wheel", collapseBar, {passive: true});
 
-// ── 分頁列固定在上方；記住瀏覽位置；回頂端按鈕 ──
+// ── 分頁列固定在上方；回頂端按鈕 ──
 new ResizeObserver(() => document.documentElement.style.setProperty("--tabs-h", $(".tabs").offsetHeight + "px")).observe($(".tabs"));
-let posTimer = null;
-function savePos(){ store.set("pos", {tab, shown, y: Math.round(window.scrollY), q: $("#q").value, sort: $("#sort").value}); }
-function restorePos(){
-  const p = store.get("pos", null);
-  if (!p || p.tab !== tab || $("#q").value !== (p.q || "")) return;
-  if (tab !== "hot" && p.sort && p.sort === $("#sort").value && p.shown > shown) { shown = p.shown; render(); }
-  requestAnimationFrame(() => window.scrollTo(0, p.y));
-}
-window.addEventListener("scroll", () => {
-  $("#toTop").hidden = window.scrollY < 1200;
-  clearTimeout(posTimer); posTimer = setTimeout(savePos, 300);
-}, {passive: true});
-window.addEventListener("pagehide", savePos);
-document.addEventListener("visibilitychange", () => { if (document.hidden) savePos(); });
+window.addEventListener("scroll", () => { $("#toTop").hidden = window.scrollY < 1200; }, {passive: true});
 $("#toTop").addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
 </script>
 </body>
