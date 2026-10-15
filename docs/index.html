@@ -34,7 +34,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
-.stats{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:16px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(5.5em,1fr));gap:8px 16px;margin-top:16px;font-variant-numeric:tabular-nums}
 .stats div{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
@@ -55,6 +55,15 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .pager .chip:disabled{opacity:.4;cursor:default}
 .pager select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px}
 .to-top{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:7;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:10px 16px;box-shadow:0 4px 14px rgb(0 0 0 / .18);cursor:pointer}
+/* 很窄的畫面（或瀏覽器字體放大）：縮小封面、價格可換行，讓名稱有空間 */
+@media (max-width:360px){
+  li{grid-template-columns:72px minmax(0,1fr) auto!important;gap:8px!important;padding:8px 6px 8px 8px}
+  .price{flex-wrap:wrap;gap:0 6px!important}
+  .price b{font-size:16px!important}
+  .thumb .tag{font-size:11px!important}
+  .stats b{font-size:20px}
+  header p{font-size:13px}
+}
 @media (max-width:480px){.tabs{overflow-x:auto;scrollbar-width:none;gap:0}.tab{font-size:14px;padding:8px 10px 9px;white-space:nowrap}}
 .tab{font:inherit;font-weight:700;font-size:15px;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 14px 9px;cursor:pointer;margin-bottom:-1px}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
@@ -124,9 +133,11 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 .ftoggle{display:none}
 @media (max-width:600px){
   .bar{padding-block:8px;gap:8px}
-  .row1{flex-wrap:nowrap}
-  input[type=search]{flex:1 1 0;padding:8px 10px}
-  select{max-width:34vw;padding:8px 6px}
+  /* 字放大時搜尋框太窄就自動換到上一行，按鈕排在下一行 */
+  .row1{flex-wrap:wrap}
+  input[type=search]{flex:1 1 0;min-width:6em;padding:8px 10px}
+  .row1 select{flex:0 1 auto;min-width:4.5em;max-width:34vw;padding:8px 6px}
+  .row1 .favonly,.row1 .ftoggle{flex:0 0 auto;padding:8px 10px}
   .ftoggle{display:inline-block;flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 10px}
   .fpanel:not(.open){display:none}
   .fpanel.open{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px) + var(--bar-h,0px));z-index:5;background:var(--bg);max-height:calc(100dvh - var(--tabs-h,0px) - var(--bar-h,0px));overflow-y:auto;padding-top:0}
