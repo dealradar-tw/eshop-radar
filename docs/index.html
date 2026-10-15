@@ -1142,19 +1142,27 @@ function renderLows(h, g){
 // ── 我的收藏（獨立頁面）：收藏＋備忘錄、已購買＋購買明細（只存在這台裝置） ──
 // MINE = {編號: {b: 已購買, p: [{q 數量, d 日期, t 版本, r 地區, c 幣別, a 金額}], n: 購買備忘, fn: 收藏備忘}}
 let MINE = store.get("mine", {});
-for (const k in MINE) if (MINE[k].p?.length && MINE[k].b == null) MINE[k].b = true;  // 舊資料：有紀錄就算已購買
+for (const k in MINE) {
+  const m = MINE[k];
+  if (m.p?.length && m.b == null) m.b = true;  // 舊資料：有紀錄就算已購買
+  if (m.p?.length > 1 || (m.p?.[0]?.q || 1) > 1) {  // 舊資料有多筆／多份：保留第一筆，其餘寫進記事
+    const extra = m.p.map((x, i) => (i || (x.q || 1) > 1) ? `${x.d || ""} ${({dl: "數位版", pk: "實體版", key: "鑰匙卡"})[x.t] || ""} ${x.q || 1} 份 ${x.c} ${x.a}` : "").filter(Boolean);
+    m.p = [{...m.p[0], q: 1}];
+    if (extra.length) m.n = ((m.n ? m.n + "\n" : "") + "（舊紀錄）" + extra.join("；")).trim();
+  }
+}
 let mineTab = "fav", mineF = "";  // mineF：已購買頁的分類篩選（dl/pk/key/sw/s2）
 const BAG_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bag" d="M5 8h14l-1.2 12.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path class="bag" d="M9 8V6.5a3 3 0 0 1 6 0V8" style="fill:none"/><path class="chk" d="M9 14.2l2.2 2.2 4-4.4"/></svg>';
 const isBought = id => !!MINE[id]?.b;
 const buyLabel = on => BAG_SVG.replace("<svg", `<svg class="ico-bag${on ? " on" : ""}"`) + (on ? " 已購買" : " 未購買");
-const TYPES = {dl: "數位版", pk: "實體版", key: "金鑰卡"};
+const TYPES = {dl: "數位版", pk: "實體版", key: "鑰匙卡"};
 const REGIONS = {tw: "台灣", hk: "香港", jp: "日本", us: "美國", eu: "歐洲", other: "其他"};
 const CURS = {TWD: "NT$", HKD: "HK$", JPY: "¥", USD: "US$"};
 const saveMine = () => { for (const k in MINE) { const m = MINE[k]; if (!m.b && !m.p?.length && !m.n && !m.fn) delete MINE[k]; } store.set("mine", MINE); };
 const toTwd = (a, c) => c === "TWD" ? a : FX[c] ? Math.round(a * FX[c]) : null;
 function mineSpent(id){
   let twd = 0, unknown = false, qty = 0;
-  for (const x of MINE[id]?.p || []) { qty += x.q || 1; const v = toTwd(x.a || 0, x.c); v == null ? unknown = true : twd += v; }
+  for (const x of MINE[id]?.p || []) { qty += 1; if (x.a == null) continue; const v = toTwd(x.a, x.c); v == null ? unknown = true : twd += v; }
   return {twd, unknown, qty};
 }
 function refreshBuyIcons(id){
@@ -1172,30 +1180,34 @@ function openDlg(html){
 function closeDlg(){ if (history.state?.dlg) history.back(); else closeDlgNow(); }
 function closeDlgNow(){ $("#dlg").hidden = true; $("#dlg").innerHTML = ""; }
 function buyDlg(id){
-  const g = BY.get(id), m = MINE[id] || {p: []};
+  // 每款遊戲一筆購買明細，直接填寫、自動儲存（多買其他區的請寫在記事備忘錄）
+  const g = BY.get(id), m = MINE[id] || {}, x = m.p?.[0] || {};
   const today = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
   const opt = (o, v) => Object.entries(o).map(([k, t]) => `<option value="${k}"${k === v ? " selected" : ""}>${t}</option>`).join("");
-  const last = m.p?.[m.p.length - 1];
-  const s = mineSpent(id);
   openDlg(`<div class="dlg-head"><h3>購買明細</h3><button class="chip" data-dlgclose>完成</button></div>
     <p class="dlg-name">${esc(g?.name || id)}</p>
-    ${m.p?.length ? `<ul class="buys">${m.p.map((x, i) => `<li>
-        <span><b>${CURS[x.c] || ""}${nf(x.a)}</b>${x.c !== "TWD" && toTwd(x.a, x.c) != null ? `<small>（約 NT$${nf(toTwd(x.a, x.c))}）</small>` : ""}</span>
-        <span>${x.q || 1} 份 · ${TYPES[x.t] || ""} · ${REGIONS[x.r] || ""}區</span>
-        <span class="muted">${esc(x.d || "")}</span>
-        <button class="chip" data-delbuy="${i}">刪除</button></li>`).join("")}</ul>
-      <p class="cnote">合計 ${s.qty} 份，約 NT$${nf(s.twd)}${s.unknown ? "（有外幣尚無匯率，未計入）" : ""}</p>` : '<p class="cnote">還沒有購買明細，請在下面新增。</p>'}
-    <div class="buyform">
-      <label>購買數量<input type="number" id="bQty" min="1" step="1" value="1" inputmode="numeric"></label>
-      <label>購買日期<input type="date" id="bDate" value="${today}"></label>
-      <label>版本<select id="bType">${opt(TYPES, last?.t || "dl")}</select></label>
-      <label>購買地區<select id="bReg">${opt(REGIONS, last?.r || "tw")}</select></label>
-      <label>幣別<select id="bCur">${opt({TWD: "新台幣 NT$", HKD: "港幣 HK$", JPY: "日圓 ¥", USD: "美元 US$"}, last?.c || "TWD")}</select></label>
-      <label>金額<input type="number" id="bAmt" min="0" step="any" inputmode="decimal" placeholder="例如 ${g?.price ?? 990}"></label>
-      <button class="chip save" id="bSave" data-id="${id}">＋ 新增這筆</button>
+    <div class="buyform" id="buyForm" data-id="${id}">
+      <label>購買日期<input type="date" id="bDate" value="${esc(x.d || today)}"></label>
+      <label>版本<select id="bType">${opt(TYPES, x.t || "dl")}</select></label>
+      <label>購買地區<select id="bReg">${opt(REGIONS, x.r || "tw")}</select></label>
+      <label>幣別<select id="bCur">${opt({TWD: "新台幣 NT$", HKD: "港幣 HK$", JPY: "日圓 ¥", USD: "美元 US$"}, x.c || "TWD")}</select></label>
+      <label>金額<input type="number" id="bAmt" min="0" step="any" inputmode="decimal" placeholder="例如 ${g?.price ?? 990}" value="${x.a ?? ""}"></label>
+      <p class="cnote" id="bTwd"></p>
     </div>
-    <label class="note-lbl">記事備忘錄<textarea id="bNote" data-id="${id}" rows="3" placeholder="例如：送給朋友、跟哪家店買、序號放在哪…">${esc(m.n || "")}</textarea></label>
+    <label class="note-lbl">記事備忘錄<textarea id="bNote" data-id="${id}" rows="3" placeholder="例如：另外買了港區版、送給朋友、跟哪家店買…">${esc(m.n || "")}</textarea></label>
+    <p class="cnote">填寫後會自動儲存，按「完成」關閉。</p>
     <button class="chip unbuy" data-unbuy="${id}">取消「已購買」</button>`);
+  saveBuyForm(true);
+}
+function saveBuyForm(onlyPreview){
+  const f = $("#buyForm"); if (!f) return;
+  const id = f.dataset.id, raw = $("#bAmt").value.trim(), a = raw === "" ? null : Math.max(0, parseFloat(raw));
+  const c = $("#bCur").value, twd = a == null ? null : toTwd(a, c);
+  $("#bTwd").textContent = a == null ? "" : c === "TWD" ? "" : twd != null ? `約 NT$${nf(twd)}（以今天匯率換算）` : "這個幣別還沒有匯率，總花費暫不計入";
+  if (onlyPreview) return;
+  (MINE[id] ||= {}).b = true;
+  MINE[id].p = [{q: 1, d: $("#bDate").value, t: $("#bType").value, r: $("#bReg").value, c, a}];
+  saveMine(); refreshBuyIcons(id);
 }
 function memoDlg(id){
   const g = BY.get(id), m = MINE[id] || {};
@@ -1228,19 +1240,20 @@ function renderMine(){
       <div><b>${items.filter(g => g.isLow).length}</b><span>史低價</span></div>
       <div><b>${items.filter(g => g.onSale && g.days != null && g.days <= 3).length}</b><span>3 天內結束</span></div>`;
   } else {
-    let spent = 0, unk = false, qty = 0;
-    ids.forEach(id => { const x = mineSpent(id); spent += x.twd; qty += x.qty; unk ||= x.unknown; });
+    let spent = 0, unk = false;
+    ids.forEach(id => { const x = mineSpent(id); spent += x.twd; unk ||= x.unknown; });
+    const filled = ids.filter(id => MINE[id].p?.[0]?.a != null).length;
     $("#mineSum").innerHTML = `<div><b>${items.length}</b><span>已購買遊戲</span></div>
-      <div><b>${qty}</b><span>總份數</span></div>
       <div><b>NT$${nf(spent)}</b><span>總花費（約）${unk ? "＊" : ""}</span></div>
-      <div><b>${ids.filter(id => !MINE[id].p?.length).length}</b><span>未填明細</span></div>`;
+      <div><b>NT$${filled ? nf(Math.round(spent / filled)) : 0}</b><span>平均每款</span></div>
+      <div><b>${ids.length - filled}</b><span>未填金額</span></div>`;
     // 分類統計：版本以份數計，主機以遊戲數計；點一下可篩選
     const byType = {dl: 0, pk: 0, key: 0};
-    ids.forEach(id => (MINE[id].p || []).forEach(x => { if (x.t in byType) byType[x.t] += x.q || 1; }));
+    ids.forEach(id => { const x = MINE[id].p?.[0]; if (x && x.t in byType) byType[x.t]++; });
     const sw = ids.filter(id => !BY.get(id).s2).length, s2 = ids.length - sw;
     const chip = (k, label, n, unit) => `<button class="chip" data-mf="${k}" aria-pressed="${mineF === k}">${label} <b>${n}</b> ${unit}</button>`;
     $("#mineSum").innerHTML += `<div class="mine-break">
-      <div class="chips"><span class="lbl">版本</span>${chip("dl", "數位版", byType.dl, "份")}${chip("pk", "實體版", byType.pk, "份")}${chip("key", "金鑰卡", byType.key, "份")}</div>
+      <div class="chips"><span class="lbl">版本</span>${chip("dl", "數位版", byType.dl, "款")}${chip("pk", "實體版", byType.pk, "款")}${chip("key", "鑰匙卡", byType.key, "款")}</div>
       <div class="chips"><span class="lbl">主機</span>${chip("sw", "Switch", sw, "款")}${chip("s2", "Switch 2", s2, "款")}</div>
       ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
   }
@@ -1253,9 +1266,10 @@ function renderMine(){
               g.cheapPct ? `${g.cheapRegion}現在便宜 ${g.cheapPct}%` : ""].filter(Boolean).join(" · ");
       info += `<div class="memo">${m.fn ? `📝 ${esc(m.fn)}` : '<span class="muted">還沒有備忘錄</span>'}<button class="chip" data-memo="${g.id}">✎ 備忘錄</button></div>`;
     } else {
-      const x = mineSpent(g.id);
-      info = m.p?.length
-        ? `<b>${x.qty} 份</b> · ${[...new Set(m.p.map(r => TYPES[r.t]))].join("、")} · ${[...new Set(m.p.map(r => REGIONS[r.r] + "區"))].join("、")} · 約 NT$${nf(x.twd)} · 最近購買 ${esc(m.p.at(-1).d || "")}`
+      const x = m.p?.[0];
+      info = x ? [`<b>${TYPES[x.t] || ""}</b>`, `${REGIONS[x.r] || ""}區`,
+          x.a != null ? `${CURS[x.c] || ""}${nf(x.a)}${x.c !== "TWD" && toTwd(x.a, x.c) != null ? `（約 NT$${nf(toTwd(x.a, x.c))}）` : ""}` : '<span class="muted">未填金額</span>',
+          x.d ? `${esc(x.d)} 購買` : ""].filter(Boolean).join(" · ")
         : '<span class="muted">還沒有填購買明細</span>';
       info += `<div class="memo">${m.n ? `📝 ${esc(m.n)}` : ""}<button class="chip" data-buyedit="${g.id}">✎ 購買明細</button></div>`;
     }
@@ -1281,16 +1295,6 @@ document.addEventListener("click", e => {
   }
   const be = t.closest("[data-buyedit]"); if (be) { e.stopPropagation(); buyDlg(be.dataset.buyedit); return; }
   const mm = t.closest("[data-memo]"); if (mm) { e.stopPropagation(); memoDlg(mm.dataset.memo); return; }
-  if (t.id === "bSave") {
-    const id = t.dataset.id, amt = parseFloat($("#bAmt").value);
-    if (!(amt >= 0)) { $("#bAmt").focus(); $("#bAmt").placeholder = "請輸入金額"; return; }
-    (MINE[id] ||= {p: []}).p ||= []; MINE[id].b = true;
-    MINE[id].p.push({q: Math.max(1, parseInt($("#bQty").value, 10) || 1), d: $("#bDate").value,
-      t: $("#bType").value, r: $("#bReg").value, c: $("#bCur").value, a: amt});
-    saveMine(); buyDlg(id); refreshBuyIcons(id); return;
-  }
-  const del = t.closest("[data-delbuy]");
-  if (del) { const id = $("#bSave").dataset.id; if (confirm("確定刪除這筆購買明細？")) { MINE[id].p.splice(+del.dataset.delbuy, 1); saveMine(); buyDlg(id); refreshBuyIcons(id); } return; }
   const ub = t.closest("[data-unbuy]");
   if (ub) {
     const id = ub.dataset.unbuy, n = MINE[id]?.p?.length || 0;
@@ -1309,9 +1313,10 @@ document.addEventListener("click", e => {
 document.addEventListener("input", e => {
   const t = e.target;
   if (t.id === "bNote") { (MINE[t.dataset.id] ||= {p: []}).n = t.value; saveMine(); }
+  if (["bDate", "bAmt"].includes(t.id)) saveBuyForm();
   if (t.id === "fNote") { (MINE[t.dataset.id] ||= {p: []}).fn = t.value; saveMine(); }
 });
-document.addEventListener("change", e => { if ((e.target.id === "bNote" || e.target.id === "fNote") && !$("#minePage").hidden) renderMine(); });
+document.addEventListener("change", e => { if (["bType", "bReg", "bCur", "bDate"].includes(e.target.id)) saveBuyForm(); if ((e.target.id === "bNote" || e.target.id === "fNote") && !$("#minePage").hidden) renderMine(); });
 $("#mineFile").addEventListener("change", async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
   try {
