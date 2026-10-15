@@ -630,7 +630,7 @@ async function loadChart(id){
 
 // ── 詳情 ──
 let lastFocus = null, SHOTS = [];
-async function openDetail(id){
+async function openDetail(id, fromHistory){
   const g = BY.get(id); if (!g) return;
   const parent = g.isDlc ? BY.get(g.parent) : null;
   let det = {};
@@ -684,8 +684,10 @@ async function openDetail(id){
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
       </div>
     </div></div>`;
-  if ($("#sheet").hidden) { lastFocus = document.activeElement; history.pushState({ov: "sheet"}, ""); }
-  $("#sheet").hidden = false;
+  if ($("#sheet").hidden) lastFocus = document.activeElement;
+  // 每打開一頁（遊戲 → DLC → …）記一筆，按返回就回到上一頁
+  if (!fromHistory) history.pushState({ov: "sheet", id, d: (history.state?.ov === "sheet" ? history.state.d : 0) + 1}, "");
+  $("#sheet").hidden = false; $("#sheet").dataset.id = id;
   document.body.style.overflow = "hidden";
   $("#sheet .sheet").scrollTop = 0;
   $("#sheet .x").focus();
@@ -693,7 +695,7 @@ async function openDetail(id){
 }
 // 手機「返回」：打開詳細頁／截圖時記一筆瀏覽紀錄，按返回就只關掉它，不會離開網站
 function closeDetail(){
-  if (history.state?.ov === "sheet") { history.back(); return; }
+  if (history.state?.ov === "sheet") { history.go(-history.state.d); return; }  // ×：整個關掉，回到清單
   closeDetailNow();
 }
 function closeDetailNow(){
@@ -731,8 +733,10 @@ function closeLightbox(){
   closeLightboxNow();
 }
 function closeLightboxNow(){ $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; }
-window.addEventListener("popstate", () => {
-  if (!$("#lightbox").hidden) closeLightboxNow();
+window.addEventListener("popstate", e => {
+  if (!$("#lightbox").hidden) { closeLightboxNow(); if (e.state?.ov !== "lb") return; }
+  const st = e.state;
+  if (st?.ov === "sheet") { if (st.id !== $("#sheet").dataset.id || $("#sheet").hidden) openDetail(st.id, true); }
   else if (!$("#sheet").hidden) closeDetailNow();
 });
 $("#lightbox").addEventListener("click", e => {
