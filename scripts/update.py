@@ -320,6 +320,35 @@ def fetch_dlc_lists(ids):
     return out
 
 
+def refresh_movies(games, limit=6000):
+    """台灣區商店多半沒放宣傳影片，改從港區商店（同一編號）補上 YouTube 影片。"""
+    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING and g.get("mv") != 1][:limit]
+    if not todo:
+        return
+    log(f"補影片（港區）：{len(todo)} 款")
+    added = 0
+    mv = "movies { __typename ... on YoutubeMovie { youtubeId } }"
+    try:
+        for b in batches(todo, 20):
+            item = gql(" ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid {mv} }}" for i, n in enumerate(b)), HK_VARS) or {}
+            for i, n in enumerate(b):
+                ids = [m.get("youtubeId") for m in ((item.get(f"a{i}") or {}).get("movies") or []) if m and m.get("youtubeId")]
+                p = os.path.join(DOCS, "d", n[-6:] + ".json")
+                if ids and os.path.exists(p):
+                    with open(p, encoding="utf-8") as f:
+                        det = json.load(f)
+                    merged = list(dict.fromkeys((det.get("vids") or []) + ids))
+                    if merged != det.get("vids"):
+                        det["vids"] = merged
+                        save(p, det)
+                        added += 1
+                games[n]["mv"] = 1
+            time.sleep(1.0)
+    except Blocked as e:
+        log(f"  資料介面暫時無法使用（{e}），下次再繼續")
+    log(f"  補上影片 {added} 款")
+
+
 def refresh_meta(games, dlcs, limit, retry_missing):
     """用任天堂商店的資料介面（台灣區）補齊名稱、平台、介紹與 DLC 清單。"""
     selling = lambda g: g.get("status") in SELLING
@@ -344,7 +373,7 @@ def refresh_meta(games, dlcs, limit, retry_missing):
                 g.update(name=s(f["formalName"]), plat=f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else "HAC",
                          img=img_hash(f.get("heroBannerUrl")) or g.get("img", ""), meta=True, nodata=False,
                          dv=DETAIL_VERSION, app=det.get("titleId", ""), rel=det.get("release", ""), demo=1 if det.get("demo") else 0, genres=det.get("genres", []), pmax=det.get("pmax", 0), poff=det.get("poff", 0),
-                         zh=zh_code(det), zv=2)
+                         zh=zh_code(det), zv=2, mv=0)
                 g.pop("hk404", None)
                 done.append((nid, det))
                 ok += 1
@@ -862,6 +891,7 @@ def main():
     refresh_prices(games, args.full)
     refresh_dlc_prices(dlcs)
     refresh_meta(games, dlcs, args.meta_limit, args.full)
+    refresh_movies(games)
     if args.full:
         refresh_all_dlc_lists(games, dlcs)
     refresh_dlc_prices({k: v for k, v in dlcs.items() if "status" not in v})  # 這次新發現的 DLC
