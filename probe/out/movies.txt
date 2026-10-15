@@ -1,0 +1,109 @@
+## typenames OK {"data":{"item":{"a0":{"nsUid":70010000027622,"movies":[]},"a1":{"nsUid":70010000035483,"movies":[]},"a2":{"nsUid":70010000041428,"movies":[]},"a3":{"nsUid":70010000034469,"movies":[]},"a4":{"nsUid":70010000022954,"movies":[]}}}}
+
+## Movie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"07ae4be54f5661e42f2ec316059f7170"}}]}
+
+## Movie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"68927d2d6c387824e5c82f7a61fcec6e"}}]}
+
+## Movie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"f79205fd2d008a7c695863b538bdd455"}}]}
+
+## Movie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"762e8cb5d24c9cd72156e3720d1c76a2"}}]}
+
+## Movie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"95e5365e7e326ba30b7e4ffb3fcb29f8"}}]}
+
+## Movie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"3cbb04b1fe4e391ffb452a500e8dafc8"}}]}
+
+## EshopMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":236}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"52238f91455e1e157d58a7bba1a6e0ff"}}]}
+
+## EshopMovie.movieUrl OK {"data":{"item":{"a0":{"movies":[]}}}}
+
+## EshopMovie.thumbnailUrl OK {"data":{"item":{"a0":{"movies":[]}}}}
+
+## EshopMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":236}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"4ff3574d4bc96f6ac73776c3263e88ba"}}]}
+
+## EshopMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":236}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"925a89235f878b0f01a728ad996b416e"}}]}
+
+## EshopMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":236}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"c0b89962d239959a40e49cd8fe67aabd"}}]}
+
+## NintendoMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"b7073947e98ece3cbe8593a479de7da5"}}]}
+
+## NintendoMovie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"4ff3d5cbbef40588461c8660ffc49a68"}}]}
+
+## NintendoMovie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"c13caeaf42acd249274a6df23c87a925"}}]}
+
+## NintendoMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"e86b04459c988f47799369be84aa43bb"}}]}
+
+## NintendoMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"fde91527b7cc2d028b88e760a521dab1"}}]}
+
+## NintendoMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"e511947bc5174217e1b04c1cca5a5c6e"}}]}
+
+## HostedMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"d5cadab18c86add40fe75ced970784f5"}}]}
+
+## HostedMovie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"ba574e4acc47ca782f86832ae2d52ea3"}}]}
+
+## HostedMovie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"27c3c9009c470729e3bc2458cc259e97"}}]}
+
+## HostedMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"ba64394f3400132230388875a1ba0d07"}}]}
+
+## HostedMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"6097edca7499ccdf4c64b0332c26d3fa"}}]}
+
+## HostedMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"60a3dc1d9444cc681cd16efbb0886acb"}}]}
+
+## VideoMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"ffbe5c327f9d448431adf52e834887e8"}}]}
+
+## VideoMovie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"bc661e3d0b16e27e3112fc5a7122151d"}}]}
+
+## VideoMovie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"6e81dc4889d09d069f19a3812ae5b812"}}]}
+
+## VideoMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"b85972489941c736f9aa14025b430f99"}}]}
+
+## VideoMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"c004f5710b966d496431368a58b7ce6f"}}]}
+
+## VideoMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"49379e4a9f6f4440cacf4defedb852d8"}}]}
+
+## UrlMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"d665a3990a55717299e407a721f465c4"}}]}
+
+## UrlMovie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"2cbbf96d3f64d3898a494b21a5c4defb"}}]}
+
+## UrlMovie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"9b3bccd79ecd71cf55d40c3250a1e655"}}]}
+
+## UrlMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"ff4037be9c98d6fa4773c4e03732e601"}}]}
+
+## UrlMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"2386262d5ddf7100b25f8bf4a48c9ca6"}}]}
+
+## UrlMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"8c61d17d2f4fb13762880e7bb26d7795"}}]}
+
+## BrightcoveMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"2a8ed83408aacef44c58d8e624c5af80"}}]}
+
+## BrightcoveMovie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"7efa52facc908063f9812a65c1005166"}}]}
+
+## BrightcoveMovie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"2592b21fc7cf3c20927b4ef656bdc47d"}}]}
+
+## BrightcoveMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"64b42c4e46e1c19b3d301acb360c9f4b"}}]}
+
+## BrightcoveMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"d3b6ccbb7cfe00a9653e51203c74fa97"}}]}
+
+## BrightcoveMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"8c1aa18d9ab9d146566f0760f8fc8c5a"}}]}
+
+## EcMovie.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"2272c1b6a10dd32abb50f4c11681bc60"}}]}
+
+## EcMovie.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"d95c447884030d3f308a105f8df6f426"}}]}
+
+## EcMovie.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"8d07f40b66891bdf7781e8685c357a19"}}]}
+
+## EcMovie.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"829d90edb30c67bd6dd40366280fe54f"}}]}
+
+## EcMovie.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"16d824cd4ca1eec2f79dc9f370e40509"}}]}
+
+## EcMovie.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"75b9fbb7660f2092e5b7c0d69fe3ee94"}}]}
+
+## MovieItem.url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"1317caf41d594561cbcf4f70cd1f26f6"}}]}
+
+## MovieItem.movieUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"26f7fdccd101076c43234f010f069f6a"}}]}
+
+## MovieItem.thumbnailUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"ed22f1e603c82affef1db7e1048eb61c"}}]}
+
+## MovieItem.hlsUrl HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"0d627fff4dbd99741a40648609d93376"}}]}
+
+## MovieItem.mp4Url HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"d76dbecee403b9eb59fde089caa6d055"}}]}
+
+## MovieItem.id HTTP 400 {"errors":[{"message":"error","locations":[{"line":1,"column":223}],"extensions":{"type":"https://problem-details.ennovate.srv.nintendo.net/yata/invalid-param","status":400,"module":"YATA","title":"INVALID_PARAM","errorCode":"1802","traceId":"3994fd0b6e10c000af2bc8dc1fe60acc"}}]}
