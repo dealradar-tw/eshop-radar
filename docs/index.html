@@ -319,8 +319,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。「名稱待補」是商店暫時查不到資料的商品，之後的自動更新會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
-  收藏和目標價存在這台裝置的瀏覽器裡。想收到手機推播通知（降價、達到目標價、特價快結束），把下面複製的內容貼到 GitHub 的 <code>data/wishlist.txt</code>：
-  <button class="chip" id="copyFav" style="margin-top:6px">複製收藏編號</button> <span id="copyMsg"></span>
+  收藏存在這台裝置的瀏覽器裡。
 </footer>
 </div>
 
@@ -678,11 +677,6 @@ async function openDetail(id){
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         <button class="more" style="margin:0" data-fav="${id}">${favs.has(id) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"}</button>
-        <div class="target" id="targetBox" ${favs.has(id) ? "" : "hidden"}>
-          <label for="targetIn">目標價（選填）</label>
-          <span class="tin">NT$ <input id="targetIn" type="number" inputmode="numeric" min="0" step="1" placeholder="例如 ${g.reg ? Math.round(g.reg * 0.5) : 300}" value="${targets[id] ?? ""}" data-target="${id}"></span>
-          <p class="cnote">價格降到這個數字以下時通知你。沒填的話，只要降價就通知。</p>
-        </div>
       </div>
     </div></div>`;
   if ($("#sheet").hidden) lastFocus = document.activeElement;
@@ -756,7 +750,7 @@ document.addEventListener("click", e => {
   const rg = t.closest("[data-range]");
   if (rg) { chartRange = rg.dataset.range; store.set("chartRange", chartRange); $("#chart")?._redraw?.(); return; }
   const f = t.closest("[data-fav]");
-  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; const tb2 = $("#targetBox"); if (tb2) tb2.hidden = !favs.has(f.dataset.fav); if (favOnly) render(); return; }
+  if (f) { toggleFav(f.dataset.fav); f.textContent = favs.has(f.dataset.fav) ? "★ 已收藏（點一下取消）" : "☆ 加入收藏"; if (favOnly) render(); return; }
   const tb = t.closest(".tab");
   if (tb) { showTab(tb.dataset.tab); return; }
   const p = t.closest(".plats [data-p]");
