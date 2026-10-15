@@ -262,6 +262,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .fav-top{display:inline-flex;align-items:center;gap:4px}
 .lowbtn{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:8px 12px;font-weight:700}
 .lowbtn[aria-pressed="true"]{background:#178a4c;border-color:#178a4c;color:#fff}
+.demo-chip[aria-pressed="true"]{background:#0e7490;border-color:#0e7490;color:#fff}
 .favonly{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 12px}
 .hdr-btns{float:right;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:6px 0 0 8px}
 .theme-btn{white-space:nowrap}
@@ -387,6 +388,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-k="game" aria-pressed="true">遊戲</button>
     <button class="chip" data-k="dlc" aria-pressed="false">DLC 追加內容</button>
     <button class="chip" data-k="both" aria-pressed="false">遊戲＋DLC</button>
+    <button class="chip demo-chip" id="demoOnly" aria-pressed="false" title="只看有體驗版的遊戲">體驗版</button>
   </div>
   <div class="chips" id="tiers" role="group" aria-label="價格區間">
     <span class="lbl">價格</span>
@@ -421,11 +423,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
       <button class="chip" data-pl="4" aria-pressed="false">4 人以上</button>
       <button class="chip" data-pl="8" aria-pressed="false">8 人以上</button>
     </div>
-    <div class="chips" id="fDemo"><span class="lbl">體驗版</span>
-      <button class="chip" id="demoOnly" aria-pressed="false">只看有體驗版</button>
-    </div>
     <div class="chips" id="fGenre"><span class="lbl">類型</span></div>
-    <p class="fnote">類型、中文、人數、體驗版篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
+    <p class="fnote">類型、中文、人數篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
   </div>
 </div>
 <p class="count" id="count"></p>
@@ -665,9 +664,9 @@ function render(){
     <button class="chip" data-pg="${page + 1}" ${page >= pages ? "disabled" : ""}>下一頁 ›</button>
     <select id="pgSize" aria-label="每頁顯示數量"><option value="50"${pageSize === 50 ? " selected" : ""}>每頁 50 項</option><option value="100"${pageSize === 100 ? " selected" : ""}>每頁 100 項</option></select>`;
   $("#pager").hidden = !rows.length;
-  const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size + (demoOnly ? 1 : 0);
+  const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
-  const m = n + (plat !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0);
+  const m = n + (plat !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
   $("#fBadge").textContent = m ? ` · ${m}` : "";
   $("#clearF").hidden = !(m || $("#q").value);
 }
