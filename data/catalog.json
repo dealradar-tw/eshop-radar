@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-15 14:43",
+"asof":"2026-10-15 21:15",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -162407,7 +162407,7 @@
 "name":"Cotton Reboot!",
 "plat":"BEE",
 "img":"1d5997fd7a9e0df2e1aea335ebd9f8e0d4ca5d37f12e7c1470ed073525bcd5f7",
-"status":"unreleased",
+"status":"preorder",
 "reg":549,
 "sale":null,
 "end":"",
@@ -162829,7 +162829,7 @@
 "img":"897546a9fd99f15d426afcd733eedbd2bc168ce675abab19b86a259d5879ec0a",
 "meta":true,
 "first_seen":"2026-10-13",
-"status":"unreleased",
+"status":"preorder",
 "reg":449,
 "sale":null,
 "end":"",
@@ -163367,11 +163367,48 @@
 "end":""
 },
 "jp":null
+},
+"70010000138573":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-15",
+"status":"unreleased",
+"reg":588,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":155,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000139024":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-15",
+"status":"unreleased",
+"reg":110,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":30,
+"sale":null,
+"end":""
+},
+"jp":null
 }
 },
 "fx":{
 "HKD":4.0962,
 "JPY":0.2028,
-"date":"2026-10-15"
+"date":"2026-10-15",
+"USD":32.2103
 }
 }
