@@ -128,7 +128,7 @@ li{display:grid;grid-template-columns:168px minmax(0,1fr) auto 40px;align-items:
 .price{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .price s{display:block;font-size:12px;color:var(--muted)}
 .price b{font-family:var(--display);font-size:20px;font-weight:800}
-.price .flag,.pricebox .flag{font-style:normal;font-size:1.05em;margin-right:5px;vertical-align:1px}
+.fl{width:1.45em;height:.97em;vertical-align:-.1em;margin-right:5px;border-radius:2px;box-shadow:0 0 0 1px rgba(128,128,128,.45)}
 .price .twd{display:block;font-size:11px;color:var(--muted)}
 .price b small{font-family:var(--body);font-size:11px;font-weight:500;margin-right:2px;color:var(--muted)}
 /* 收藏星號：圓形按鈕，未收藏是灰框灰星，已收藏是黃底 */
@@ -594,11 +594,16 @@ function regionBox(g, id){
     </tbody></table>
     <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣、1 日圓 ≈ ${FX.JPY} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。日本區只對應遊戲本體，DLC 暫不比較。實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
 }
+const FLAG = {
+  tw: '<svg class="fl" viewBox="0 0 24 16" aria-label="台灣"><rect width="24" height="16" fill="#fe0000"/><rect width="12" height="8" fill="#000095"/><circle cx="6" cy="4" r="2.7" fill="#fff"/><circle cx="6" cy="4" r="2" fill="#000095"/><circle cx="6" cy="4" r="1.5" fill="#fff"/></svg>',
+  hk: '<svg class="fl" viewBox="0 0 24 16" aria-label="香港"><rect width="24" height="16" fill="#de2910"/><g fill="#fff"><ellipse cx="12" cy="5.4" rx="1.5" ry="2.5" transform="rotate(0 12 8)"/><ellipse cx="12" cy="5.4" rx="1.5" ry="2.5" transform="rotate(72 12 8)"/><ellipse cx="12" cy="5.4" rx="1.5" ry="2.5" transform="rotate(144 12 8)"/><ellipse cx="12" cy="5.4" rx="1.5" ry="2.5" transform="rotate(216 12 8)"/><ellipse cx="12" cy="5.4" rx="1.5" ry="2.5" transform="rotate(288 12 8)"/></g></svg>',
+  jp: '<svg class="fl" viewBox="0 0 24 16" aria-label="日本"><rect width="24" height="16" fill="#fff"/><circle cx="12" cy="8" r="4.8" fill="#bc002d"/></svg>',
+};
 // 換算台幣後最便宜的地區（平手時優先台灣）
 function cheapest(g){
   if (g.reg == null || g.reg === 0) return null;
-  let b = {flag: "🇹🇼", cur: "NT$", reg: g.reg, sale: g.sale, now: g.price, twd: g.price, tw: true};
-  for (const [flag, cur, reg, sale, now, twd] of [["🇭🇰", "HK$", g.hkReg, g.hkSale, g.hkNow, g.hkTwd], ["🇯🇵", "¥", g.jpReg, g.jpSale, g.jpNow, g.jpTwd]])
+  let b = {flag: FLAG.tw, cur: "NT$", reg: g.reg, sale: g.sale, now: g.price, twd: g.price, tw: true};
+  for (const [flag, cur, reg, sale, now, twd] of [[FLAG.hk, "HK$", g.hkReg, g.hkSale, g.hkNow, g.hkTwd], [FLAG.jp, "¥", g.jpReg, g.jpSale, g.jpNow, g.jpTwd]])
     if (now != null && twd != null && b.twd != null && twd < b.twd) b = {flag, cur, reg, sale, now, twd, tw: false};
   const rate = b.tw ? 1 : b.twd / b.now;
   b.regTwd = Math.round(b.reg * rate);
@@ -611,7 +616,7 @@ function priceHTML(g){
   if (g.reg == null) return '<b class="full" style="font-size:14px">價格未定</b>';
   const c = cheapest(g);
   const loc = c.tw ? "" : `<span class="twd">${c.cur}${nf(c.onSale ? c.sale : c.reg)}</span>`;
-  const fl = `<i class="flag">${c.flag}</i>`;
+  const fl = `${c.flag}`;
   if (c.onSale) return `<s>NT$${nf(c.regTwd)}</s><b>${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
   return `<b class="full">${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
 }
@@ -881,12 +886,12 @@ async function openDetail(id, fromHistory){
   const hot = [...HOT.s2.map(h => [h, "Switch 2"]), ...HOT.sw.map(h => [h, "Switch"])].find(([h]) => h.id.slice(-6) === id);
   const ch = cheapest(g);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
-    : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b><i class="flag">${ch.flag}</i><small>NT$</small>${nf(ch.twd)}</b></div>
+    : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b>${ch.flag}<small>NT$</small>${nf(ch.twd)}</b></div>
        <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}　·　台灣 NT$${nf(g.price)}</div>`
-    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b><i class="flag">🇹🇼</i><small>NT$</small>${nf(g.sale)}</b></div>
+    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b>${FLAG.tw}<small>NT$</small>${nf(g.sale)}</b></div>
        <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}${g.isLow ? "　<b style='color:#178a4c;font-size:13px'>目前是史低價</b>" : ""}</div>`
     : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"
-    : `<b><i class="flag">🇹🇼</i><small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
+    : `<b>${FLAG.tw}<small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
   const rows = [
     ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
     parent && ["本體", `<button class="parent-link" data-open="${parent.id}">${esc(parent.name || "名稱待補")}</button>`],
