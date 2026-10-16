@@ -284,6 +284,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .lowbtn[aria-pressed="true"]{background:#178a4c;border-color:#178a4c;color:#fff}
 .demo-chip[aria-pressed="true"]{background:#0e7490;border-color:#0e7490;color:#fff}
 .favonly .ico-star{width:1.7em;height:1.7em;margin-right:4px}
+.favonly[aria-pressed="true"] .ico-star path{stroke:var(--bg)}  /* 按下後按鈕底色變成跟外框同色，星星外框改用反色才不會縮小 */
+.row1 select,.row1 .favonly,.row1 .ftoggle{font-size:15px}
 .fb{display:inline-block;min-width:1.5em;margin:0 4px;padding:0 6px;border-radius:999px;background:var(--line);color:var(--ink);font-size:12px;font-weight:700;line-height:1.5;text-align:center}
 .fb.on{background:var(--tag);color:#1a1a1a}
 .ftoggle[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
