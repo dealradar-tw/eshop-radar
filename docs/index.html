@@ -446,7 +446,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </section>
 
 <section id="pHot" hidden>
-  <p class="note">台灣與港區沒有公開下載排行，這裡用任天堂日本官方公布的下載排行，挑出台灣區有賣的遊戲，左邊數字是日本排行的名次。日本玩家的口味和台灣不完全一樣，請當作參考。</p>
+  <p class="note" id="hotNote">依日本 Fami通 每週銷量排行（推估銷量），挑出商店裡有賣的遊戲，左邊數字是這個清單內的名次。日本玩家的口味和其他地區不完全一樣，請當作參考。</p>
   <div class="chips plats" role="group" aria-label="主機" style="margin-top:14px">
     <span class="lbl">主機</span>
     <button class="chip" data-p="all" aria-pressed="true">全部</button>
@@ -685,6 +685,7 @@ function render(){
 }
 function renderHot(){
   const mk = list => list.map(h => { const g = BY.get(h.id.slice(-6)); return g ? row(g, h.rank) : ""; }).join("");
+  if (HOT.week) $("#hotNote").textContent = `依日本 Fami通 每週銷量排行（${HOT.week}，推估銷量），挑出商店裡有賣的遊戲，左邊數字是這個清單內的名次。Fami通前 30 名裡沒有在商店上架的遊戲不會出現。日本玩家的口味和其他地區不完全一樣，請當作參考。`;
   $("#hotS2").innerHTML = mk(HOT.s2);
   $("#hotSw").innerHTML = mk(HOT.sw);
   $("#secS2").hidden = $("#hotS2").hidden = plat === "0";
@@ -873,7 +874,7 @@ async function openDetail(id, fromHistory){
     det.size && ["容量", esc(det.size)],
     !g.isDlc && g.hasDetail && ["體驗版", g.demo ? "<b>有</b>，可在主機的 eShop 免費下載試玩" : "沒有"],
     det.rating && ["分級", esc(det.rating)],
-    hot && ["熱門", `日本${esc(hot[0].src)} ${hot[1]} 下載排行第 ${hot[0].rank} 名`],
+    hot && ["熱門", `日本 Fami通 ${esc(HOT.week || "")} 銷量排行第 ${hot[0].fr} 名（${hot[1]}，約 ${nf(hot[0].sales)} 本）`],
     ["編號", full(id)],
   ].filter(Boolean);
   SHOTS = det.shots || [];

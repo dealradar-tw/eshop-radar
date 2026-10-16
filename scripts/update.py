@@ -499,6 +499,65 @@ def refresh_jp(games, jp, limit=6000):
     log(f"  台日對應（有價格）：{matched} 款")
 
 
+FAMITSU = "https://www.famitsu.com/ranking/game-sales/"
+
+
+def _nz(t):
+    import unicodedata
+    return re.sub(r"[\s\W_]+", "", unicodedata.normalize("NFKC", t or "")).lower()
+
+
+def refresh_hot(games, jp):
+    """熱門排行：抓 Fami通 每週銷量排行（日本實體＋下載卡等推估銷量），對應回商店裡的遊戲。"""
+    try:
+        h = get(FAMITSU, 40)
+    except Exception as e:
+        log(f"  Fami通排行抓取失敗，沿用上次：{e}")
+        return
+    cards = re.findall(r'__ranking">(\d+)</div><div><div class="[^"]*__platform[^"]*?__(\w+)">[^<]*</div>'
+                       r'<div class="[^"]*__title">([^<]*)</div><div class="[^"]*salesCountLine">'
+                       r'<p class="[^"]*salesCount">([\d,]+)', h)
+    m = re.search(r"集計期間：(.*?)</p>", h)
+    period = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
+    if not cards:
+        log("  Fami通排行解析不到資料（網頁格式可能改了），沿用上次")
+        return
+    titles = jp.get("titles", {}); apps = jp.get("apps", {})
+    idx = {}
+    for n, v in titles.items():
+        if isinstance(v, list):
+            idx.setdefault((_nz(v[0]), v[1]), []).append(n)
+    by_app = {}
+    for nid, g in games.items():
+        if g.get("app") and g.get("status") in SELLING:
+            by_app.setdefault(g["app"].lower(), []).append(nid)
+    out = {"s2": [], "sw": [], "week": period, "src": "Fami通"}
+    used = set(); miss = 0
+    for rk, pl, title, sales in cards:
+        if "switch" not in pl:
+            continue
+        s2 = "switch2" in pl
+        plat = "BEE" if s2 else "HAC"
+        found = None
+        for jn in idx.get((_nz(title), plat), []):
+            for nid in by_app.get(apps.get(jn, ""), []):
+                if (games[nid].get("plat") or "HAC") == plat and nid not in used:
+                    found = nid; break
+            if found:
+                break
+        if not found:
+            miss += 1
+            continue
+        used.add(found)
+        out["s2" if s2 else "sw"].append({"id": found, "fr": int(rk), "sales": int(sales.replace(",", ""))})
+    for k in ("s2", "sw"):
+        for i, e in enumerate(out[k], 1):
+            e["rank"] = i
+    log(f"  Fami通排行（{period}）：Switch 2 {len(out['s2'])} 款、Switch {len(out['sw'])} 款，商店找不到 {miss} 款")
+    if out["s2"] or out["sw"]:
+        save_if_changed(os.path.join(DOCS, "hot.json"), out)
+
+
 def refresh_all_dlc_lists(games, dlcs):
     """每週一次：重新查所有遊戲的 DLC 清單，找出新推出的 DLC。"""
     ids = [i for i, g in games.items() if g.get("status") in SELLING and g.get("meta")]
@@ -899,6 +958,7 @@ def main():
     backfill_app_ids(games)
     jp = load("jp.json", {})
     refresh_jp(games, jp)
+    refresh_hot(games, jp)
 
     items = {**games, **dlcs}
     drops = update_history(items, hist)
