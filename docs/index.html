@@ -695,7 +695,7 @@ const SORTS = {
 const sorters = {
   pct:  (a,b) => b.dealPct - a.dealPct || b.dealSave - a.dealSave,
   low:  (a,b) => (a.minTwd ?? 1e9) - (b.minTwd ?? 1e9) || b.dealPct - a.dealPct,
-  high: (a,b) => (b.price ?? -1) - (a.price ?? -1),
+  high: (a,b) => (b.minTwd ?? b.price ?? -1) - (a.minTwd ?? a.price ?? -1),
   save: (a,b) => b.dealSave - a.dealSave,
   end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.dealPct - a.dealPct,
   new:  (a,b) => (b.firstSeen || "").localeCompare(a.firstSeen || "") || full(b.id).localeCompare(full(a.id)),
@@ -710,9 +710,10 @@ const isRecent = g => !!g.rel && g.rel >= recentFrom() && g.rel <= TODAY_STR;
 let pMin = store.get("pMin", null), pMax = store.get("pMax", null);
 function inTier(g){
   if (tier === "all") return true;
-  if (g.price == null) return false;
-  if (tier === "custom") return (pMin == null || g.price >= pMin) && (pMax == null || g.price <= pMax);
-  return tier === "lt100" ? g.price < 100 : g.price >= +tier;
+  const p = g.minTwd ?? g.price;  // 與卡片顯示的最便宜地區價格一致
+  if (p == null) return false;
+  if (tier === "custom") return (pMin == null || p >= pMin) && (pMax == null || p <= pMax);
+  return tier === "lt100" ? p < 100 : p >= +tier;
 }
 function gameFilters(g){
   if (g.isDlc) return true;
