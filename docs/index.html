@@ -255,6 +255,18 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .buyform input,.buyform select,.note-lbl textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px;width:100%}
 .buyform .save{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;padding:9px}
 #visits{white-space:nowrap}
+.utag{display:inline-block;font-size:11px;font-weight:700;color:#7a4cc2;background:color-mix(in srgb,#7a4cc2 12%,transparent);border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;white-space:nowrap}
+:root[data-theme="dark"] .utag{color:#c9a8ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .utag{color:#c9a8ff}}
+.utag.big{font-size:13px;padding:3px 4px 3px 8px;display:inline-flex;align-items:center;gap:2px}
+.utag.big button{font:inherit;border:0;background:none;color:inherit;cursor:pointer;padding:0 4px;font-size:15px;line-height:1}
+.tagbox{display:flex;flex-direction:column;gap:6px}
+.tag-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tag-row .lbl{font-size:12px;color:var(--muted);margin-right:2px}
+.tag-add{display:inline-flex;gap:6px;flex:1 1 220px}
+.tag-add input{font:inherit;font-size:14px;flex:1;min-width:0;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.tag-sug{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px}
+.tag-sug .chip{font-size:12px;padding:3px 10px}
 .zh-line{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
@@ -580,7 +592,8 @@ function priceHTML(g){
   return `<b class="full"><small>NT$</small>${nf(g.reg)}</b>`;
 }
 function metaLine(g){
-  const parts = [badges(g) + endText(g)];
+  const tg = tagsOf(g.id);
+  const parts = [badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
   if (tab === "new" && g.rel) { const [, m, d] = g.rel.split("-"); parts.push(`${+m}/${+d} 發售`); }
   if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
   else if (g.dlcN) parts.push(`${g.dlcN} 個 DLC`);
@@ -645,7 +658,7 @@ function filtered(){
     (!lowOnly || g.isLow) &&
     (!demoOnly || g.demo) &&
     (!favOnly || favs.has(g.id)) &&
-    (!q || (g.name || "").toLowerCase().includes(q)
+    (!q || (g.name || "").toLowerCase().includes(q) || tagsOf(g.id).some(t => t.toLowerCase().includes(q))
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
@@ -872,6 +885,7 @@ async function openDetail(id, fromHistory){
         <div class="title-row"><h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button>
           <button class="fav-top buy-top" data-buy="${id}" aria-pressed="${isBought(id)}">${buyLabel(isBought(id))}</button></div>
+        <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
         <div class="chart" id="chart"></div>
@@ -1159,7 +1173,7 @@ const buyLabel = on => BAG_SVG.replace("<svg", `<svg class="ico-bag${on ? " on" 
 const TYPES = {dl: "數位版", pk: "實體版", key: "鑰匙卡"};
 const REGIONS = {tw: "台灣", hk: "香港", jp: "日本", us: "美國", eu: "歐洲", other: "其他"};
 const CURS = {TWD: "NT$", HKD: "HK$", JPY: "¥", USD: "US$"};
-const saveMine = () => { for (const k in MINE) { const m = MINE[k]; if (!m.b && !m.p?.length && !m.n && !m.fn) delete MINE[k]; } store.set("mine", MINE); };
+const saveMine = () => { for (const k in MINE) { const m = MINE[k]; if (!m.b && !m.p?.length && !m.n && !m.fn && !m.tags?.length) delete MINE[k]; } store.set("mine", MINE); };
 const toTwd = (a, c) => c === "TWD" ? a : FX[c] ? Math.round(a * FX[c]) : null;
 function mineSpent(id){
   let twd = 0, unknown = false, qty = 0;
@@ -1340,6 +1354,43 @@ $("#mineFile").addEventListener("change", async e => {
     if (d.value != null) $("#visits").textContent = ` · 累計瀏覽 ${nf(d.value)} 次`;
   } catch (e) {}
 })();
+
+// ── 自訂標籤：在遊戲介紹頁新增，搜尋時名稱和標籤都會比對（只存在這台裝置，會一起匯出備份） ──
+function tagsOf(id){ return (typeof MINE !== "undefined" && MINE[id]?.tags) || []; }
+function allTags(){
+  const c = new Map();
+  for (const k in MINE) for (const t of MINE[k].tags || []) c.set(t, (c.get(t) || 0) + 1);
+  return [...c.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
+}
+function tagBoxInner(id){
+  const tg = tagsOf(id), sug = allTags().filter(t => !tg.includes(t)).slice(0, 12);
+  return `<div class="tag-row"><span class="lbl">我的標籤</span>
+      ${tg.map((t, i) => `<span class="utag big">#${esc(t)}<button data-deltag="${i}" aria-label="移除標籤 ${esc(t)}">×</button></span>`).join("")}
+      <span class="tag-add"><input id="tagIn" type="text" maxlength="20" placeholder="新增標籤，例如：派對、想買" enterkeyhint="done"><button class="chip" id="tagAdd">新增</button></span></div>
+    ${sug.length ? `<div class="tag-sug"><span class="muted">常用：</span>${sug.map(t => `<button class="chip" data-addtag="${esc(t)}">#${esc(t)}</button>`).join("")}</div>` : ""}`;
+}
+function addTag(id, raw){
+  const t = String(raw || "").replace(/^#+/, "").trim().slice(0, 20);
+  if (!t) return;
+  const m = (MINE[id] ||= {p: []}); m.tags ||= [];
+  if (!m.tags.includes(t)) m.tags.push(t);
+  saveMine(); refreshTags(id);
+}
+function refreshTags(id){
+  const box = $("#tagBox"); if (box && box.dataset.id === id) { box.innerHTML = tagBoxInner(id); }
+  if (tab !== "hot") render(); else renderHot();
+  if (!$("#minePage").hidden) renderMine();
+}
+document.addEventListener("click", e => {
+  const t = e.target, box = t.closest("#tagBox"); if (!box) return;
+  const id = box.dataset.id;
+  if (t.id === "tagAdd") { addTag(id, $("#tagIn").value); $("#tagIn")?.focus(); return; }
+  const at = t.closest("[data-addtag]"); if (at) { addTag(id, at.dataset.addtag); return; }
+  const dt = t.closest("[data-deltag]"); if (dt) { MINE[id].tags.splice(+dt.dataset.deltag, 1); saveMine(); refreshTags(id); }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.id === "tagIn" && e.key === "Enter") { e.preventDefault(); addTag($("#tagBox").dataset.id, e.target.value); $("#tagIn")?.focus(); }
+});
 </script>
 </body>
 </html>
