@@ -429,6 +429,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-r="tw" aria-pressed="false">台灣有賣</button>
     <button class="chip" data-r="jp" aria-pressed="false">日本限定</button>
     <button class="chip" data-r="hk" aria-pressed="false">港區限定</button>
+    <button class="chip" data-r="jh" aria-pressed="false">日港限定</button>
   </div>
   <div class="chips" role="group" aria-label="類別">
     <span class="lbl">類別</span>
@@ -599,10 +600,13 @@ function zhInfo(g){
 }
 const demoBadge = g => g.demo ? '<span class="demo-badge">有體驗版</span>' : "";
 const zhBadge = g => { const z = zhInfo(g); return z ? `<span class="zh ${z[0]}">${z[1]}</span>` : ""; };
+// 台灣沒賣的遊戲分三種：只有日本（jp）、只有香港（hk）、日本和香港都有（jh）
+const onlyKind = g => g.only === "hk" ? (g.jpNow != null ? "jh" : "hk") : (g.only || "");
+const ONLY_LABEL = {jp: "日本限定", hk: "港區限定", jh: "日港限定"};
 function badges(g){
   return zhBadge(g) + demoBadge(g) + (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
     + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
-    + (g.only ? `<span class="only-badge">${g.only === "jp" ? "日本限定" : "港區限定"}</span>` : "")
+    + (g.only ? `<span class="only-badge">${ONLY_LABEL[onlyKind(g)]}</span>` : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
     + (g.cheapPct ? `<span class="hk-badge">${g.cheapRegion}便宜 ${g.cheapPct}%</span>` : "")
     + (HOT_IDS.has(g.id) ? '<span class="hot-badge">熱門</span>' : "")
@@ -724,7 +728,7 @@ function filtered(){
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
     (tab === "all" || (tab === "new" ? isRecent(g) : g.dealAny)) &&
     (plat === "all" || +g.s2 === +plat) &&
-    (regF === "all" || (regF === "tw" ? !g.only : g.only === regF)) &&
+    (regF === "all" || (regF === "tw" ? !g.only : onlyKind(g) === regF)) &&
     inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
     (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
@@ -952,7 +956,7 @@ async function openDetail(id, fromHistory){
     : `<b>${FLAG.tw}<small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
   const rows = [
     ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
-    g.only && ["販售地區", g.only === "jp" ? "只有日本區商店有賣（台灣、香港都沒有）" : "台灣沒有，只有港區商店有賣"],
+    g.only && ["販售地區", {jp: "只有日本區商店有賣（台灣、香港都沒有）", hk: "只有港區商店有賣（台灣、日本都沒有）", jh: "台灣沒有，日本區和港區商店有賣"}[onlyKind(g)]],
     parent && ["本體", `<button class="parent-link" data-open="${parent.id}">${esc(parent.name || "名稱待補")}</button>`],
     g.isDlc && g.membersOnly && ["條件", "需加入 Nintendo Switch Online"],
     det.publisher && ["發行商", esc(det.publisher)],
