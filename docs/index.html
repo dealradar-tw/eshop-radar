@@ -80,6 +80,11 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var(--surface) 55%);box-shadow:inset 4px 0 0 var(--s2)}
 .thumb .s2mark{position:absolute;right:0;top:0;background:var(--s2);color:var(--s2-ink);font-family:var(--display);font-weight:800;font-size:11px;line-height:1.5;padding:1px 6px;border-radius:0 0 0 6px;letter-spacing:.02em}
 .hot-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--urgent);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-right:6px;vertical-align:1px}
+.hotinfo{font-size:13px;color:var(--muted);margin-top:4px}
+.hotinfo b{color:var(--ink);font-variant-numeric:tabular-nums}
+li.hot-miss{display:flex;align-items:center;opacity:.9}
+li.hot-miss .rank{min-width:46px}
+li.hot-miss .name{font-weight:700;font-size:15px}
 .rank{font-family:var(--display);font-weight:800;font-size:22px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
 .price .full{font-family:var(--display);font-size:18px;font-weight:800}
 .note{font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:16px 0 0;line-height:1.7}
@@ -392,8 +397,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 
 <div id="tabsAnchor"></div>
 <nav class="tabs" role="tablist">
-  <button class="tab" role="tab" data-tab="deals" aria-selected="true">特價中</button>
-  <button class="tab" role="tab" data-tab="hot" aria-selected="false">熱門排行</button>
+  <button class="tab" role="tab" data-tab="hot" aria-selected="false">Fami通銷售排行</button>
   <button class="tab" role="tab" data-tab="new" aria-selected="false">近期發售</button>
 </nav>
 
@@ -404,6 +408,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <select id="sort" aria-label="排序方式"></select>
     <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏"><svg class="ico-star on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg> 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge" class="fb">0</span><span class="arr">▾</span></button>
+  </div>
+  <div class="chips" id="recentBox" role="group" aria-label="發售時間" hidden style="padding-top:2px">
+    <span class="lbl">發售時間</span>
+    <button class="chip" data-m="1" aria-pressed="false">1 個月內</button>
+    <button class="chip" data-m="3" aria-pressed="false">3 個月內</button>
+    <button class="chip" data-m="6" aria-pressed="true">6 個月內</button>
   </div>
 </div>
 <div class="fpanel">
@@ -477,10 +487,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-p="0" aria-pressed="false">Switch</button>
     <button class="chip" data-p="1" aria-pressed="false">Switch 2</button>
   </div>
-  <h2 class="sec" id="secS2">Switch 2</h2>
-  <ul id="hotS2"></ul>
-  <h2 class="sec" id="secSw">Switch</h2>
-  <ul id="hotSw"></ul>
+  <ul id="hotList" style="margin-top:12px"></ul>
 </section>
 
 <div id="minePage" class="mine-page" hidden>
@@ -525,7 +532,7 @@ const store = {
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
 
-let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {s2: [], sw: []}, HOT_IDS = new Set(), ASOF = "", FX = {};
+let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {items: []}, HOT_IDS = new Set(), ASOF = "", FX = {};
 let favs = new Set(store.get("favs", []).map(String));
 let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
@@ -663,12 +670,12 @@ function metaLine(g){
 }
 const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg>';
 const favLabel = on => STAR_SVG.replace("<svg", `<svg class="ico-star${on ? " on" : ""}"`) + (on ? " 已收藏" : " 收藏");
-function row(g, rank){
+function row(g, rank, extra = ""){
   return `<li data-card="${g.id}"${g.s2 ? ' class="s2"' : ""}>
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
-      <div class="meta">${metaLine(g) || "&nbsp;"}</div>
+      <div class="meta">${metaLine(g) || "&nbsp;"}</div>${extra}
     </div>
     <div class="price">${priceHTML(g)}</div>
     <div class="acts"><button class="star" data-id="${g.id}" aria-pressed="${favs.has(g.id)}" aria-label="收藏">${STAR_SVG}</button><button class="buy" data-buy="${g.id}" aria-pressed="${isBought(g.id)}" aria-label="已購買">${BAG_SVG}</button></div>
@@ -692,9 +699,10 @@ const sorters = {
   name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
 };
 // 近期發售：發售日在今天往前 6 個月內（不含尚未發售）
-const RECENT_FROM = (() => { const d = new Date(today); d.setMonth(d.getMonth() - 6); return d.toISOString().slice(0, 10); })();
+let recentM = store.get("recentM", 6);
+const recentFrom = () => { const d = new Date(today); d.setMonth(d.getMonth() - recentM); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
 const TODAY_STR = new Date(today.getTime() - today.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
-const isRecent = g => !!g.rel && g.rel >= RECENT_FROM && g.rel <= TODAY_STR;
+const isRecent = g => !!g.rel && g.rel >= recentFrom() && g.rel <= TODAY_STR;
 let pMin = store.get("pMin", null), pMax = store.get("pMax", null);
 function inTier(g){
   if (tier === "all") return true;
@@ -747,11 +755,15 @@ function render(){
   $("#clearF").hidden = !(m || $("#q").value);
 }
 function renderHot(){
-  const mk = list => list.map(h => { const g = BY.get(h.id.slice(-6)); return g ? row(g, h.rank) : ""; }).join("");
-  $("#hotS2").innerHTML = mk(HOT.s2);
-  $("#hotSw").innerHTML = mk(HOT.sw);
-  $("#secS2").hidden = $("#hotS2").hidden = plat === "0";
-  $("#secSw").hidden = $("#hotSw").hidden = plat === "1";
+  const items = (HOT.items || []).filter(h => plat === "all" || (plat === "1") === (h.plat === "s2"));
+  if (HOT.week) $("#hotNote").textContent = `依日本 Fami通 每週銷量排行（${HOT.week}）`;
+  const info = h => `<div class="hotinfo">本週約 <b>${nf(h.sales)}</b> 本${h.total ? `　·　累計 ${nf(h.total)} 本` : ""}</div>`;
+  $("#hotList").innerHTML = items.length ? items.map(h => {
+    const g = h.id && BY.get(h.id.slice(-6));
+    if (g) return row(g, h.fr, info(h));
+    return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(h.title || "")}</span>
+      <div class="meta">${h.plat === "s2" ? '<span class="plat">Switch 2</span>' : "Switch"}<span class="muted">　商店目前查不到這款</span></div>${info(h)}</div></li>`;
+  }).join("") : '<li class="hot-miss"><div class="info">目前沒有資料。</div></li>';
 }
 function buildGenreChips(){
   const cnt = new Map();
@@ -778,6 +790,7 @@ function showTab(t){
   tab = t; store.set("tab", t);
   $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
+  $("#recentBox").hidden = t !== "new";
   $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : "搜尋特價遊戲名稱";
   page = 1;
   if (t === "hot") renderHot(); else { setSortOptions(); render(); }
@@ -786,6 +799,7 @@ function showTab(t){
 function setChips(){
   $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
   $$("[data-k]").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
+  $$("#recentBox [data-m]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.m === recentM));
   $$("#regs [data-r]").forEach(b => b.setAttribute("aria-pressed", b.dataset.r === regF));
   $$("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
   $("#prange").hidden = tier !== "custom";
@@ -927,7 +941,7 @@ async function openDetail(id, fromHistory){
   const parent = g.isDlc ? BY.get(g.parent) : null;
   let det = {};
   if (!g.isDlc && g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
-  const hot = [...HOT.s2.map(h => [h, "Switch 2"]), ...HOT.sw.map(h => [h, "Switch"])].find(([h]) => h.id.slice(-6) === id);
+  const hot = (HOT.items || []).filter(h => h.id && h.id.slice(-6) === id).map(h => [h, h.plat === "s2" ? "Switch 2" : "Switch"])[0];
   const ch = cheapest(g);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
     : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b>${ch.flag}<small>NT$</small>${nf(ch.twd)}</b></div>
@@ -1091,6 +1105,8 @@ document.addEventListener("click", e => {
   }
   const p = t.closest(".plats [data-p]");
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
+  const rm = t.closest("#recentBox [data-m]");
+  if (rm) { recentM = +rm.dataset.m; store.set("recentM", recentM); rerender(); return; }
   const rg2 = t.closest("#regs [data-r]");
   if (rg2) { regF = rg2.dataset.r; store.set("regF", regF); rerender(); return; }
   const k = t.closest("[data-k]");
@@ -1154,7 +1170,7 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     const [data, dlc, hot] = await Promise.all([
       fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
       fetch("dlc.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : {fields: [], rows: []}).catch(() => ({fields: [], rows: []})),
-      fetch("hot.json").then(r => r.json()).catch(() => ({s2: [], sw: []})),
+      fetch("hot.json").then(r => r.json()).catch(() => ({items: []})),
     ]);
     ASOF = data.asof;
     FX = data.fx || {};
@@ -1170,8 +1186,9 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     });
     games.forEach(g => { g.dlcN = (DLC_BY_PARENT.get(g.id) || []).length || g.dlcN || 0; });
     ITEMS = games.concat(dlcs);
+    if (!hot.items) hot.items = [...(hot.s2 || []).map(h => ({...h, plat: "s2", fr: h.fr || h.rank})), ...(hot.sw || []).map(h => ({...h, plat: "sw", fr: h.fr || h.rank}))].sort((a, b) => a.fr - b.fr);  // 舊格式
     HOT = hot;
-    HOT_IDS = new Set([...hot.s2, ...hot.sw].map(h => h.id.slice(-6)));
+    HOT_IDS = new Set((hot.items || []).filter(h => h.id).map(h => h.id.slice(-6)));
     $("#asof").textContent = ASOF;
     const named = games.filter(g => g.name);  // 還查不到名稱的不算
     const deals = named.filter(g => g.dealAny);

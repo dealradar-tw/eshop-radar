@@ -531,15 +531,24 @@ def _nz(t):
 
 
 def refresh_hot(games, jp):
-    """熱門排行：抓 Fami通 每週銷量排行（日本實體＋下載卡等推估銷量），對應回商店裡的遊戲。"""
+    """熱門排行：抓 Fami通 每週銷量排行（日本實體＋下載卡等推估銷量），Switch／Switch 2 的全部列出，
+    對得上商店的遊戲附上編號（可點進介紹頁）。"""
     try:
         h = get(FAMITSU, 40)
     except Exception as e:
         log(f"  Fami通排行抓取失敗，沿用上次：{e}")
         return
-    cards = re.findall(r'__ranking">(\d+)</div><div><div class="[^"]*__platform[^"]*?__(\w+)">[^<]*</div>'
-                       r'<div class="[^"]*__title">([^<]*)</div><div class="[^"]*salesCountLine">'
-                       r'<p class="[^"]*salesCount">([\d,]+)', h)
+    pat = re.compile(r'__ranking">(\d+)</div><div><div class="[^"]*__platform[^"]*?__(\w+)">[^<]*</div>'
+                     r'<div class="[^"]*__title">([^<]*)</div><div class="[^"]*salesCountLine">'
+                     r'<p class="[^"]*salesCount">([\d,]+)')
+    cards = []
+    for chunk in re.split(r'<li class="[^"]*listItem">', h)[1:]:
+        m = pat.search(chunk)
+        if not m:
+            continue
+        tot = re.search(r"累計: </span>([\d,]+)", chunk)
+        rel = re.search(r"発売日：(?:<!-- -->)?([^<]+)", chunk)
+        cards.append(m.groups() + (tot.group(1) if tot else "", rel.group(1).strip() if rel else ""))
     m = re.search(r"集計期間：(.*?)</p>", h)
     period = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
     if not cards:
@@ -554,9 +563,8 @@ def refresh_hot(games, jp):
     for nid, g in games.items():
         if g.get("app") and g.get("status") in SELLING:
             by_app.setdefault(g["app"].lower(), []).append(nid)
-    out = {"s2": [], "sw": [], "week": period, "src": "Fami通"}
-    used = set(); miss = 0
-    for rk, pl, title, sales in cards:
+    items, used, miss = [], set(), 0
+    for rk, pl, title, sales, total, rel in cards:
         if "switch" not in pl:
             continue
         s2 = "switch2" in pl
@@ -568,17 +576,18 @@ def refresh_hot(games, jp):
                     found = nid; break
             if found:
                 break
-        if not found:
+        if found:
+            used.add(found)
+        else:
             miss += 1
-            continue
-        used.add(found)
-        out["s2" if s2 else "sw"].append({"id": found, "fr": int(rk), "sales": int(sales.replace(",", ""))})
-    for k in ("s2", "sw"):
-        for i, e in enumerate(out[k], 1):
-            e["rank"] = i
-    log(f"  Fami通排行（{period}）：Switch 2 {len(out['s2'])} 款、Switch {len(out['sw'])} 款，商店找不到 {miss} 款")
-    if out["s2"] or out["sw"]:
+        items.append({"fr": int(rk), "plat": "s2" if s2 else "sw", "title": title.strip(),
+                      "sales": int(sales.replace(",", "")), "total": int(total.replace(",", "") or 0),
+                      "rel": rel, "id": found})
+    out = {"week": period, "src": "Fami通", "items": items}
+    log(f"Fami通排行（{period}）：Switch／Switch 2 共 {len(items)} 款，商店找不到 {miss} 款")
+    if items:
         save_if_changed(os.path.join(DOCS, "hot.json"), out)
+
 
 
 # ───────────── 3c. 日本限定遊戲（台灣、香港都沒有的） ─────────────
