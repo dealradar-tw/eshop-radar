@@ -454,7 +454,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </section>
 
 <section id="pHot" hidden>
-  <p class="note" id="hotNote">依日本 Fami通 每週銷量排行（推估銷量），挑出商店裡有賣的遊戲，左邊數字是這個清單內的名次。日本玩家的口味和其他地區不完全一樣，請當作參考。</p>
+  <p class="note" id="hotNote">依日本 Fami通 每週銷量排行。</p>
   <div class="chips plats" role="group" aria-label="主機" style="margin-top:14px">
     <span class="lbl">主機</span>
     <button class="chip" data-p="all" aria-pressed="true">全部</button>
@@ -527,11 +527,19 @@ function common(o){
   o.pct = o.onSale && o.reg ? Math.round((1 - o.sale / o.reg) * 100) : 0;
   o.save = o.onSale ? o.reg - o.sale : 0;
   o.days = daysLeft(o.end);
+  // 三區特價：任一地區有特價就算（台灣、香港、日本各自比原價）
+  const hkOn = o.hkSale != null && o.hkReg != null && o.hkSale < o.hkReg;
+  const jpOn = o.jpSale != null && o.jpReg != null && o.jpSale < o.jpReg;
+  o.dealAny = o.onSale || hkOn || jpOn;
   o.isLow = o.onSale && o.nPrices > 1 && o.low != null && o.sale <= o.low;
   o.hkNow = o.hkSale ?? o.hkReg ?? null;
   o.hkTwd = o.hkNow != null && FX.HKD ? Math.round(o.hkNow * FX.HKD) : null;
   o.jpNow = o.jpSale ?? o.jpReg ?? null;
   o.jpTwd = o.jpNow != null && FX.JPY ? Math.round(o.jpNow * FX.JPY) : null;
+  o.dealPct = Math.max(o.pct, hkOn ? Math.round((1 - o.hkSale / o.hkReg) * 100) : 0, jpOn ? Math.round((1 - o.jpSale / o.jpReg) * 100) : 0);
+  o.dealSave = Math.max(o.save, hkOn && FX.HKD ? Math.round((o.hkReg - o.hkSale) * FX.HKD) : 0, jpOn && FX.JPY ? Math.round((o.jpReg - o.jpSale) * FX.JPY) : 0);
+  o.minTwd = Math.min(...[o.price, o.hkTwd, o.jpTwd].filter(v => v != null));
+  if (!isFinite(o.minTwd)) o.minTwd = null;
   // 其他地區換算台幣後比台區便宜 10% 以上才標示（取最便宜的那區）
   o.cheapRegion = "", o.cheapPct = 0;
   for (const [r, v] of [["港區", o.hkTwd], ["日區", o.jpTwd]]) {
@@ -611,6 +619,8 @@ function cheapest(g){
   b.pct = b.onSale ? Math.round((1 - b.sale / b.reg) * 100) : 0;
   return b;
 }
+// 卡片左下角的折扣：最便宜的地區有特價就用它，否則用三區裡折扣最大的
+function tagPct(g){ const c = cheapest(g); return c?.onSale ? c.pct : g.dealPct; }
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
   if (g.reg == null) return '<b class="full" style="font-size:14px">價格未定</b>';
@@ -632,7 +642,7 @@ const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2
 const favLabel = on => STAR_SVG.replace("<svg", `<svg class="ico-star${on ? " on" : ""}"`) + (on ? " 已收藏" : " 收藏");
 function row(g, rank){
   return `<li data-card="${g.id}"${g.s2 ? ' class="s2"' : ""}>
-    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.onSale ? `<div class="tag">-${g.pct}%</div>` : ""}</div>
+    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
       <div class="meta">${metaLine(g) || "&nbsp;"}</div>
@@ -649,11 +659,11 @@ const SORTS = {
   all:   [["new","最新上架"],["low","價格最低"],["high","價格最高"],["name","名稱"]],
 };
 const sorters = {
-  pct:  (a,b) => b.pct - a.pct || b.save - a.save,
-  low:  (a,b) => (a.price ?? 1e9) - (b.price ?? 1e9) || b.pct - a.pct,
+  pct:  (a,b) => b.dealPct - a.dealPct || b.dealSave - a.dealSave,
+  low:  (a,b) => (a.minTwd ?? 1e9) - (b.minTwd ?? 1e9) || b.dealPct - a.dealPct,
   high: (a,b) => (b.price ?? -1) - (a.price ?? -1),
-  save: (a,b) => b.save - a.save,
-  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.pct - a.pct,
+  save: (a,b) => b.dealSave - a.dealSave,
+  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.dealPct - a.dealPct,
   new:  (a,b) => (b.firstSeen || "").localeCompare(a.firstSeen || "") || full(b.id).localeCompare(full(a.id)),
   rel:  (a,b) => (b.rel || "").localeCompare(a.rel || "") || full(b.id).localeCompare(full(a.id)),
   name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
@@ -681,7 +691,7 @@ function filtered(){
   return ITEMS.filter(g =>
     !!g.name &&  // 還查不到名稱的商品先不列出
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
-    (tab === "all" || (tab === "new" ? isRecent(g) : g.onSale)) &&
+    (tab === "all" || (tab === "new" ? isRecent(g) : g.dealAny)) &&
     (plat === "all" || +g.s2 === +plat) &&
     inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
@@ -713,7 +723,6 @@ function render(){
 }
 function renderHot(){
   const mk = list => list.map(h => { const g = BY.get(h.id.slice(-6)); return g ? row(g, h.rank) : ""; }).join("");
-  if (HOT.week) $("#hotNote").textContent = `依日本 Fami通 每週銷量排行（${HOT.week}，推估銷量），挑出商店裡有賣的遊戲，左邊數字是這個清單內的名次。Fami通前 30 名裡沒有在商店上架的遊戲不會出現。日本玩家的口味和其他地區不完全一樣，請當作參考。`;
   $("#hotS2").innerHTML = mk(HOT.s2);
   $("#hotSw").innerHTML = mk(HOT.sw);
   $("#secS2").hidden = $("#hotS2").hidden = plat === "0";
@@ -1117,9 +1126,9 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     HOT = hot;
     HOT_IDS = new Set([...hot.s2, ...hot.sw].map(h => h.id.slice(-6)));
     $("#asof").textContent = ASOF;
-    const deals = games.filter(g => g.onSale);
+    const deals = games.filter(g => g.dealAny);
     $("#sTotal").textContent = nf(deals.length);
-    $("#sDeep").textContent = nf(deals.filter(g => g.pct >= 50).length);
+    $("#sDeep").textContent = nf(deals.filter(g => g.dealPct >= 50).length);
     $("#sLow").textContent = nf(deals.filter(g => g.isLow).length);
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
     buildGenreChips();
