@@ -98,34 +98,53 @@ def batches(seq, n=50):
 
 
 def refresh_prices(games, full):
-    known = sorted(int(i) for i in games)
+    known = sorted(int(i) for i, g in games.items() if g.get("only") != "jp")  # 日本限定的另外處理
     top = max(known) if known else BASE
     scan = range(BASE, top + 6000) if full else range(max(BASE, top - 2000), top + 6000)
     targets = sorted(set(known) | set(scan))
     log(f"查價（台）：{len(targets)} 個編號（已知遊戲 {len(known)}）")
-    seen, new = set(), []
+    seen, new, hk_new = set(), [], []
     bs = batches(targets)
     for n, b in enumerate(bs, 1):
+        tw_hit = set()
         for p in price_batch(b):
             nsuid = str(p.get("title_id"))
             info = parse_price(p)
             if info["status"] == "not_found":
                 continue
             seen.add(nsuid)
+            tw_hit.add(nsuid)
             g = games.get(nsuid)
             if g is None:
                 g = games[nsuid] = {"name": "", "plat": "", "img": "", "meta": False,
                                     "first_seen": TODAY}
                 new.append(nsuid)
             g.update(info)
+            g.pop("only", None)  # 台灣也有賣了
+        # 港區限定：台灣沒有、港區有的遊戲
+        cand = [str(i) for i in b if str(i) not in tw_hit and str(i) not in games]
+        if cand:
+            try:
+                for p in price_batch(cand, "HK"):
+                    info = parse_price(p)
+                    nsuid = str(p.get("title_id"))
+                    if info["status"] == "not_found" or nsuid in games:
+                        continue
+                    games[nsuid] = {"name": "", "plat": "", "img": "", "meta": False, "only": "hk",
+                                    "first_seen": "" if full else TODAY, "status": info["status"],
+                                    "reg": None, "sale": None, "end": "",
+                                    "hk": {"reg": info["reg"], "sale": info["sale"], "end": info["end"]}}
+                    hk_new.append(nsuid)
+            except RuntimeError as e:
+                log(f"  港區限定查詢失敗，略過：{e}")
         if n % 20 == 0:
             log(f"  {n}/{len(bs)}")
         time.sleep(0.4)
     known_set = set(map(str, known))
     for nsuid, g in games.items():
-        if nsuid not in seen and nsuid in known_set:
+        if nsuid not in seen and nsuid in known_set and g.get("only") != "hk":
             g["status"] = "not_found"  # 已下架
-    log(f"新發現 {len(new)} 個商品")
+    log(f"新發現 {len(new)} 個商品；港區限定新增 {len(hk_new)} 個")
     return new
 
 
@@ -149,7 +168,7 @@ def refresh_dlc_prices(dlcs):
 
 def refresh_hk_prices(items):
     """跨區比價用：查同一批編號在港區的價格（港幣）。"""
-    ids = [i for i, g in items.items() if g.get("status") in SELLING]
+    ids = [i for i, g in items.items() if g.get("status") in SELLING and g.get("only") != "jp"]
     log(f"查價（港）：{len(ids)} 個")
     for b in batches(ids):
         try:
@@ -157,8 +176,10 @@ def refresh_hk_prices(items):
                 nsuid = str(p.get("title_id"))
                 if nsuid in items:
                     info = parse_price(p)
-                    items[nsuid]["hk"] = None if info["status"] == "not_found" else \
-                        {"reg": info["reg"], "sale": info["sale"], "end": info["end"]}
+                    nf = info["status"] == "not_found"
+                    items[nsuid]["hk"] = None if nf else {"reg": info["reg"], "sale": info["sale"], "end": info["end"]}
+                    if items[nsuid].get("only") == "hk":  # 港區限定的商品，狀態以港區為準
+                        items[nsuid]["status"] = "not_found" if nf else info["status"]
         except RuntimeError as e:
             log(f"  港區查價失敗，略過：{e}")
             return
@@ -322,7 +343,7 @@ def fetch_dlc_lists(ids):
 
 def refresh_movies(games, limit=6000):
     """台灣區商店多半沒放宣傳影片，改從港區商店（同一編號）補上 YouTube 影片。"""
-    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING and g.get("mv") != 1][:limit]
+    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING and g.get("mv") != 1 and g.get("only") != "jp"][:limit]
     if not todo:
         return
     log(f"補影片（港區）：{len(todo)} 款")
@@ -352,7 +373,7 @@ def refresh_movies(games, limit=6000):
 def refresh_meta(games, dlcs, limit, retry_missing):
     """用任天堂商店的資料介面（台灣區）補齊名稱、平台、介紹與 DLC 清單。"""
     selling = lambda g: g.get("status") in SELLING
-    need = [i for i, g in games.items() if selling(g) and (
+    need = [i for i, g in games.items() if selling(g) and g.get("only") != "jp" and (
             not g.get("meta") or g.get("dv", 1) < DETAIL_VERSION) ]  # 查無資料的每天都再試（多半是剛上架、商店頁還沒公開）
     need.sort(key=lambda i: (games[i].get("meta", False), games[i].get("sale") is None, -int(i)))
     todo = need[:limit]
@@ -469,7 +490,7 @@ def refresh_jp(games, jp, limit=6000):
     cands = {}
     for nid, g in games.items():
         a = (g.get("app") or "").lower()
-        if a in by_app and g.get("status") in SELLING:
+        if g.get("only") != "jp" and a in by_app and g.get("status") in SELLING:
             cands[nid] = by_app[a]
     ids = sorted({n for c in cands.values() for n in c})
     prices = {}
@@ -486,6 +507,8 @@ def refresh_jp(games, jp, limit=6000):
     # 選對應商品：同平台優先，再取原價最低的（通常是單買本體，不是同捆組合）
     matched = 0
     for nid, g in games.items():
+        if g.get("only") == "jp":
+            continue
         c = [n for n in cands.get(nid, []) if n in prices]
         if not c:
             g["jp"] = None
@@ -556,6 +579,95 @@ def refresh_hot(games, jp):
     log(f"  Fami通排行（{period}）：Switch 2 {len(out['s2'])} 款、Switch {len(out['sw'])} 款，商店找不到 {miss} 款")
     if out["s2"] or out["sw"]:
         save_if_changed(os.path.join(DOCS, "hot.json"), out)
+
+
+# ───────────── 3c. 日本限定遊戲（台灣、香港都沒有的） ─────────────
+JP_GENRE = [("アクション", "動作"), ("アドベンチャー", "冒險"), ("シミュレーション", "模擬"), ("パズル", "益智"),
+            ("アーケード", "街機"), ("ロールプレイング", "角色扮演"), ("RPG", "角色扮演"), ("ストラテジー", "策略"),
+            ("パーティー", "派對"), ("シューティング", "射擊"), ("学習", "學習"), ("教育", "學習"), ("トレーニング", "訓練"),
+            ("コミュニケーション", "交流"), ("実用", "實用"), ("レース", "競速"), ("スポーツ", "運動"),
+            ("テーブル", "桌上遊戲"), ("ボード", "桌上遊戲"), ("格闘", "格鬥"), ("音楽", "音樂"), ("リズム", "音樂"),
+            ("その他", "其他")]
+
+
+def jp_genres(gs):
+    out = []
+    for g in gs or []:
+        t = next((v for k, v in JP_GENRE if k in g), "其他")
+        if t not in out:
+            out.append(t)
+    return out
+
+
+def refresh_jponly(games, jp):
+    """日本區有、台灣與香港都沒有的遊戲：以日本區編號建立商品，價格用日圓。"""
+    titles, apps = jp.get("titles", {}), jp.get("apps", {})
+    owned = {(g.get("app") or "").lower() for g in games.values() if g.get("app") and g.get("only") != "jp"}
+    for n in [n for n, g in games.items() if g.get("only") == "jp" and (g.get("app") or "").lower() in owned]:
+        del games[n]  # 後來發現台灣或香港也有賣，併回原本的商品
+    first = not any(g.get("only") == "jp" for g in games.values())
+    added = 0
+    for n, a in apps.items():
+        t = titles.get(n)
+        if not a or a in owned or n in games or not isinstance(t, list):
+            continue
+        games[n] = {"name": t[0], "plat": t[1] if t[1] in ("HAC", "BEE") else "HAC", "img": "", "meta": False,
+                    "only": "jp", "first_seen": "" if first else TODAY, "status": "onsale",
+                    "reg": None, "sale": None, "end": "", "app": "", "jp": None}
+        added += 1
+    ids = [n for n, g in games.items() if g.get("only") == "jp"]
+    log(f"日本限定：{len(ids)} 款（新增 {added}）")
+    try:
+        for b in batches(ids):
+            found = {str(p.get("title_id")): parse_price(p) for p in price_batch(b, "JP")}
+            for n in b:
+                info, g = found.get(n), games[n]
+                if not info or info["status"] == "not_found" or info["reg"] is None:
+                    g["status"], g["jp"] = "not_found", None
+                    g.pop("jpId", None)
+                else:
+                    g["status"] = info["status"]
+                    g["jp"] = {"reg": info["reg"], "sale": info["sale"], "end": info["end"]}
+                    g["jpId"] = n
+            time.sleep(0.4)
+    except RuntimeError as e:
+        log(f"  日本限定查價失敗，略過：{e}")
+
+
+def refresh_meta_jponly(games, limit):
+    """日本限定遊戲的名稱、封面、介紹（日本區商店，日文）。"""
+    need = [n for n, g in games.items() if g.get("only") == "jp" and g.get("status") in SELLING
+            and (not g.get("meta") or g.get("dv", 1) < DETAIL_VERSION)]
+    need.sort(key=lambda n: (games[n].get("nodata", False), -int(n)))
+    todo = need[:limit]
+    log(f"抓日本限定商品資料：本次 {len(todo)} 筆（待處理 {len(need)}）")
+    os.makedirs(os.path.join(DOCS, "d"), exist_ok=True)
+    ok = nodata = 0
+    try:
+        for k, b in enumerate(batches(todo, 20), 1):
+            res = fetch_apps(b, JP_VARS)
+            for n in b:
+                f, g = res.get(n), games[n]
+                if not f or not s(f.get("formalName")):
+                    g["nodata"] = True
+                    nodata += 1
+                    continue
+                det = build_detail(f)
+                det["genres"] = jp_genres(det.get("genres"))
+                rel = re.sub(r"[./]", "-", det.get("release", ""))
+                g.update(name=s(f["formalName"]), plat=f.get("labelPlatform") if f.get("labelPlatform") in ("HAC", "BEE") else g.get("plat", "HAC"),
+                         img=img_hash(f.get("heroBannerUrl")) or g.get("img", ""), meta=True, nodata=False,
+                         dv=DETAIL_VERSION, app=det.get("titleId", ""), rel=rel, demo=1 if det.get("demo") else 0,
+                         genres=det["genres"], pmax=det.get("pmax", 0), poff=det.get("poff", 0),
+                         zh=zh_code(det), zv=2, mv=1)
+                save(os.path.join(DOCS, "d", n[-6:] + ".json"), det)
+                ok += 1
+            if k % 20 == 0:
+                log(f"  {k * 20}/{len(todo)}（成功 {ok}、查無 {nodata}）")
+            time.sleep(1.2)
+    except Blocked as e:
+        log(f"  資料介面暫時無法使用（{e}），下次再繼續")
+    log(f"  日本限定商品資料完成 {ok} 筆，查無 {nodata} 筆")
 
 
 def refresh_all_dlc_lists(games, dlcs):
@@ -667,7 +779,7 @@ PARTIAL_ZH = re.compile(
 def zh_code(det):
     """中文支援：1=繁體、2=簡體、4=部分中文（介紹裡寫只有選單／部分內容是中文）。"""
     langs = det.get("langs", [])
-    code = (1 if any("繁體" in l for l in langs) else 0) | (2 if any("簡體" in l for l in langs) else 0)
+    code = (1 if any("繁體" in l or "繁体" in l for l in langs) else 0) | (2 if any("簡體" in l or "簡体" in l for l in langs) else 0)
     text = (det.get("desc") or "") + "\n" + (det.get("catch") or "")
     if PARTIAL_ZH.search(text):
         code |= 4
@@ -755,14 +867,14 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
                      n, STATUS_CODE[g["status"]], g.get("first_seen", ""), 1 if g.get("meta") else 0,
                      g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0),
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
-                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0)])
+                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", "")])
     rows.sort(key=lambda r: r[0])
     save(os.path.join(DOCS, "data.json"), {
         "asof": asof,
         "fx": fx or {},
         "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                   "jpReg", "jpSale", "jpId", "rel", "demo"],
+                   "jpReg", "jpSale", "jpId", "rel", "demo", "only"],
         "rows": rows})
 
     drows = []
@@ -958,6 +1070,8 @@ def main():
     backfill_app_ids(games)
     jp = load("jp.json", {})
     refresh_jp(games, jp)
+    refresh_jponly(games, jp)
+    refresh_meta_jponly(games, 6000)
     refresh_hot(games, jp)
 
     items = {**games, **dlcs}
