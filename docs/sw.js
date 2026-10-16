@@ -1,6 +1,6 @@
 // 台區特價雷達：離線快取
 // 頁面與價格資料：先上網拿最新的，沒網路時用上次存的；圖示與遊戲圖片：先用存的。
-const VER = "v36";
+const VER = "v37";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open("core-" + VER).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
