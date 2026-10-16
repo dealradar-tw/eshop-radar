@@ -41,6 +41,9 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
 .bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px));z-index:5;background:var(--bg);padding-block:14px 10px;margin-top:18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.tabs,.bar{transition:transform .22s ease}
+.hdr-hide .tabs{transform:translateY(calc(-100% - env(safe-area-inset-top,0px) - 4px))}
+.hdr-hide .bar{transform:translateY(calc(-100% - var(--tabs-h,0px) - env(safe-area-inset-top,0px) - 4px))}
 .fpanel{display:flex;flex-direction:column;gap:10px;padding-block:10px;border-bottom:1px solid var(--line)}
 .fpanel > *{flex-shrink:0}  /* 面板有高度上限時，各列不能被壓扁 */
 .row1{display:flex;gap:8px;flex-wrap:wrap}
@@ -1201,6 +1204,22 @@ document.addEventListener("touchmove", collapseBar, {passive: true});
 document.addEventListener("wheel", collapseBar, {passive: true});
 
 // ── 分頁列固定在上方；回頂端按鈕 ──
+// 往下捲時把分頁列與搜尋列收起來，往回捲時再出現
+(() => {
+  let lastY = window.scrollY, acc = 0;
+  const root = document.documentElement;
+  addEventListener("scroll", () => {
+    const y = window.scrollY, dy = y - lastY;
+    lastY = y;
+    if (y < 120) { acc = 0; root.classList.remove("hdr-hide"); return; }
+    if (dy * acc < 0) acc = 0;  // 方向改變就重新累計
+    acc += dy;
+    const a = document.activeElement;
+    if (a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName)) return;  // 輸入中不收起來
+    if (acc > 24) root.classList.add("hdr-hide");
+    else if (acc < -24) root.classList.remove("hdr-hide");
+  }, {passive: true});
+})();
 new ResizeObserver(() => document.documentElement.style.setProperty("--tabs-h", $(".tabs").offsetHeight + "px")).observe($(".tabs"));
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", $(".bar").offsetHeight + "px")).observe($(".bar"));
 window.addEventListener("scroll", () => { $("#toTop").hidden = window.scrollY < 1200; }, {passive: true});
