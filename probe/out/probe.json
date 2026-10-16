@@ -1,0 +1,536 @@
+{
+ "jp_meta": {
+  "70010000139536": {
+   "formalName": "+1 Speed Cat プラスワンスピードキャット",
+   "labelPlatform": "HAC",
+   "heroBannerUrl": "https://img-eshop.cdn.nintendo.net/i/fe0b04c41cd4afb3a61badd10571523bba68406ae49d3e81441f852c7467e8fc.jpg",
+   "genre": "アーケード / アクション / アドベンチャー / レース",
+   "languages": [
+    {
+     "name": "日本語"
+    },
+    {
+     "name": "英語"
+    },
+    {
+     "name": "スペイン語"
+    },
+    {
+     "name": "フランス語"
+    },
+    {
+     "name": "ドイツ語"
+    },
+    {
+     "name": "イタリア語"
+    },
+    {
+     "name": "オランダ語"
+    },
+    {
+     "name": "ポルトガル語"
+    },
+    {
+     "name": "ロシア語"
+    },
+    {
+     "name": "ポーランド語"
+    }
+   ],
+   "releaseDateOnEshop": "2026-10-15",
+   "screenshotUrls": [
+    "https://img-eshop.cdn.nintendo.net/i/335e5b9017f383e10bdf2a6536558a7f8b1eebbd6adf457d95df04013bebbe03.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/0c6640f985459cedef732636b3f36a76f922e14ccf79932123e282613dba36ee.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/249510d741f070fbe51eac179f88b9ddc9554979e7d39741b93d9f5c923a79f8.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/49cbf85609c2a9e1424d6cccb7891b7015b24edf4634c1b886585aab23251810.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/89df104853e6b22a943b2ebe762f6f3c2e756155830498c12d984ff7aad9b232.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/cc83201e209a6684443ab07f554d9809a439619e90d27adb83b1ca57732ab9a7.jpg"
+   ],
+   "ratingInfo": {
+    "rating": {
+     "name": "3+",
+     "age": 3
+    }
+   },
+   "applications": [
+    {
+     "id": "0100de602a966000"
+    }
+   ]
+  },
+  "70010000139199": {
+   "formalName": "Backrooms: Escape",
+   "labelPlatform": "HAC",
+   "heroBannerUrl": "https://img-eshop.cdn.nintendo.net/i/dabaffba59f7682c38fea292ba8cb58e23ae30f8378545a4345cb0d76ddcd891.jpg",
+   "genre": "アドベンチャー / アクション / パズル",
+   "languages": [
+    {
+     "name": "英語"
+    }
+   ],
+   "releaseDateOnEshop": "2026-10-15",
+   "screenshotUrls": [
+    "https://img-eshop.cdn.nintendo.net/i/eb66cab4c29b72c419572311f302d23bf42471dcddb2ed495173e2506e2c8626.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/47236cc05b081c477621b283377a403ac50bb823d7db7504a6aa0ef7e9df5a6c.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/3bc17643d7810766757ec3f75b9fac1f2871f161dbac3de7326b0a7c67949d13.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/0a0f160890dedeea84731f7a75cab10b16d952260c5eb48030aab6efe7e92a4e.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/562795212f800a24c023c47afaecf14d97648aad46b0378cfe3176edf6a49650.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/0cd496725b00a1d09c11016f3ffe321e3daba1b7e3bc33f7d152cc5c8008a27a.jpg"
+   ],
+   "ratingInfo": {
+    "rating": {
+     "name": "12+",
+     "age": 12
+    }
+   },
+   "applications": [
+    {
+     "id": "0100cec02a87e000"
+    }
+   ]
+  },
+  "70010000138855": {
+   "formalName": "Deep Rock Galactic: Survivor - Nintendo Switch 2 Edition",
+   "labelPlatform": "BEE",
+   "heroBannerUrl": "https://img-eshop.cdn.nintendo.net/i/02c21f7fec9f56e3db967b62638512fefce48e043d4d6de9fd66a1c318fa3cde.jpg",
+   "genre": "シューティング",
+   "languages": [
+    {
+     "name": "日本語"
+    },
+    {
+     "name": "英語"
+    },
+    {
+     "name": "ポルトガル語"
+    },
+    {
+     "name": "スペイン語"
+    },
+    {
+     "name": "フランス語"
+    },
+    {
+     "name": "ドイツ語"
+    },
+    {
+     "name": "ロシア語"
+    },
+    {
+     "name": "韓国語"
+    },
+    {
+     "name": "中国語 (簡体字)"
+    },
+    {
+     "name": "中国語 (繁体字)"
+    }
+   ],
+   "releaseDateOnEshop": "2026-10-15",
+   "screenshotUrls": [
+    "https://img-eshop.cdn.nintendo.net/i/4c43759b8320a81ce50d513d64c475659d99b75758044c0cd035122c5124c593.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/7c01bdb9d025094d04db625b623619721d524cd97862e53cb1a73f7a7028dab4.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/370ccc4dfd19005390cfb4039159aac5fc188015746d32f1dc064b455eba679a.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/4fc4e4a9e5f9ca0adbf60928d31ac63a6b3b76d8b23007e1a65e31c4692526d5.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/0ede12205f23d40d9e0ee01057c2f41609014317e2ad601abcccf26b09d77884.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/8d165154cba2640b20ee7e0f32d5c1b4d7f0bb138626d446b463379c9edbd63b.jpg"
+   ],
+   "ratingInfo": {
+    "rating": {
+     "name": "12+",
+     "age": 12
+    }
+   },
+   "applications": [
+    {
+     "id": "01003ec027cc8000"
+    }
+   ]
+  },
+  "70010000086484": {
+   "formalName": "Dunk Dunk",
+   "labelPlatform": "HAC",
+   "heroBannerUrl": "https://img-eshop.cdn.nintendo.net/i/7b6772756749b876c2e8acdec93cd5fced06cc6dc7f06ffdb74d035291be3d9b.jpg",
+   "genre": "スポーツ / アーケード / パーティー",
+   "languages": [
+    {
+     "name": "日本語"
+    },
+    {
+     "name": "スペイン語"
+    },
+    {
+     "name": "英語"
+    },
+    {
+     "name": "フランス語"
+    },
+    {
+     "name": "ドイツ語"
+    },
+    {
+     "name": "ポルトガル語"
+    }
+   ],
+   "releaseDateOnEshop": "2025-05-08",
+   "screenshotUrls": [
+    "https://img-eshop.cdn.nintendo.net/i/830804a8c0bc555b6494214f8366b955c41fbb1d9c2d80c7cadfd2a9b1387ec5.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/11a7d23b1bee16c79d4403847bb45817634f70575a85f3faee8080a0026c7a89.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/2288d2cc3166de5e76b7a2dd253a50c48b3d32546f95b96fb5767919774163ff.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/5b928e0880254a18a4ad499eed0e20be31ed2d885b71db50ace6d7a6969719ae.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/f3e449b687971c77a89a791b8bab96f77fb855f4325142e7d1c2db29c9e8143c.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/5b0eadf4ce32ecb596c11014ee55ffead167ae9595feb6c8db57513e4d5e4b93.jpg"
+   ],
+   "ratingInfo": {
+    "rating": {
+     "name": "3+",
+     "age": 3
+    }
+   },
+   "applications": [
+    {
+     "id": "010004502071e000"
+    }
+   ]
+  },
+  "70010000086476": {
+   "formalName": "ボールラッシュ2",
+   "labelPlatform": "HAC",
+   "heroBannerUrl": "https://img-eshop.cdn.nintendo.net/i/4ce82a3f8c2bda13a9474eb0f854ceac8fac9afa0c5468773a9c3f0fe1be83ba.jpg",
+   "genre": "アーケード / アクション / レース / アドベンチャー",
+   "languages": [
+    {
+     "name": "英語"
+    }
+   ],
+   "releaseDateOnEshop": "2024-11-07",
+   "screenshotUrls": [
+    "https://img-eshop.cdn.nintendo.net/i/948e0b471cbcb3739b9dbddce6fe566964e94a528bbe644b27360bb3d16df45d.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/d77e78e6134490e1a6a5d671d6b515bbfd8d21c3dd64ce1045b92cd11b1dcdf6.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/eeb1a9543e32790ec01fa542df54c41b5ed10b336b9f8dfab49eb344e387e1b2.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/8017a05cb705d8d3c05d1abd1d47458c02cb2d95e816fea45c6f84e49d8073da.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/c641eb5d215b34d70b7d6972062ae65b0d4231ab80874f30a07f6e11dff63e3d.jpg"
+   ],
+   "ratingInfo": {
+    "rating": {
+     "name": "3+",
+     "age": 3
+    }
+   },
+   "applications": [
+    {
+     "id": "01005290206dc000"
+    }
+   ]
+  },
+  "70010000086472": {
+   "formalName": "黄昏に潜む梟と、明け方の昴",
+   "labelPlatform": "HAC",
+   "heroBannerUrl": "https://img-eshop.cdn.nintendo.net/i/b57f33bd55e0d6a74fdfa14e6513f40237724be997d7f920603c423633106fe1.jpg",
+   "genre": "アドベンチャー",
+   "languages": [
+    {
+     "name": "日本語"
+    }
+   ],
+   "releaseDateOnEshop": "2024-12-26",
+   "screenshotUrls": [
+    "https://img-eshop.cdn.nintendo.net/i/22adccced460e760785211ac854b08255f1777096b8618b5bc088bd7d20ff50b.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/9d5eecbe9d4db2d2fe0f6accd2fdf69119847910d753e7dddce7e014db37e0a2.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/e4273b4cdb03b1ce376997db51a40b6db85a5dc2a530afeb0d22aed759df96f4.jpg",
+    "https://img-eshop.cdn.nintendo.net/i/18e131d319af8b1ec3836f0862189b2302a17e95d80e138f33b577d96caa087e.jpg"
+   ],
+   "ratingInfo": {
+    "rating": {
+     "name": "C",
+     "age": 15
+    }
+   },
+   "applications": [
+    {
+     "id": "0100062020718000"
+    }
+   ]
+  }
+ },
+ "jp_titles": {
+  "70010000139536": [
+   "+1 Speed Cat プラスワンスピードキャット",
+   "HAC"
+  ],
+  "70010000139199": [
+   "Backrooms: Escape",
+   "HAC"
+  ],
+  "70010000138855": [
+   "Deep Rock Galactic: Survivor - Nintendo Switch 2 Edition",
+   "BEE"
+  ],
+  "70010000086484": [
+   "Dunk Dunk",
+   "HAC"
+  ],
+  "70010000086476": [
+   "ボールラッシュ2",
+   "HAC"
+  ],
+  "70010000086472": [
+   "黄昏に潜む梟と、明け方の昴",
+   "HAC"
+  ]
+ },
+ "jp_price": [
+  {
+   "id": 70010000139536,
+   "status": "onsale",
+   "reg": 650,
+   "sale": null,
+   "end": ""
+  },
+  {
+   "id": 70010000139199,
+   "status": "onsale",
+   "reg": 799,
+   "sale": 479,
+   "end": "2026-10-29T14:59:59Z"
+  },
+  {
+   "id": 70010000138855,
+   "status": "onsale",
+   "reg": 2329,
+   "sale": null,
+   "end": ""
+  },
+  {
+   "id": 70010000086484,
+   "status": "onsale",
+   "reg": 1200,
+   "sale": null,
+   "end": ""
+  },
+  {
+   "id": 70010000086476,
+   "status": "onsale",
+   "reg": 145,
+   "sale": null,
+   "end": ""
+  },
+  {
+   "id": 70010000086472,
+   "status": "onsale",
+   "reg": 3300,
+   "sale": null,
+   "end": ""
+  }
+ ],
+ "hk_scan_70010000100000": {
+  "tw": 146,
+  "hk": 220,
+  "hk_only": [
+   [
+    "70010000100015",
+    {
+     "status": "onsale",
+     "reg": 59,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100066",
+    {
+     "status": "onsale",
+     "reg": 70,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100091",
+    {
+     "status": "onsale",
+     "reg": 118,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100134",
+    {
+     "status": "onsale",
+     "reg": 52,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100158",
+    {
+     "status": "unreleased",
+     "reg": 65,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100167",
+    {
+     "status": "onsale",
+     "reg": 69,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100172",
+    {
+     "status": "onsale",
+     "reg": 69,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000100177",
+    {
+     "status": "onsale",
+     "reg": 69,
+     "sale": null,
+     "end": ""
+    }
+   ]
+  ],
+  "hk_only_n": 75
+ },
+ "hk_scan_70010000115000": {
+  "tw": 170,
+  "hk": 179,
+  "hk_only": [
+   [
+    "70010000115195",
+    {
+     "status": "onsale",
+     "reg": 96,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000115433",
+    {
+     "status": "onsale",
+     "reg": 238,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000115468",
+    {
+     "status": "onsale",
+     "reg": 115,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000115485",
+    {
+     "status": "onsale",
+     "reg": 299,
+     "sale": 179,
+     "end": "2026-11-03T15:59:59Z"
+    }
+   ],
+   [
+    "70010000115506",
+    {
+     "status": "onsale",
+     "reg": 78,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000115686",
+    {
+     "status": "onsale",
+     "reg": 308,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000115890",
+    {
+     "status": "onsale",
+     "reg": 210,
+     "sale": 189,
+     "end": "2026-10-24T15:59:59Z"
+    }
+   ],
+   [
+    "70010000115896",
+    {
+     "status": "onsale",
+     "reg": 46,
+     "sale": null,
+     "end": ""
+    }
+   ]
+  ],
+  "hk_only_n": 13
+ },
+ "hk_scan_70010000130000": {
+  "tw": 117,
+  "hk": 121,
+  "hk_only": [
+   [
+    "70010000130458",
+    {
+     "status": "onsale",
+     "reg": 78,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000130476",
+    {
+     "status": "onsale",
+     "reg": 78,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000130482",
+    {
+     "status": "onsale",
+     "reg": 78,
+     "sale": null,
+     "end": ""
+    }
+   ],
+   [
+    "70010000130806",
+    {
+     "status": "onsale",
+     "reg": 157,
+     "sale": 141,
+     "end": "2026-10-21T15:59:59Z"
+    }
+   ],
+   [
+    "70010000130867",
+    {
+     "status": "sales_termination",
+     "reg": null,
+     "sale": null,
+     "end": ""
+    }
+   ]
+  ],
+  "hk_only_n": 5
+ }
+}
