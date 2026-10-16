@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-16 14:05",
+"asof":"2026-10-16 14:42",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -163455,6 +163455,42 @@
 "nodata":true,
 "hk":{
 "reg":39,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000139200":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-16",
+"status":"unreleased",
+"reg":159,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":39,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000139723":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-16",
+"status":"unreleased",
+"reg":90,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":23,
 "sale":null,
 "end":""
 },
