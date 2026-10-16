@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-16 02:43",
+"asof":"2026-10-16 14:05",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -30284,7 +30284,7 @@
 "name":"刀劍神域 碎夢邊境 數位美術書＆數位原聲帶 附迷你遊戲",
 "plat":"HAC",
 "img":"b0af2a6d719b264590145660ee52905eddc23a24e9a886ed84912be21e5fcf40",
-"status":"unreleased",
+"status":"sales_termination",
 "reg":null,
 "sale":null,
 "end":"",
@@ -91398,7 +91398,7 @@
 "name":"永恆傳奇 Remastered 數位美術書＆原聲帶",
 "plat":"HAC",
 "img":"1eb7f039811e4f51edc0f8381538d3c1e2ca5fb198a3d1e3fab63ade71af456d",
-"status":"unreleased",
+"status":"sales_termination",
 "reg":null,
 "sale":null,
 "end":"",
@@ -91466,7 +91466,7 @@
 "name":"永恆傳奇 Remastered 數位美術書＆原聲帶",
 "plat":"BEE",
 "img":"1eb7f039811e4f51edc0f8381538d3c1e2ca5fb198a3d1e3fab63ade71af456d",
-"status":"unreleased",
+"status":"sales_termination",
 "reg":null,
 "sale":null,
 "end":"",
@@ -130192,7 +130192,7 @@
 "name":"Castlevania: Belmont's Curse Digital Sound & Art Gallery",
 "plat":"HAC",
 "img":"2df153418ca69df1f4f3ccb81a95c484348125248030e2d895f38c0055d136d1",
-"status":"unreleased",
+"status":"sales_termination",
 "reg":null,
 "sale":null,
 "end":"",
@@ -147745,7 +147745,7 @@
 "name":"Wild Rose: Broken Compass",
 "plat":"HAC",
 "img":"d7a2ebdd04d9e0499901dfee9b9cb17c2993485946c02b04a4510cde1a9ca2c4",
-"status":"unreleased",
+"status":"sales_termination",
 "reg":null,
 "sale":null,
 "end":"",
@@ -163441,12 +163441,30 @@
 "end":""
 },
 "jp":null
+},
+"70010000140177":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-16",
+"status":"unreleased",
+"reg":158,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":39,
+"sale":null,
+"end":""
+},
+"jp":null
 }
 },
 "fx":{
-"HKD":4.0962,
-"JPY":0.2028,
+"HKD":4.1254,
+"JPY":0.2049,
 "date":"2026-10-16",
-"USD":32.2103
+"USD":32.3604
 }
 }
