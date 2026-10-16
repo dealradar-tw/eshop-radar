@@ -288,6 +288,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .target .tin{font-size:14px;color:var(--muted)}
 .target input{font:inherit;width:8em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .target .cnote{flex-basis:100%;margin:0}
+.only-badge{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#7a4bd1;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px}
 .hk-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--hk,#b4530b);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
 .region h3{font-size:15px;margin:0 0 6px}
 .region table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
@@ -404,6 +405,13 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-p="0" aria-pressed="false">Switch</button>
     <button class="chip" data-p="1" aria-pressed="false">Switch 2</button>
   </div>
+  <div class="chips" id="regs" role="group" aria-label="販售地區">
+    <span class="lbl">地區</span>
+    <button class="chip" data-r="all" aria-pressed="true">全部</button>
+    <button class="chip" data-r="tw" aria-pressed="false">台灣有賣</button>
+    <button class="chip" data-r="jp" aria-pressed="false">日本限定</button>
+    <button class="chip" data-r="hk" aria-pressed="false">港區限定</button>
+  </div>
   <div class="chips" role="group" aria-label="類別">
     <span class="lbl">類別</span>
     <button class="chip" data-k="game" aria-pressed="true">遊戲</button>
@@ -514,6 +522,7 @@ let favs = new Set(store.get("favs", []).map(String));
 let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
+let regF = store.get("regF", "all");
 let favOnly = false, lowOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
 const today = new Date(); today.setHours(0, 0, 0, 0);
 
@@ -543,9 +552,10 @@ function common(o){
   // 其他地區換算台幣後比台區便宜 10% 以上才標示（取最便宜的那區）
   o.cheapRegion = "", o.cheapPct = 0;
   for (const [r, v] of [["港區", o.hkTwd], ["日區", o.jpTwd]]) {
-    const pct = v != null && o.price > 0 && v <= o.price * 0.9 ? Math.round((1 - v / o.price) * 100) : 0;
+    const pct = v != null && o.reg != null && o.price > 0 && v <= o.price * 0.9 ? Math.round((1 - v / o.price) * 100) : 0;
     if (pct > o.cheapPct) { o.cheapPct = pct; o.cheapRegion = r; }
   }
+  if (o.reg == null && o.minTwd != null) o.price = o.minTwd;  // 台灣沒賣：篩選與排序用最便宜地區的換算價
   return o;
 }
 function fromRow(fields, r, extra){
@@ -577,6 +587,7 @@ const zhBadge = g => { const z = zhInfo(g); return z ? `<span class="zh ${z[0]}"
 function badges(g){
   return zhBadge(g) + demoBadge(g) + (g.isDlc ? '<span class="dlc-badge">DLC</span>' : "")
     + (g.s2 ? '<span class="plat">Switch 2 專用</span>' : "")
+    + (g.only ? `<span class="only-badge">${g.only === "jp" ? "日本限定" : "港區限定"}</span>` : "")
     + (g.isLow ? '<span class="low-badge">史低</span>' : "")
     + (g.cheapPct ? `<span class="hk-badge">${g.cheapRegion}便宜 ${g.cheapPct}%</span>` : "")
     + (HOT_IDS.has(g.id) ? '<span class="hot-badge">熱門</span>' : "")
@@ -584,14 +595,15 @@ function badges(g){
 }
 // ── 跨區比價（換算台幣） ──
 function regionBox(g, id){
-  if ((g.hkNow == null && g.jpNow == null) || g.reg == null) return "";
-  const twd = g.price, rows = [
+  if (g.hkNow == null && g.jpNow == null) return "";
+  const twd = g.reg != null ? (g.sale ?? g.reg) : null, rows = [
     {flag: "台灣", cur: "NT$", local: twd, reg: g.reg, sale: g.sale, twd},
     {flag: "香港", cur: "HK$", local: g.hkNow, reg: g.hkReg, sale: g.hkSale, twd: g.hkTwd,
      url: g.isDlc ? "" : `https://ec.nintendo.com/HK/zh/titles/${full(id)}`},
     {flag: "日本", cur: "¥", local: g.jpNow, reg: g.jpReg, sale: g.jpSale, twd: g.jpTwd,
      url: g.jpId ? `https://store-jp.nintendo.com/item/software/D${g.jpId}` : ""},
   ].filter(r => r.local != null).sort((a, b) => (a.twd ?? 1e12) - (b.twd ?? 1e12));  // 換算台幣後最便宜的排最上面
+  if (!rows.length) return "";
   const best = Math.min(...rows.filter(r => r.twd != null).map(r => r.twd));
   return `<div class="region"><h3>各區價格比較</h3><table>
     <thead><tr><th>地區</th><th>當地價格</th><th>約合台幣</th></tr></thead><tbody>
@@ -609,10 +621,13 @@ const FLAG = {
 };
 // 換算台幣後最便宜的地區（平手時優先台灣）
 function cheapest(g){
-  if (g.reg == null || g.reg === 0) return null;
-  let b = {flag: FLAG.tw, cur: "NT$", reg: g.reg, sale: g.sale, now: g.price, twd: g.price, tw: true};
+  if (g.reg === 0) return null;
+  const list = [];
+  if (g.reg != null) list.push({flag: FLAG.tw, cur: "NT$", reg: g.reg, sale: g.sale, now: g.sale ?? g.reg, twd: g.sale ?? g.reg, tw: true});
   for (const [flag, cur, reg, sale, now, twd] of [[FLAG.hk, "HK$", g.hkReg, g.hkSale, g.hkNow, g.hkTwd], [FLAG.jp, "¥", g.jpReg, g.jpSale, g.jpNow, g.jpTwd]])
-    if (now != null && twd != null && b.twd != null && twd < b.twd) b = {flag, cur, reg, sale, now, twd, tw: false};
+    if (now != null && twd != null && reg != null) list.push({flag, cur, reg, sale, now, twd, tw: false});
+  if (!list.length) return null;
+  const b = list.reduce((m, x) => x.twd < m.twd ? x : m);  // 平手時排前面的（台灣）
   const rate = b.tw ? 1 : b.twd / b.now;
   b.regTwd = Math.round(b.reg * rate);
   b.onSale = b.sale != null && b.sale < b.reg;
@@ -623,8 +638,8 @@ function cheapest(g){
 function tagPct(g){ const c = cheapest(g); return c?.onSale ? c.pct : g.dealPct; }
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
-  if (g.reg == null) return '<b class="full" style="font-size:14px">價格未定</b>';
   const c = cheapest(g);
+  if (!c) return '<b class="full" style="font-size:14px">價格未定</b>';
   const loc = c.tw ? "" : `<span class="twd">${c.cur}${nf(c.onSale ? c.sale : c.reg)}</span>`;
   const fl = `${c.flag}`;
   if (c.onSale) return `<s>NT$${nf(c.regTwd)}</s><b>${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
@@ -693,6 +708,7 @@ function filtered(){
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
     (tab === "all" || (tab === "new" ? isRecent(g) : g.dealAny)) &&
     (plat === "all" || +g.s2 === +plat) &&
+    (regF === "all" || (regF === "tw" ? !g.only : g.only === regF)) &&
     inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
     (!demoOnly || g.demo) &&
@@ -717,7 +733,7 @@ function render(){
   $("#pager").hidden = !rows.length;
   const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
-  const m = n + (plat !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
+  const m = n + (plat !== "all" ? 1 : 0) + (regF !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
   $("#fBadge").textContent = m ? ` · ${m}` : "";
   $("#clearF").hidden = !(m || $("#q").value);
 }
@@ -755,6 +771,7 @@ function showTab(t){
 function setChips(){
   $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
   $$("[data-k]").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
+  $$("#regs [data-r]").forEach(b => b.setAttribute("aria-pressed", b.dataset.r === regF));
   $$("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
   $("#prange").hidden = tier !== "custom";
   if (document.activeElement !== $("#pMin")) $("#pMin").value = pMin ?? "";
@@ -767,7 +784,7 @@ function setChips(){
   $("#demoOnly").setAttribute("aria-pressed", demoOnly);
 }
 function clearFilters(){
-  plat = "all"; kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
+  plat = "all"; regF = "all"; store.set("regF", "all"); kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
   $("#q").value = "";
   Object.entries({plat, kind, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
   rerender();
@@ -864,17 +881,20 @@ async function loadChart(id){
   const g = BY.get(id);
   const conv = (data, rate) => (data || []).map(([d, p]) => [d, Math.round(p * rate)]);
   const hasOthers = (h.hk?.length && FX.HKD) || (h.jp?.length && FX.JPY);
-  const series = () => [{data: h.tw, cls: "line-tw", label: "台灣", main: true}].concat(chartOthers ? [
-    h.hk?.length && FX.HKD ? {data: conv(h.hk, FX.HKD), cls: "line-hk", label: "香港"} : null,
-    h.jp?.length && FX.JPY ? {data: conv(h.jp, FX.JPY), cls: "line-jp", label: "日本"} : null] : []).filter(Boolean);
+  const hkS = h.hk?.length && FX.HKD ? {data: conv(h.hk, FX.HKD), cls: "line-hk", label: "香港"} : null;
+  const jpS = h.jp?.length && FX.JPY ? {data: conv(h.jp, FX.JPY), cls: "line-jp", label: "日本"} : null;
+  const noTw = !h.tw?.length;  // 台灣沒賣：第一條線改用有資料的地區（換算台幣）
+  const mainS = noTw ? (jpS || hkS) : {data: h.tw, cls: "line-tw", label: "台灣"};
+  const hasOthers2 = !noTw && hasOthers;
+  const series = () => mainS ? [{...mainS, main: true}].concat(chartOthers && !noTw ? [hkS, jpS].filter(Boolean) : []) : [];
   const draw = () => {
     const days = RANGES.find(r => r[0] === chartRange)[2];
-    const since = h.tw.length ? h.tw[0][0] : "";
+    const since = mainS?.data.length ? mainS.data[0][0] : "";
     box.innerHTML = `<div class="chart-head"><div class="seg">${RANGES.map(([k, t]) =>
         `<button data-range="${k}" aria-pressed="${k === chartRange}">${t}</button>`).join("")}</div></div>
-      ${h.tw.length ? chartSVG(series(), g, days) + chartStats(h.tw, g) : '<p class="cnote">還沒有價格紀錄。</p>'}
-      ${hasOthers ? `<label class="others"><input type="checkbox" id="chartOthers" ${chartOthers ? "checked" : ""}> 一起顯示港區／日區（以今天匯率換算台幣）</label>` : ""}
-      ${h.tw.length === 1 ? '<p class="cnote">開始記錄以來價格沒有變動過。</p>' : ""}
+      ${mainS?.data.length ? chartSVG(series(), g, days) + chartStats(mainS.data, g) + (noTw ? `<p class="cnote">台灣沒有販售，圖中是${mainS.label}區價格（以今天匯率換算成台幣）。</p>` : "") : '<p class="cnote">還沒有價格紀錄。</p>'}
+      ${hasOthers2 ? `<label class="others"><input type="checkbox" id="chartOthers" ${chartOthers ? "checked" : ""}> 一起顯示港區／日區（以今天匯率換算台幣）</label>` : ""}
+      ${mainS?.data.length === 1 ? '<p class="cnote">開始記錄以來價格沒有變動過。</p>' : ""}
       <p class="cnote">${since ? `從 ${since} 開始記錄，資料會每天累積。` : ""}</p>`;
   };
   box._redraw = draw;
@@ -896,20 +916,21 @@ async function openDetail(id, fromHistory){
   const ch = cheapest(g);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
     : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b>${ch.flag}<small>NT$</small>${nf(ch.twd)}</b></div>
-       <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}　·　台灣 NT$${nf(g.price)}</div>`
+       <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}　·　${g.reg != null ? `台灣 NT$${nf(g.sale ?? g.reg)}` : "台灣沒有販售"}</div>`
     : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b>${FLAG.tw}<small>NT$</small>${nf(g.sale)}</b></div>
        <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}${g.isLow ? "　<b style='color:#178a4c;font-size:13px'>目前是史低價</b>" : ""}</div>`
     : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"
     : `<b>${FLAG.tw}<small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
   const rows = [
     ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
+    g.only && ["販售地區", g.only === "jp" ? "只有日本區商店有賣（台灣、香港都沒有）" : "台灣沒有，只有港區商店有賣"],
     parent && ["本體", `<button class="parent-link" data-open="${parent.id}">${esc(parent.name || "名稱待補")}</button>`],
     g.isDlc && g.membersOnly && ["條件", "需加入 Nintendo Switch Online"],
     det.publisher && ["發行商", esc(det.publisher)],
     det.release && ["發售日", esc(det.release)],
     det.genres?.length && ["類型", esc(det.genres.join("、"))],
     det.players && ["遊玩人數", esc(det.players)],
-    det.langs?.length && ["語言", det.langs.map(l => /中文/.test(l) ? `<b>${esc(l)}</b>` : esc(l)).join("、")],
+    det.langs?.length && ["語言", det.langs.map(l => /中文|中国語/.test(l) ? `<b>${esc(l)}</b>` : esc(l)).join("、")],
     det.modes?.length && ["遊玩模式", esc(det.modes.join("、"))],
     det.size && ["容量", esc(det.size)],
     !g.isDlc && g.hasDetail && ["體驗版", g.demo ? "<b>有</b>，可在主機的 eShop 免費下載試玩" : "沒有"],
@@ -1045,6 +1066,8 @@ document.addEventListener("click", e => {
   if (tb) { showTab(tb.dataset.tab); return; }
   const p = t.closest(".plats [data-p]");
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
+  const rg2 = t.closest("#regs [data-r]");
+  if (rg2) { regF = rg2.dataset.r; store.set("regF", regF); rerender(); return; }
   const k = t.closest("[data-k]");
   if (k) { kind = k.dataset.k; store.set("kind", kind); rerender(); return; }
   const ti = t.closest("#tiers [data-t]");

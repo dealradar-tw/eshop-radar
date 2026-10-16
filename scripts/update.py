@@ -899,7 +899,8 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
     os.makedirs(hdir, exist_ok=True)
     changed = 0
     hist_jp = hist_jp or {}
-    for nsuid in set(hist) | set(hist_hk):
+    jp_only = {n for n, g in games.items() if g.get("only") == "jp" and hist_jp.get(n)}
+    for nsuid in set(hist) | set(hist_hk) | jp_only:
         obj = {"tw": hist.get(nsuid, []), "hk": hist_hk.get(nsuid, [])}
         jid = (games.get(nsuid) or {}).get("jpId")
         if jid and hist_jp.get(jid):
