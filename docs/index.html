@@ -35,9 +35,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
-.stats div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.stats .st{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:left;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.stats .st[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 @media (max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.stats div{display:flex;flex-direction:column}
+.stats .st{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
 .bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px));z-index:5;background:var(--bg);padding-block:14px 10px;margin-top:18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
@@ -162,8 +163,7 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
   .bar{padding-block:8px;gap:8px}
   /* 手機：第一行搜尋框（整行），第二行 排序／收藏／篩選 */
   .row1{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px}
-  .row1 input[type=search]{grid-column:1/3;width:100%;min-width:0;padding:8px 10px}
-  .row1 .lowbtn{grid-column:3}
+  .row1 input[type=search]{grid-column:1/-1;width:100%;min-width:0;padding:8px 10px}
   .row1 select{min-width:0;max-width:none;width:100%;padding:8px 6px}
   .row1 .favonly,.row1 .ftoggle{padding:8px 12px;white-space:nowrap}
   .ftoggle{display:inline-block;flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 10px}
@@ -376,10 +376,10 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <h1>特價雷達</h1>
   <p>Nintendo eShop 特價與價格追蹤。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
   <div class="stats">
-    <div><b id="sTotal">–</b><span>件特價中</span></div>
-    <div><b id="sDeep">–</b><span>件 5 折以下</span></div>
-    <div><b id="sLow">–</b><span>件史低價</span></div>
-    <div><b id="sSoon">–</b><span>件 3 天內結束</span></div>
+    <button class="st" data-view="deals" aria-pressed="false"><b id="sTotal">–</b><span>件特價中</span></button>
+    <button class="st" data-view="all" aria-pressed="false"><b id="sAll">–</b><span>件全部遊戲</span></button>
+    <button class="st" data-view="low" aria-pressed="false"><b id="sLow">–</b><span>件歷史新低</span></button>
+    <button class="st" data-view="soon" aria-pressed="false"><b id="sSoon">–</b><span>件 3 天內結束</span></button>
   </div>
 </header>
 
@@ -388,14 +388,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   <button class="tab" role="tab" data-tab="deals" aria-selected="true">特價中</button>
   <button class="tab" role="tab" data-tab="hot" aria-selected="false">熱門排行</button>
   <button class="tab" role="tab" data-tab="new" aria-selected="false">近期發售</button>
-  <button class="tab" role="tab" data-tab="all" aria-selected="false">全部遊戲</button>
 </nav>
 
 <section id="pList">
 <div class="bar">
   <div class="row1">
     <input id="q" type="search" placeholder="搜尋遊戲名稱" aria-label="搜尋遊戲名稱">
-    <button class="chip lowbtn" id="lowOnly" aria-pressed="false" title="只看歷史新低價">歷史新低</button>
     <select id="sort" aria-label="排序方式"></select>
     <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏"><svg class="ico-star on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg> 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge"></span> ▾</button>
@@ -526,7 +524,7 @@ let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
 let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
 let regF = store.get("regF", "all");
-let favOnly = false, lowOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
+let favOnly = false, lowOnly = false, soonOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
 const today = new Date(); today.setHours(0, 0, 0, 0);
 
 function daysLeft(end){
@@ -714,6 +712,7 @@ function filtered(){
     (regF === "all" || (regF === "tw" ? !g.only : g.only === regF)) &&
     inTier(g) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
+    (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
     (!demoOnly || g.demo) &&
     (!favOnly || favs.has(g.id)) &&
     (!q || (g.name || "").toLowerCase().includes(q) || tagsOf(g.id).some(t => t.toLowerCase().includes(q))
@@ -736,7 +735,7 @@ function render(){
   $("#pager").hidden = !rows.length;
   const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
-  const m = n + (plat !== "all" ? 1 : 0) + (regF !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
+  const m = n + (plat !== "all" ? 1 : 0) + (regF !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (soonOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
   $("#fBadge").textContent = m ? ` · ${m}` : "";
   $("#clearF").hidden = !(m || $("#q").value);
 }
@@ -760,6 +759,11 @@ function setSortOptions(){
   $("#sort").innerHTML = SORTS[key].map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
   $("#sort").value = SORTS[key].some(([v]) => v === saved) ? saved : SORTS[key][0][0];
 }
+// 上方四個數字：點了就切到對應的清單
+function setStatActive(){
+  const cur = tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
+  $$(".stats .st").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === cur));
+}
 function showTab(t){
   // 切換分頁時，若已經捲到下面，就回到分頁列的位置（不用一路滑回頂端）
   const tabsTop = $("#tabsAnchor").getBoundingClientRect().top + window.scrollY + 22;
@@ -770,6 +774,7 @@ function showTab(t){
   $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : "搜尋特價遊戲名稱";
   page = 1;
   if (t === "hot") renderHot(); else { setSortOptions(); render(); }
+  setStatActive();
 }
 function setChips(){
   $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
@@ -783,11 +788,11 @@ function setChips(){
   $$("#fPl [data-pl]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.pl === plF));
   $$("#fGenre [data-g]").forEach(b => b.setAttribute("aria-pressed", genresF.has(b.dataset.g)));
   $("#favOnly").setAttribute("aria-pressed", favOnly);
-  $("#lowOnly").setAttribute("aria-pressed", lowOnly);
+  setStatActive();
   $("#demoOnly").setAttribute("aria-pressed", demoOnly);
 }
 function clearFilters(){
-  plat = "all"; regF = "all"; store.set("regF", "all"); kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
+  plat = "all"; regF = "all"; store.set("regF", "all"); kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; soonOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
   $("#q").value = "";
   Object.entries({plat, kind, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
   rerender();
@@ -1066,7 +1071,17 @@ document.addEventListener("click", e => {
   const f = t.closest("[data-fav]");
   if (f) { toggleFav(f.dataset.fav); f.innerHTML = favLabel(favs.has(f.dataset.fav)); f.setAttribute("aria-pressed", favs.has(f.dataset.fav)); if (favOnly) render(); return; }
   const tb = t.closest(".tab");
-  if (tb) { showTab(tb.dataset.tab); return; }
+  if (tb) { lowOnly = soonOnly = false; showTab(tb.dataset.tab); return; }
+  const sv = t.closest(".stats [data-view]");
+  if (sv) {
+    const w = sv.dataset.view;
+    clearFilters();  // 先清掉其他篩選，清單數量才會跟上面的數字一致
+    lowOnly = w === "low"; soonOnly = w === "soon";
+    showTab(w === "all" ? "all" : "deals");
+    if (w === "soon") { $("#sort").value = "end"; render(); }
+    setChips();
+    return;
+  }
   const p = t.closest(".plats [data-p]");
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
   const rg2 = t.closest("#regs [data-r]");
@@ -1087,7 +1102,6 @@ document.addEventListener("click", e => {
   if (t.id === "clearF") { clearFilters(); return; }
   if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
   if (t.id === "favOnly") { favOnly = !favOnly; rerender(); return; }
-  if (t.id === "lowOnly") { lowOnly = !lowOnly; rerender(); return; }
   const pg = t.closest("[data-pg]");
   if (pg && !pg.disabled) { goPage(+pg.dataset.pg); return; }
   if (t.id === "copyFav") {
@@ -1152,9 +1166,10 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     HOT = hot;
     HOT_IDS = new Set([...hot.s2, ...hot.sw].map(h => h.id.slice(-6)));
     $("#asof").textContent = ASOF;
-    const deals = games.filter(g => g.dealAny);
+    const named = games.filter(g => g.name);  // 還查不到名稱的不算
+    const deals = named.filter(g => g.dealAny);
     $("#sTotal").textContent = nf(deals.length);
-    $("#sDeep").textContent = nf(deals.filter(g => g.dealPct >= 50).length);
+    $("#sAll").textContent = nf(named.length);
     $("#sLow").textContent = nf(deals.filter(g => g.isLow).length);
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
     buildGenreChips();
