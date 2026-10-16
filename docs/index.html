@@ -254,7 +254,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .buyform label,.note-lbl{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
 .buyform input,.buyform select,.note-lbl textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px;width:100%}
 .buyform .save{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;padding:9px}
-#visits{display:inline-block;margin-top:6px}
+#visits{white-space:nowrap}
 .zh-line{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .title-row{display:flex;align-items:flex-start;gap:10px}
 .title-row h2{flex:1;min-width:0}
@@ -349,7 +349,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
   </div>
   <h1>台區特價雷達</h1>
-  <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time></p>
+  <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
   <div class="stats">
     <div><b id="sTotal">–</b><span>件特價中</span></div>
     <div><b id="sDeep">–</b><span>件 5 折以下</span></div>
@@ -472,8 +472,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
-  收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
-  <span id="visits"></span>
+  收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。
 </footer>
 </div>
 
@@ -1338,7 +1337,7 @@ $("#mineFile").addEventListener("change", async e => {
   try {
     const r = await fetch(`${base}/${first ? "hit" : "get"}/eshop-radar-jackie/visits`);
     const d = await r.json();
-    if (d.value != null) $("#visits").textContent = `累計瀏覽 ${nf(d.value)} 次`;
+    if (d.value != null) $("#visits").textContent = ` · 累計瀏覽 ${nf(d.value)} 次`;
   } catch (e) {}
 })();
 </script>
