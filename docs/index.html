@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#151a21">
-<title>台區特價雷達</title>
+<title>特價雷達</title>
 <script>try{var t=JSON.parse(localStorage.getItem("theme"));if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -361,8 +361,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip mine-btn" id="openMine">我的收藏</button>
     <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
   </div>
-  <h1>台區特價雷達</h1>
-  <p>台灣區 eShop 的特價與價格追蹤，價格為新台幣。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
+  <h1>特價雷達</h1>
+  <p>Nintendo eShop 特價與價格追蹤。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
   <div class="stats">
     <div><b id="sTotal">–</b><span>件特價中</span></div>
     <div><b id="sDeep">–</b><span>件 5 折以下</span></div>
@@ -575,7 +575,7 @@ function regionBox(g, id){
      url: g.isDlc ? "" : `https://ec.nintendo.com/HK/zh/titles/${full(id)}`},
     {flag: "日本", cur: "¥", local: g.jpNow, reg: g.jpReg, sale: g.jpSale, twd: g.jpTwd,
      url: g.jpId ? `https://store-jp.nintendo.com/item/software/D${g.jpId}` : ""},
-  ].filter(r => r.local != null);
+  ].filter(r => r.local != null).sort((a, b) => (a.twd ?? 1e12) - (b.twd ?? 1e12));  // 換算台幣後最便宜的排最上面
   const best = Math.min(...rows.filter(r => r.twd != null).map(r => r.twd));
   return `<div class="region"><h3>各區價格比較</h3><table>
     <thead><tr><th>地區</th><th>當地價格</th><th>約合台幣</th></tr></thead><tbody>
@@ -1147,7 +1147,8 @@ function renderLows(h, g){
   const box = $("#lowBox"); if (!box) return;
   const low = (arr) => { if (!arr?.length) return null; let b = arr[0]; for (const x of arr) if (x[1] < b[1] || (x[1] === b[1] && x[0] > b[0])) b = x; return b; };
   const rows = [["台灣", "NT$", low(h.tw), 1], ["香港", "HK$", low(h.hk), FX.HKD], ["日本", "¥", low(h.jp), FX.JPY]]
-    .filter(r => r[2] && r[3]).map(([n, c, [d, p], rate]) => ({n, c, d, p, twd: Math.round(p * rate)}));
+    .filter(r => r[2] && r[3]).map(([n, c, [d, p], rate]) => ({n, c, d, p, twd: Math.round(p * rate)}))
+    .sort((a, b) => a.twd - b.twd);  // 最便宜的排最上面
   if (!rows.length) { box.innerHTML = ""; return; }
   const best = Math.min(...rows.map(r => r.twd));
   box.innerHTML = `<h3>各區史低</h3><table><tbody>${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>

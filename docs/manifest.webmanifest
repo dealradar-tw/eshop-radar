@@ -1,7 +1,7 @@
 {
-  "name": "台區特價雷達",
+  "name": "特價雷達",
   "short_name": "特價雷達",
-  "description": "台灣區 Nintendo eShop 特價與價格追蹤",
+  "description": "Nintendo eShop 特價與價格追蹤",
   "lang": "zh-Hant-TW",
   "id": "./",
   "start_url": "./",
