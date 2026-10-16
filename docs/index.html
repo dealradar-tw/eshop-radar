@@ -36,7 +36,8 @@ header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
 .stats .st{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:left;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.stats .st[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.stats .st[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.stats .st[aria-pressed="true"] span{color:var(--bg);opacity:.8}
 @media (max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .stats .st{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
@@ -162,10 +163,10 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 @media (max-width:600px){
   .bar{padding-block:8px;gap:8px}
   /* 手機：第一行搜尋框（整行），第二行 排序／收藏／篩選 */
-  .row1{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px}
+  .row1{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
   .row1 input[type=search]{grid-column:1/-1;width:100%;min-width:0;padding:8px 10px}
   .row1 select{min-width:0;max-width:none;width:100%;padding:8px 6px}
-  .row1 .favonly,.row1 .ftoggle{padding:8px 12px;white-space:nowrap}
+  .row1 .favonly,.row1 .ftoggle{padding:8px 6px;white-space:nowrap;text-align:center;display:flex;align-items:center;justify-content:center;gap:2px}
   .ftoggle{display:inline-block;flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 10px}
   .fpanel:not(.open){display:none}
   .fpanel.open{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,0px) + var(--bar-h,0px));z-index:5;background:var(--bg);max-height:calc(100dvh - var(--tabs-h,0px) - var(--bar-h,0px));overflow-y:auto;padding-top:0}
@@ -282,6 +283,10 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .lowbtn{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:8px 12px;font-weight:700}
 .lowbtn[aria-pressed="true"]{background:#178a4c;border-color:#178a4c;color:#fff}
 .demo-chip[aria-pressed="true"]{background:#0e7490;border-color:#0e7490;color:#fff}
+.favonly .ico-star{width:1.7em;height:1.7em;margin-right:4px}
+.fb{display:inline-block;min-width:1.5em;margin:0 4px;padding:0 6px;border-radius:999px;background:var(--line);color:var(--ink);font-size:12px;font-weight:700;line-height:1.5;text-align:center}
+.fb.on{background:var(--tag);color:#1a1a1a}
+.ftoggle[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .favonly{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 12px}
 .hdr-btns{float:right;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:6px 0 0 8px}
 .theme-btn{white-space:nowrap}
@@ -396,7 +401,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <input id="q" type="search" placeholder="搜尋遊戲名稱" aria-label="搜尋遊戲名稱">
     <select id="sort" aria-label="排序方式"></select>
     <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏"><svg class="ico-star on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg> 收藏</button>
-    <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge"></span> ▾</button>
+    <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge" class="fb">0</span><span class="arr">▾</span></button>
   </div>
 </div>
 <div class="fpanel">
@@ -736,7 +741,7 @@ function render(){
   const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
   const m = n + (plat !== "all" ? 1 : 0) + (regF !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (soonOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
-  $("#fBadge").textContent = m ? ` · ${m}` : "";
+  $("#fBadge").textContent = m; $("#fBadge").classList.toggle("on", m > 0);
   $("#clearF").hidden = !(m || $("#q").value);
 }
 function renderHot(){
@@ -1097,7 +1102,7 @@ document.addEventListener("click", e => {
   const ge = t.closest("[data-g]");
   if (ge) { const x = ge.dataset.g; genresF.has(x) ? genresF.delete(x) : genresF.add(x); store.set("genres", [...genresF]); rerender(); return; }
   const ft = t.closest("#fToggle");
-  if (ft) { const open = $(".fpanel").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? " ▴" : " ▾"; return; }
+  if (ft) { const open = $(".fpanel").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? "▴" : "▾"; return; }
   if (t.id === "demoOnly") { demoOnly = !demoOnly; store.set("demoOnly", demoOnly); rerender(); return; }
   if (t.id === "clearF") { clearFilters(); return; }
   if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
