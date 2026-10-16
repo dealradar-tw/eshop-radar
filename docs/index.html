@@ -128,6 +128,7 @@ li{display:grid;grid-template-columns:168px minmax(0,1fr) auto 40px;align-items:
 .price{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .price s{display:block;font-size:12px;color:var(--muted)}
 .price b{font-family:var(--display);font-size:20px;font-weight:800}
+.price .twd{display:block;font-size:11px;color:var(--muted)}
 .price b small{font-family:var(--body);font-size:11px;font-weight:500;margin-right:2px;color:var(--muted)}
 /* 收藏星號：圓形按鈕，未收藏是灰框灰星，已收藏是黃底 */
 /* 收藏星號：沒有外圈，未收藏是空心星（粗框），收藏後是亮黃實心星（粗框） */
@@ -178,6 +179,7 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
   .star svg,.buy svg{width:27px;height:27px}
   .price{grid-column:2/4;grid-row:2;text-align:left;display:flex;gap:8px;align-items:baseline}
   .price s{display:inline}
+  .price .twd{display:inline}
   .price b{font-size:18px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -305,7 +307,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 /* 價格走勢圖 */
 .chart{display:flex;flex-direction:column;gap:8px}
 .chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.chart-head h3{font-size:15px;margin:0}
+.fold{margin:14px 0 0;border-top:1px solid var(--line);padding-top:10px}
+.fold>summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none;display:flex;align-items:center;gap:6px;padding:4px 0}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸";display:inline-block;transition:transform .15s}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold>.chart{margin-top:8px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .seg button{font:inherit;font-size:12px;border:0;background:var(--surface);color:var(--muted);padding:4px 10px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
@@ -586,11 +593,23 @@ function regionBox(g, id){
     </tbody></table>
     <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣、1 日圓 ≈ ${FX.JPY} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。日本區只對應遊戲本體，DLC 暫不比較。實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
 }
+// 換算台幣後最便宜的地區（平手時優先台灣）
+function cheapest(g){
+  if (g.reg == null || g.reg === 0) return null;
+  let b = {flag: "🇹🇼", cur: "NT$", reg: g.reg, sale: g.sale, now: g.price, twd: g.price, tw: true};
+  for (const [flag, cur, reg, sale, now, twd] of [["🇭🇰", "HK$", g.hkReg, g.hkSale, g.hkNow, g.hkTwd], ["🇯🇵", "¥", g.jpReg, g.jpSale, g.jpNow, g.jpTwd]])
+    if (now != null && twd != null && b.twd != null && twd < b.twd) b = {flag, cur, reg, sale, now, twd, tw: false};
+  b.onSale = b.sale != null && b.sale < b.reg;
+  b.pct = b.onSale ? Math.round((1 - b.sale / b.reg) * 100) : 0;
+  return b;
+}
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
   if (g.reg == null) return '<b class="full" style="font-size:14px">價格未定</b>';
-  if (g.onSale) return `<s>NT$${nf(g.reg)}</s><b><small>NT$</small>${nf(g.sale)}</b>`;
-  return `<b class="full"><small>NT$</small>${nf(g.reg)}</b>`;
+  const c = cheapest(g);
+  const twd = c.tw ? "" : `<span class="twd">約 NT$${nf(c.twd)}</span>`;
+  if (c.onSale) return `<s>${c.cur}${nf(c.reg)}</s><b><small>${c.flag} ${c.cur}</small>${nf(c.sale)}</b>${twd}`;
+  return `<b class="full"><small>${c.flag} ${c.cur}</small>${nf(c.reg)}</b>${twd}`;
 }
 function metaLine(g){
   const tg = tagsOf(g.id);
@@ -833,7 +852,7 @@ async function loadChart(id){
   const draw = () => {
     const days = RANGES.find(r => r[0] === chartRange)[2];
     const since = h.tw.length ? h.tw[0][0] : "";
-    box.innerHTML = `<div class="chart-head"><h3>價格走勢</h3><div class="seg">${RANGES.map(([k, t]) =>
+    box.innerHTML = `<div class="chart-head"><div class="seg">${RANGES.map(([k, t]) =>
         `<button data-range="${k}" aria-pressed="${k === chartRange}">${t}</button>`).join("")}</div></div>
       ${h.tw.length ? chartSVG(series(), g, days) + chartStats(h.tw, g) : '<p class="cnote">還沒有價格紀錄。</p>'}
       ${hasOthers ? `<label class="others"><input type="checkbox" id="chartOthers" ${chartOthers ? "checked" : ""}> 一起顯示港區／日區（以今天匯率換算台幣）</label>` : ""}
@@ -856,11 +875,14 @@ async function openDetail(id, fromHistory){
   let det = {};
   if (!g.isDlc && g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
   const hot = [...HOT.s2.map(h => [h, "Switch 2"]), ...HOT.sw.map(h => [h, "Switch"])].find(([h]) => h.id.slice(-6) === id);
+  const ch = cheapest(g);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
-    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b><small>NT$</small>${nf(g.sale)}</b></div>
+    : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>${ch.cur}${nf(ch.reg)}</s><br>` : ""}<b><small>${ch.flag} ${ch.cur}</small>${nf(ch.onSale ? ch.sale : ch.reg)}</b></div>
+       <div class="when">${ch.flag} 最便宜地區，約 NT$${nf(ch.twd)}　·　台灣 NT$${nf(g.price)}</div>`
+    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b><small>🇹🇼 NT$</small>${nf(g.sale)}</b></div>
        <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}${g.isLow ? "　<b style='color:#178a4c;font-size:13px'>目前是史低價</b>" : ""}</div>`
     : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"
-    : `<b><small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
+    : `<b><small>🇹🇼 NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
   const rows = [
     ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
     parent && ["本體", `<button class="parent-link" data-open="${parent.id}">${esc(parent.name || "名稱待補")}</button>`],
@@ -890,8 +912,8 @@ async function openDetail(id, fromHistory){
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
-        <div class="chart" id="chart"></div>
         ${regionBox(g, id)}
+        <details class="fold" id="chartFold"><summary>價格走勢</summary><div class="chart" id="chart"></div></details>
         <div class="lows" id="lowBox"></div>
         <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
         ${det.catch ? `<p class="catch">${esc(det.catch)}</p>` : ""}
