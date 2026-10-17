@@ -51,6 +51,9 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .row1{display:flex;gap:8px;flex-wrap:wrap}
 input[type=search],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;min-width:0}
 input[type=search]{flex:1 1 220px}
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin:0 -2px 0 6px;cursor:pointer;border-radius:50%;
+  background:var(--muted) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7L7 17'/%3E%3C/svg%3E") center/16px no-repeat;opacity:.75}
+input[type=search]::-webkit-search-cancel-button:hover{opacity:1}
 select{flex:0 0 auto}
 input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
