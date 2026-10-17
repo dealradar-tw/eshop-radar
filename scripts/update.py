@@ -574,51 +574,153 @@ def norm_title(t):
     return re.sub(r"[\W_]+", "", t)
 
 
+# 知名系列的台灣慣用中文名（人工整理）。遊戲名稱「開頭」是這些系列名時，把系列名換成中文、其餘照留。
+SERIES_ZH = [
+    (["Resident Evil", "BIOHAZARD", "バイオハザード"], "惡靈古堡"),
+    (["Monster Hunter", "モンスターハンター"], "魔物獵人"),
+    (["Fire Emblem", "ファイアーエムブレム"], "聖火降魔錄"),
+    (["The Legend of Zelda", "Zelda", "ゼルダの伝説"], "薩爾達傳說"),
+    (["Super Mario Bros. Wonder", "スーパーマリオブラザーズ ワンダー"], "超級瑪利歐兄弟 驚奇"),
+    (["Super Mario Bros.", "スーパーマリオブラザーズ"], "超級瑪利歐兄弟"),
+    (["Super Mario Odyssey", "スーパーマリオ オデッセイ"], "超級瑪利歐 奧德賽"),
+    (["Super Mario Party", "スーパー マリオパーティ", "スーパーマリオパーティ"], "超級瑪利歐派對"),
+    (["Super Mario", "スーパーマリオ"], "超級瑪利歐"),
+    (["Mario Kart World", "マリオカート ワールド"], "瑪利歐賽車 世界"),
+    (["Mario Kart", "マリオカート"], "瑪利歐賽車"),
+    (["Mario Party", "マリオパーティ"], "瑪利歐派對"),
+    (["Paper Mario", "ペーパーマリオ"], "紙片瑪利歐"),
+    (["Luigi's Mansion", "ルイージマンション"], "路易吉洋樓"),
+    (["Pokémon", "Pokemon", "ポケットモンスター", "ポケモン"], "寶可夢"),
+    (["Animal Crossing", "あつまれ どうぶつの森", "どうぶつの森"], "動物森友會"),
+    (["Splatoon", "スプラトゥーン"], "斯普拉遁"),
+    (["Kirby", "星のカービィ"], "星之卡比"),
+    (["Donkey Kong", "ドンキーコング"], "咚奇剛"),
+    (["Super Smash Bros.", "大乱闘スマッシュブラザーズ"], "任天堂明星大亂鬥"),
+    (["Pikmin", "ピクミン"], "皮克敏"),
+    (["Xenoblade Chronicles", "ゼノブレイド"], "異度神劍"),
+    (["Metroid", "メトロイド"], "銀河戰士"),
+    (["Final Fantasy", "ファイナルファンタジー"], "最終幻想"),
+    (["Dragon Quest Monsters", "ドラゴンクエストモンスターズ"], "勇者鬥惡龍 怪獸篇"),
+    (["Dragon Quest Builders", "ドラゴンクエストビルダーズ"], "勇者鬥惡龍 創世小玩家"),
+    (["Dragon Quest Treasures", "ドラゴンクエストトレジャーズ"], "勇者鬥惡龍 尋寶探險團"),
+    (["Dragon Quest Heroes", "ドラゴンクエストヒーローズ"], "勇者鬥惡龍 英雄集結"),
+    (["Dragon Quest", "ドラゴンクエスト"], "勇者鬥惡龍"),
+    (["Persona 3", "ペルソナ3"], "女神異聞錄3"),
+    (["Persona 4", "ペルソナ4"], "女神異聞錄4"),
+    (["Persona 5", "ペルソナ5"], "女神異聞錄5"),
+    (["Persona Q", "ペルソナQ"], "女神異聞錄Q"),
+    (["Shin Megami Tensei", "真・女神転生"], "真・女神轉生"),
+    (["Dragon Ball", "ドラゴンボール"], "七龍珠"),
+    (["One Piece", "ONE PIECE", "ワンピース"], "航海王"),
+    (["NARUTO－ナルト－ 疾風伝", "NARUTO SHIPPUDEN", "NARUTO: Ultimate Ninja STORM"], "火影忍者 疾風傳"),
+    (["Naruto", "NARUTO", "ナルト"], "火影忍者"),
+    (["Street Fighter", "ストリートファイター"], "快打旋風"),
+    (["Tekken", "鉄拳"], "鐵拳"),
+    (["Kingdom Hearts", "キングダム ハーツ", "キングダムハーツ"], "王國之心"),
+    (["Metal Gear Solid", "メタルギア ソリッド", "メタルギアソリッド"], "潛龍諜影"),
+    (["Metal Gear", "メタルギア"], "潛龍諜影"),
+    (["Devil May Cry", "デビル メイ クライ"], "惡魔獵人"),
+    (["Dark Souls", "DARK SOULS", "ダークソウル"], "黑暗靈魂"),
+    (["Elden Ring", "ELDEN RING", "エルデンリング"], "艾爾登法環"),
+    (["Minecraft", "マインクラフト"], "我的世界"),
+    (["Ace Attorney", "逆転裁判"], "逆轉裁判"),
+    (["Professor Layton", "レイトン教授"], "雷頓教授"),
+    (["Bayonetta", "ベヨネッタ"], "魔兵驚天錄"),
+    (["Octopath Traveler", "OCTOPATH TRAVELER", "オクトパストラベラー"], "歧路旅人"),
+    (["Bravely Default", "ブレイブリーデフォルト"], "勇氣默示錄"),
+    (["Disgaea", "魔界戦記ディスガイア"], "魔界戰記"),
+    (["Yo-kai Watch", "妖怪ウォッチ"], "妖怪手錶"),
+    (["Digimon", "デジモン"], "數碼寶貝"),
+    (["Hatsune Miku", "初音ミク"], "初音未來"),
+    (["Nobunaga's Ambition", "信長の野望"], "信長之野望"),
+    (["Castlevania", "悪魔城ドラキュラ"], "惡魔城"),
+    (["Gundam", "ガンダム"], "鋼彈"),
+    (["Sword Art Online", "ソードアート・オンライン"], "刀劍神域"),
+    (["Attack on Titan", "進撃の巨人"], "進擊的巨人"),
+    (["Demon Slayer", "鬼滅の刃"], "鬼滅之刃"),
+    (["My Hero Academia", "僕のヒーローアカデミア"], "我的英雄學院"),
+    (["Puyo Puyo", "ぷよぷよ"], "魔法氣泡"),
+]
+EDITION_ZH = [(r"Deluxe Edition|デラックスエディション|\\bDeluxe\\b", "豪華版"), (r"Gold Edition|ゴールドエディション", "黃金版"),
+              (r"Ultimate Edition|アルティメットエディション", "終極版"), (r"Complete Edition|コンプリートエディション", "完全版"),
+              (r"Definitive Edition", "決定版"), (r"Standard Edition", "標準版"), (r"Collector'?s Edition", "典藏版"),
+              (r"ナルティメットストーム|Ultimate Ninja Storm", "終極風暴")]
+_SERIES = sorted(((a, zh) for al, zh in SERIES_ZH for a in al), key=lambda x: -len(x[0]))
+
+
+def series_zh(name):
+    """依系列名稱規則取得中文名；對不上回傳空字串。系列名必須在最前面，且後面不能緊接英文字母。"""
+    nm = re.sub(r"[™®©]", "", name or "").strip()
+    low = unicodedata.normalize("NFKC", nm).lower()
+    for al, zh in _SERIES:
+        a = unicodedata.normalize("NFKC", al).lower()
+        if low.startswith(a) and not re.match(r"[a-z]", low[len(a):len(a) + 1]):
+            rest = unicodedata.normalize("NFKC", nm)[len(a):].strip(" 　:：-－–—･・")
+            for pat, rep in EDITION_ZH:
+                rest = re.sub(pat, rep, rest, flags=re.I)
+            return (zh + (" " + rest if rest else "")).strip()
+    return ""
+
+
 def refresh_zhnames(games):
-    """中文名稱：商店名稱是英文或日文的遊戲，用維基數據（Wikidata）裡 Switch 遊戲的中文標題對照補上。
-    只做名稱完全對得上（英文或日文原名）的；每週更新一次，失敗就沿用上次。"""
+    """中文名稱：商店名稱是英文或日文的遊戲，優先用維基數據（Wikidata）裡 Switch 遊戲的中文標題（原名完全對得上才用），
+    對不上再用知名系列名稱規則（SERIES_ZH）。維基數據每週更新一次，失敗就沿用上次。"""
     path = os.path.join(DOCS, "zhnames.json")
     today = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
     old = {}
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             old = json.load(f)
-    if old.get("asof") and (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(old["asof"], "%Y-%m-%d")).days < 6:
-        return
-    try:
-        url = WD_ENDPOINT + "?format=json&query=" + urllib.parse.quote(WD_QUERY)
-        req = urllib.request.Request(url, headers={"User-Agent": "eshop-radar/1.0 (github.com/jackie-1002/eshop-radar)",
-                                                   "Accept": "application/sparql-results+json"})
-        with urllib.request.urlopen(req, timeout=180) as r:
-            rows = json.loads(r.read().decode("utf-8"))["results"]["bindings"]
-    except Exception as e:
-        log(f"  中文名稱（維基數據）抓取失敗，沿用上次：{e}")
-        return
-    table = {}  # 原名（正規化）→ (優先序, 中文名)
-    for b in rows:
-        zh = re.sub(r"\s*[（(](?:遊戲|游戏|電子遊戲|电子游戏|視頻遊戲|视频游戏|電玩遊戲)[)）]\s*$", "", b["zh"]["value"].strip())
-        if not HAN.search(zh):
-            continue
-        pri = WD_PRI.get(b["zhl"]["value"], 9)
-        for k in ("en", "ja"):
-            if k in b:
-                key = norm_title(b[k]["value"])
-                if len(key) >= 3 and (key not in table or pri < table[key][0]):
-                    table[key] = (pri, zh)
-    out = {}
+    wd = old.get("wd") or old.get("n") or {}
+    asof = old.get("asof") or today
+    fresh = old.get("asof") and (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(old["asof"], "%Y-%m-%d")).days < 6
+    table = None
+    if not fresh:
+        try:
+            url = WD_ENDPOINT + "?format=json&query=" + urllib.parse.quote(WD_QUERY)
+            req = urllib.request.Request(url, headers={"User-Agent": "eshop-radar/1.0 (github.com/jackie-1002/eshop-radar)",
+                                                       "Accept": "application/sparql-results+json"})
+            with urllib.request.urlopen(req, timeout=180) as r:
+                rows = json.loads(r.read().decode("utf-8"))["results"]["bindings"]
+            table = {}  # 原名（正規化）→ (優先序, 中文名)
+            for b in rows:
+                zh = re.sub(r"\s*[（(](?:遊戲|游戏|電子遊戲|电子游戏|視頻遊戲|视频游戏|電玩遊戲)[)）]\s*$", "", b["zh"]["value"].strip())
+                if not HAN.search(zh):
+                    continue
+                pri = WD_PRI.get(b["zhl"]["value"], 9)
+                for k in ("en", "ja"):
+                    if k in b:
+                        key = norm_title(b[k]["value"])
+                        if len(key) >= 3 and (key not in table or pri < table[key][0]):
+                            table[key] = (pri, zh)
+            asof = today
+        except Exception as e:
+            log(f"  中文名稱（維基數據）抓取失敗，沿用上次：{e}")
+    if table is not None:
+        wd = {}
+        for nid, g in games.items():
+            nm = g.get("name") or ""
+            if not nm or (HAN.search(nm) and not re.search(r"[\u3040-\u30ff]", nm)):
+                continue
+            base = re.sub(r"[（(][^)）]*[)）]", "", nm)
+            for cand in (nm, base):
+                hit = table.get(norm_title(cand))
+                if hit and norm_title(hit[1]) != norm_title(nm):
+                    wd[nid[-6:]] = hit[1]
+                    break
+    out = dict(wd)
+    nser = 0
     for nid, g in games.items():
         nm = g.get("name") or ""
-        if not nm or (HAN.search(nm) and not re.search(r"[\u3040-\u30ff]", nm)):
-            continue  # 已經有中文名
-        base = re.sub(r"[（(][^)）]*[)）]", "", nm)
-        for cand in (nm, base):
-            hit = table.get(norm_title(cand))
-            if hit and norm_title(hit[1]) != norm_title(nm):
-                out[nid[-6:]] = hit[1]
-                break
-    log(f"  中文名稱：對照表 {len(table)} 筆，補上 {len(out)} 款")
+        k = nid[-6:]
+        if not nm or k in out or (HAN.search(nm) and not re.search(r"[\u3040-\u30ff]", nm)):
+            continue
+        z = series_zh(nm)
+        if z and norm_title(z) != norm_title(nm):
+            out[k] = z; nser += 1
+    log(f"  中文名稱：維基數據 {len(wd)} 款＋系列規則 {nser} 款")
     if out:
-        save(path, {"asof": today, "n": out})
+        save(path, {"asof": asof, "wd": wd, "n": out})
 
 
 def refresh_hot(games, jp):
