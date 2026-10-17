@@ -687,19 +687,21 @@ function row(g, rank, extra = ""){
 }
 
 // ── 篩選與排序 ──
+const SORT_TAIL = [["low","價格低到高"],["high","價格高到低"],["rel","發售日新到舊"],["relOld","發售日舊到新"]];
 const SORTS = {
-  deals: [["pct","折扣最多"],["low","價格最低"],["save","省最多錢"],["end","最快結束"],["new","最新上架"]],
-  new:   [["rel","最新發售"],["pct","折扣最多"],["low","價格最低"],["high","價格最高"]],
-  all:   [["new","最新上架"],["low","價格最低"],["high","價格最高"],["name","名稱"]],
+  deals: [["pct","折扣最多"],["save","省最多錢"],["end","最快結束"],["new","最新上架"], ...SORT_TAIL],
+  new:   [["rel","發售日新到舊"],["relOld","發售日舊到新"],["pct","折扣最多"],["low","價格低到高"],["high","價格高到低"]],
+  all:   [["new","最新上架"], ...SORT_TAIL, ["name","名稱"]],
 };
 const sorters = {
   pct:  (a,b) => b.dealPct - a.dealPct || b.dealSave - a.dealSave,
   low:  (a,b) => (a.minTwd ?? 1e9) - (b.minTwd ?? 1e9) || b.dealPct - a.dealPct,
-  high: (a,b) => (b.minTwd ?? b.price ?? -1) - (a.minTwd ?? a.price ?? -1),
+  high: (a,b) => (b.minTwd ?? -1) - (a.minTwd ?? -1) || b.dealPct - a.dealPct,
   save: (a,b) => b.dealSave - a.dealSave,
   end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.dealPct - a.dealPct,
   new:  (a,b) => (b.firstSeen || "").localeCompare(a.firstSeen || "") || full(b.id).localeCompare(full(a.id)),
-  rel:  (a,b) => (b.rel || "").localeCompare(a.rel || "") || full(b.id).localeCompare(full(a.id)),
+  rel:  (a,b) => (!a.rel - !b.rel) || (b.rel || "").localeCompare(a.rel || "") || full(b.id).localeCompare(full(a.id)),
+  relOld: (a,b) => (!a.rel - !b.rel) || (a.rel || "").localeCompare(b.rel || "") || full(a.id).localeCompare(full(b.id)),
   name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
 };
 // 近期發售：發售日在今天往前 6 個月內（不含尚未發售）
