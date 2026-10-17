@@ -628,6 +628,9 @@ def refresh_hot(games, jp):
     for n, v in titles.items():
         if isinstance(v, list):
             idx.setdefault((_nz(v[0]), v[1]), []).append(n)
+            short = re.sub(r"\s*[（(][^)）]*[)）]\s*$", "", v[0])  # 商店名稱後面常附讀音，例：「… 万紫千紅 (ばんしせんこう)」
+            if short != v[0]:
+                idx.setdefault((_nz(short), v[1]), []).append(n)
     by_app = {}
     for nid, g in games.items():
         if g.get("app") and g.get("status") in SELLING:
