@@ -342,40 +342,62 @@ def fetch_dlc_lists(ids):
 
 
 def refresh_movies(games, limit=3000):
-    """補宣傳影片：台灣區與港區（同一編號）都查，影片可能在遊戲上架後才放上去，所以每 7 天重查一次。
-    games[n]["mv"] 記錄上次檢查的日期序號（舊版寫 1，視為很久以前檢查過）。"""
+    """補宣傳影片：優先用台灣區的，台灣沒有才用香港區的，香港也沒有才用日本區的（不混用）。
+    影片可能在遊戲上架後才放上去，所以每 7 天重查一次。
+    games[n]["mv2"] 記錄上次檢查的日期序號（舊的 mv 是只查台灣＋香港的版本，不再使用）。"""
     day = datetime.now(timezone(timedelta(hours=8))).date().toordinal()
-    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING and g.get("only") != "jp"
-            and day - (g.get("mv") or 0) >= 7]
-    todo.sort(key=lambda n: (games[n].get("mv") or 0, -int(n)))
+    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING
+            and day - (g.get("mv2") or 0) >= 7]
+    todo.sort(key=lambda n: (games[n].get("mv2") or 0, -int(n)))
     todo = todo[:limit]
     if not todo:
         return
-    log(f"補影片（台灣＋港區）：{len(todo)} 款")
-    added = 0
+    log(f"補影片（台灣→香港→日本）：{len(todo)} 款")
+    updated = 0
     mv = "movies { __typename ... on YoutubeMovie { youtubeId } }"
+
+    def query(ids, vars_):
+        """ids: {本地編號: 該區商店的編號} → {本地編號: [YouTube 影片]}"""
+        out = {}
+        keys = list(ids)
+        for c in batches(keys, 20):
+            item = gql(" ".join(f"a{i}: applicationItem(nsUid: {ids[n]}) {{ nsUid {mv} }}" for i, n in enumerate(c)), vars_) or {}
+            for i, n in enumerate(c):
+                out[n] = [m.get("youtubeId") for m in ((item.get(f"a{i}") or {}).get("movies") or []) if m and m.get("youtubeId")]
+            time.sleep(0.5)
+        return out
+
     try:
-        for b in batches(todo, 20):
-            found = {n: [] for n in b}
-            for vars_ in (GQL_VARS, HK_VARS):
-                item = gql(" ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid {mv} }}" for i, n in enumerate(b)), vars_) or {}
-                for i, n in enumerate(b):
-                    found[n] += [m.get("youtubeId") for m in ((item.get(f"a{i}") or {}).get("movies") or []) if m and m.get("youtubeId")]
-                time.sleep(0.5)
-            for n in b:
+        for chunk in batches(todo, 100):
+            found = {n: [] for n in chunk}
+            # 日本限定的遊戲本身就是日本編號，只查日本區
+            tw_ids = {n: n for n in chunk if games[n].get("only") != "jp"}
+            if tw_ids:
+                for n, v in query(tw_ids, GQL_VARS).items():
+                    found[n] = v
+                miss = {n: n for n in tw_ids if not found[n]}
+                if miss:
+                    for n, v in query(miss, HK_VARS).items():
+                        found[n] = v
+            jp_ids = {n: (n if games[n].get("only") == "jp" else games[n].get("jpId")) for n in chunk if not found[n]}
+            jp_ids = {n: j for n, j in jp_ids.items() if j}
+            if jp_ids:
+                for n, v in query(jp_ids, JP_VARS).items():
+                    found[n] = v
+            for n in chunk:
                 p = os.path.join(DOCS, "d", n[-6:] + ".json")
                 if found[n] and os.path.exists(p):
                     with open(p, encoding="utf-8") as f:
                         det = json.load(f)
-                    merged = list(dict.fromkeys(found[n] + (det.get("vids") or [])))  # 台灣區的排前面
-                    if merged != det.get("vids"):
-                        det["vids"] = merged
+                    vids = list(dict.fromkeys(found[n]))
+                    if vids != det.get("vids"):
+                        det["vids"] = vids
                         save(p, det)
-                        added += 1
-                games[n]["mv"] = day
+                        updated += 1
+                games[n]["mv2"] = day
     except Blocked as e:
         log(f"  資料介面暫時無法使用（{e}），下次再繼續")
-    log(f"  補上影片 {added} 款")
+    log(f"  影片更新 {updated} 款")
 
 
 def refresh_meta(games, dlcs, limit, retry_missing):
