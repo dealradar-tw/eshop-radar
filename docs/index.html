@@ -380,6 +380,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .vid-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .vid-row .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .yt-link{font-size:13px;color:var(--accent);text-decoration:none;margin-left:auto}
+#exitToast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:rgba(20,24,30,.92);color:#fff;font-size:14px;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999}
+#exitToast.on{opacity:1;transform:translate(-50%,0)}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -1058,7 +1060,26 @@ function closeLightbox(){
   closeLightboxNow();
 }
 function closeLightboxNow(){ $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; }
+// 在清單畫面按返回：第一次只提示「再按一次返回即可離開」，2 秒內再按一次才真的離開
+let exitArmed = false, exitTimer = 0;
+function showExitToast(){
+  let t = $("#exitToast");
+  if (!t) { t = document.createElement("div"); t.id = "exitToast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = "再按一次返回即可離開";
+  t.classList.add("on");
+  clearTimeout(exitTimer);
+  exitTimer = setTimeout(() => { exitArmed = false; t.classList.remove("on"); }, 2000);
+}
+try { history.replaceState({ov: "root"}, ""); history.pushState({ov: "guard"}, ""); } catch (_) {}
 window.addEventListener("popstate", e => {
+  if (e.state?.ov === "root") {
+    $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; $("#dlg").hidden = true; $("#dlg").innerHTML = "";
+    if (!$("#minePage").hidden) closeMineNow();
+    if (!$("#sheet").hidden) closeDetailNow();
+    if (exitArmed) { exitArmed = false; history.back(); return; }  // 第二次：離開
+    exitArmed = true; history.pushState({ov: "guard"}, ""); showExitToast();
+    return;
+  }
   if (!$("#dlg").hidden) { closeDlgNow(); return; }
   if (!$("#lightbox").hidden) { closeLightboxNow(); if (e.state?.ov !== "lb") return; }
   const st = e.state;
