@@ -132,6 +132,8 @@ li{display:grid;grid-template-columns:168px minmax(0,1fr) auto 40px;align-items:
 .sheet .ref{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:12px;font-size:13px;color:var(--muted)}
 .sheet .ref a{color:var(--accent);font-weight:500}
 .name:hover{color:var(--accent);text-decoration:underline}
+.name .zhn{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:1px}
+.zhn-d{font-size:13px;color:var(--muted);margin:2px 0 4px;flex-basis:100%}
 .name.unnamed{color:var(--muted);font-style:italic}
 .meta{font-size:12px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
 .meta .soon{color:var(--urgent);font-weight:700}
@@ -678,7 +680,7 @@ function row(g, rank, extra = ""){
   return `<li data-card="${g.id}"${g.s2 ? ' class="s2"' : ""}>
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
-      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
+      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}${g.zhName ? `<small class="zhn">${esc(g.zhName)}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
       <div class="meta">${metaLine(g) || "&nbsp;"}</div>${extra}
     </div>
     <div class="price">${priceHTML(g)}</div>
@@ -737,7 +739,7 @@ function filtered(){
     (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
     (!demoOnly || g.demo) &&
     (!favOnly || favs.has(g.id)) &&
-    (!q || (g.name || "").toLowerCase().includes(q) || tagsOf(g.id).some(t => t.toLowerCase().includes(q))
+    (!q || (g.name || "").toLowerCase().includes(q) || (g.zhName || "").toLowerCase().includes(q) || tagsOf(g.id).some(t => t.toLowerCase().includes(q))
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
@@ -984,6 +986,7 @@ async function openDetail(id, fromHistory){
         <div class="title-row"><h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button>
           <button class="fav-top buy-top" data-buy="${id}" aria-pressed="${isBought(id)}">${buyLabel(isBought(id))}</button></div>
+        ${g.zhName ? `<div class="zhn-d">中文名稱：${esc(g.zhName)}</div>` : ""}
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
@@ -1174,15 +1177,16 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
 (async () => {
   $("#list").innerHTML = '<li class="loading" style="display:block">載入中…</li>';
   try {
-    const [data, dlc, hot] = await Promise.all([
+    const [data, dlc, hot, zhn] = await Promise.all([
       fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
       fetch("dlc.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : {fields: [], rows: []}).catch(() => ({fields: [], rows: []})),
       fetch("hot.json").then(r => r.json()).catch(() => ({items: []})),
+      fetch("zhnames.json").then(r => r.ok ? r.json() : {}).catch(() => ({})),
     ]);
     ASOF = data.asof;
     FX = data.fx || {};
     const games = data.rows.map(r => fromRow(data.fields, r, {isDlc: false}));
-    games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; BY.set(g.id, g); });
+    games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; g.zhName = (zhn.n || {})[g.id] || ""; BY.set(g.id, g); });
     const dlcs = (dlc.rows || []).map(r => fromRow(dlc.fields, r, {isDlc: true}));
     dlcs.forEach(d => {
       const p = BY.get(d.parent);

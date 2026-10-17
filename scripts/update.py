@@ -12,7 +12,7 @@
 
 只用 Python 標準函式庫。
 """
-import argparse, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse, json, os, re, sys, time, unicodedata, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timedelta, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -536,6 +536,67 @@ FAMITSU = "https://www.famitsu.com/ranking/game-sales/"
 def _nz(t):
     import unicodedata
     return re.sub(r"[\s\W_]+", "", unicodedata.normalize("NFKC", t or "")).lower()
+
+
+WD_ENDPOINT = "https://query.wikidata.org/sparql"
+WD_QUERY = """SELECT ?en ?ja ?zh ?zhl WHERE { ?g wdt:P400 wd:Q19610114 .
+ ?g rdfs:label ?zh . FILTER(LANG(?zh) IN ("zh-hant","zh-tw","zh-hk","zh-mo","zh")) BIND(LANG(?zh) AS ?zhl)
+ OPTIONAL{?g rdfs:label ?en FILTER(LANG(?en)="en")} OPTIONAL{?g rdfs:label ?ja FILTER(LANG(?ja)="ja")} }"""
+WD_PRI = {"zh-tw": 0, "zh-hant": 1, "zh-hk": 2, "zh-mo": 3, "zh": 4}
+HAN = re.compile(r"[\u4e00-\u9fff]")
+
+
+def norm_title(t):
+    t = re.sub(r"[™®©]", "", t or "")
+    t = unicodedata.normalize("NFKC", t).lower()
+    return re.sub(r"[\W_]+", "", t)
+
+
+def refresh_zhnames(games):
+    """中文名稱：商店名稱是英文或日文的遊戲，用維基數據（Wikidata）裡 Switch 遊戲的中文標題對照補上。
+    只做名稱完全對得上（英文或日文原名）的；每週更新一次，失敗就沿用上次。"""
+    path = os.path.join(DOCS, "zhnames.json")
+    today = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
+    old = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            old = json.load(f)
+    if old.get("asof") and (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(old["asof"], "%Y-%m-%d")).days < 6:
+        return
+    try:
+        url = WD_ENDPOINT + "?format=json&query=" + urllib.parse.quote(WD_QUERY)
+        req = urllib.request.Request(url, headers={"User-Agent": "eshop-radar/1.0 (github.com/jackie-1002/eshop-radar)",
+                                                   "Accept": "application/sparql-results+json"})
+        with urllib.request.urlopen(req, timeout=180) as r:
+            rows = json.loads(r.read().decode("utf-8"))["results"]["bindings"]
+    except Exception as e:
+        log(f"  中文名稱（維基數據）抓取失敗，沿用上次：{e}")
+        return
+    table = {}  # 原名（正規化）→ (優先序, 中文名)
+    for b in rows:
+        zh = re.sub(r"\s*[（(](?:遊戲|游戏|電子遊戲|电子游戏|視頻遊戲|视频游戏|電玩遊戲)[)）]\s*$", "", b["zh"]["value"].strip())
+        if not HAN.search(zh):
+            continue
+        pri = WD_PRI.get(b["zhl"]["value"], 9)
+        for k in ("en", "ja"):
+            if k in b:
+                key = norm_title(b[k]["value"])
+                if len(key) >= 3 and (key not in table or pri < table[key][0]):
+                    table[key] = (pri, zh)
+    out = {}
+    for nid, g in games.items():
+        nm = g.get("name") or ""
+        if not nm or (HAN.search(nm) and not re.search(r"[\u3040-\u30ff]", nm)):
+            continue  # 已經有中文名
+        base = re.sub(r"[（(][^)）]*[)）]", "", nm)
+        for cand in (nm, base):
+            hit = table.get(norm_title(cand))
+            if hit and norm_title(hit[1]) != norm_title(nm):
+                out[nid[-6:]] = hit[1]
+                break
+    log(f"  中文名稱：對照表 {len(table)} 筆，補上 {len(out)} 款")
+    if out:
+        save(path, {"asof": today, "n": out})
 
 
 def refresh_hot(games, jp):
@@ -1091,6 +1152,7 @@ def main():
     refresh_jponly(games, jp)
     refresh_meta_jponly(games, 6000)
     refresh_hot(games, jp)
+    refresh_zhnames(games)
 
     items = {**games, **dlcs}
     drops = update_history(items, hist)
