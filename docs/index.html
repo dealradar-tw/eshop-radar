@@ -34,11 +34,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
 .stats .st{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:left;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .stats .st[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .stats .st[aria-pressed="true"] span{color:var(--bg);opacity:.8}
-@media (max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:900px){.stats{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .stats .st{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
 .stats span{font-size:12px;color:var(--muted);letter-spacing:.04em}
@@ -399,14 +399,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="st" data-view="all" aria-pressed="false"><b id="sAll">–</b><span>件全部遊戲</span></button>
     <button class="st" data-view="low" aria-pressed="false"><b id="sLow">–</b><span>件歷史新低</span></button>
     <button class="st" data-view="soon" aria-pressed="false"><b id="sSoon">–</b><span>件 3 天內結束</span></button>
+    <button class="st" data-view="hot" aria-pressed="false"><b id="sHot">–</b><span>Fami通銷售排行</span></button>
+    <button class="st" data-view="new" aria-pressed="false"><b id="sNew">–</b><span>近期發售</span></button>
   </div>
 </header>
 
 <div id="tabsAnchor"></div>
-<nav class="tabs" role="tablist">
-  <button class="tab" role="tab" data-tab="hot" aria-selected="false">Fami通銷售排行</button>
-  <button class="tab" role="tab" data-tab="new" aria-selected="false">近期發售</button>
-</nav>
 
 <section id="pList">
 <div class="bar">
@@ -712,6 +710,7 @@ const sorters = {
   name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
 };
 // 近期發售：發售日在今天往前 6 個月內（不含尚未發售）
+let updNewTile = () => {};
 let recentM = store.get("recentM", 6);
 const recentFrom = () => { const d = new Date(today); d.setMonth(d.getMonth() - recentM); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
 const TODAY_STR = new Date(today.getTime() - today.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
@@ -794,7 +793,7 @@ function setSortOptions(){
 }
 // 上方四個數字：點了就切到對應的清單
 function setStatActive(){
-  const cur = tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
+  const cur = tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
   $$(".stats .st").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === cur));
 }
 function showTab(t){
@@ -802,7 +801,6 @@ function showTab(t){
   const tabsTop = $("#tabsAnchor").getBoundingClientRect().top + window.scrollY + 22;
   if (tab !== t && window.scrollY > tabsTop) window.scrollTo(0, tabsTop);
   tab = t; store.set("tab", t);
-  $$(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
   $("#recentBox").hidden = t !== "new";
   $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : "搜尋特價遊戲名稱";
@@ -835,7 +833,7 @@ function clearFilters(){
 // 換頁後回到清單開頭
 function goPage(n){
   page = n; render();
-  const top = $("#pList").getBoundingClientRect().top + window.scrollY - $(".tabs").offsetHeight;
+  const top = $("#pList").getBoundingClientRect().top + window.scrollY;
   window.scrollTo(0, Math.max(0, top));
 }
 document.addEventListener("change", e => {
@@ -1125,14 +1123,12 @@ document.addEventListener("click", e => {
   if (rg) { chartRange = rg.dataset.range; store.set("chartRange", chartRange); $("#chart")?._redraw?.(); return; }
   const f = t.closest("[data-fav]");
   if (f) { toggleFav(f.dataset.fav); f.innerHTML = favLabel(favs.has(f.dataset.fav)); f.setAttribute("aria-pressed", favs.has(f.dataset.fav)); if (favOnly) render(); return; }
-  const tb = t.closest(".tab");
-  if (tb) { lowOnly = soonOnly = false; showTab(tb.dataset.tab); return; }
   const sv = t.closest(".stats [data-view]");
   if (sv) {
     const w = sv.dataset.view;
     clearFilters();  // 先清掉其他篩選，清單數量才會跟上面的數字一致
     lowOnly = w === "low"; soonOnly = w === "soon";
-    showTab(w === "all" ? "all" : "deals");
+    showTab(w === "all" ? "all" : w === "hot" ? "hot" : w === "new" ? "new" : "deals");
     if (w === "soon") { $("#sort").value = "end"; render(); }
     setChips();
     return;
@@ -1140,7 +1136,7 @@ document.addEventListener("click", e => {
   const p = t.closest(".plats [data-p]");
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
   const rm = t.closest("#recentBox [data-m]");
-  if (rm) { recentM = +rm.dataset.m; store.set("recentM", recentM); rerender(); return; }
+  if (rm) { recentM = +rm.dataset.m; store.set("recentM", recentM); updNewTile(); rerender(); return; }
   const rg2 = t.closest("#regs [data-r]");
   if (rg2) { regF = rg2.dataset.r; store.set("regF", regF); rerender(); return; }
   const k = t.closest("[data-k]");
@@ -1230,6 +1226,9 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     $("#sTotal").textContent = nf(deals.length);
     $("#sAll").textContent = nf(named.length);
     $("#sLow").textContent = nf(deals.filter(g => g.isLow).length);
+    $("#sHot").textContent = nf((hot.items || []).length);
+    updNewTile = () => { $("#sNew").textContent = nf(games.filter(g => g.name && isRecent(g)).length); };
+    updNewTile();
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
     buildGenreChips();
     setChips();
@@ -1294,7 +1293,7 @@ document.addEventListener("wheel", collapseBar, {passive: true});
     else if (acc < -24) root.classList.remove("hdr-hide");
   }, {passive: true});
 })();
-new ResizeObserver(() => document.documentElement.style.setProperty("--tabs-h", $(".tabs").offsetHeight + "px")).observe($(".tabs"));
+document.documentElement.style.setProperty("--tabs-h", "0px");
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", $(".bar").offsetHeight + "px")).observe($(".bar"));
 window.addEventListener("scroll", () => { $("#toTop").hidden = window.scrollY < 1200; }, {passive: true});
 $("#toTop").addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
