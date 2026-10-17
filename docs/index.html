@@ -1525,7 +1525,7 @@ function tagBoxInner(id){
   const tg = tagsOf(id), sug = allTags().filter(t => !tg.includes(t)).slice(0, 12);
   return `<div class="tag-row"><span class="lbl">搜尋標籤</span>
       ${tg.map((t, i) => `<span class="utag big">#${esc(t)}<button data-deltag="${i}" aria-label="移除標籤 ${esc(t)}">×</button></span>`).join("")}
-      <span class="tag-add"><input id="tagIn" type="text" maxlength="20" placeholder="新增標籤，例如：派對、想買" enterkeyhint="done"><button class="chip" id="tagAdd">新增</button></span></div>
+      <span class="tag-add"><input id="tagIn" type="text" maxlength="20" placeholder="新增搜尋標籤，例如：派對、想買" enterkeyhint="done"><button class="chip" id="tagAdd">新增搜尋標籤</button></span></div>
     ${sug.length ? `<div class="tag-sug"><span class="muted">常用：</span>${sug.map(t => `<button class="chip" data-addtag="${esc(t)}">#${esc(t)}</button>`).join("")}</div>` : ""}`;
 }
 function addTag(id, raw){
