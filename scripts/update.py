@@ -578,6 +578,7 @@ def norm_title(t):
 SERIES_ZH = [
     (["Resident Evil", "BIOHAZARD", "バイオハザード"], "惡靈古堡"),
     (["Monster Hunter", "モンスターハンター"], "魔物獵人"),
+    (["Fire Emblem: Fortune's Weave", "Fire Emblem Fortune's Weave", "ファイアーエムブレム 万紫千紅"], "聖火降魔錄 萬縷千絲"),
     (["Fire Emblem", "ファイアーエムブレム"], "聖火降魔錄"),
     (["The Legend of Zelda", "Zelda", "ゼルダの伝説"], "薩爾達傳說"),
     (["Super Mario Bros. Wonder", "スーパーマリオブラザーズ ワンダー"], "超級瑪利歐兄弟 驚奇"),
