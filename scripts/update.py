@@ -641,7 +641,7 @@ SERIES_ZH = [
     (["My Hero Academia", "僕のヒーローアカデミア"], "我的英雄學院"),
     (["Puyo Puyo", "ぷよぷよ"], "魔法氣泡"),
 ]
-EDITION_ZH = [(r"Deluxe Edition|デラックスエディション|\\bDeluxe\\b", "豪華版"), (r"Gold Edition|ゴールドエディション", "黃金版"),
+EDITION_ZH = [(r"Deluxe Edition|デラックスエディション|\bDeluxe\b", "豪華版"), (r"Gold Edition|ゴールドエディション", "黃金版"),
               (r"Ultimate Edition|アルティメットエディション", "終極版"), (r"Complete Edition|コンプリートエディション", "完全版"),
               (r"Definitive Edition", "決定版"), (r"Standard Edition", "標準版"), (r"Collector'?s Edition", "典藏版"),
               (r"ナルティメットストーム|Ultimate Ninja Storm", "終極風暴")]
