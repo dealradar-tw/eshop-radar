@@ -685,7 +685,7 @@ function row(g, rank, extra = ""){
   return `<li data-card="${g.id}"${g.s2 ? ' class="s2"' : ""}>
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
-      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.name)}${g.zhName ? `<small class="zhn">${esc(g.zhName)}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
+      ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.zhName || g.name)}${g.zhName ? `<small class="zhn">${esc(g.name)}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
       <div class="meta">${metaLine(g) || "&nbsp;"}</div>${extra}
     </div>
     <div class="price">${priceHTML(g)}</div>
@@ -988,10 +988,10 @@ async function openDetail(id, fromHistory){
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
       <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
       <div class="body">
-        <div class="title-row"><h2 id="dTitle">${esc(g.name || "名稱待補")}</h2>
+        <div class="title-row"><h2 id="dTitle">${esc(g.zhName || g.name || "名稱待補")}</h2>
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button>
           <button class="fav-top buy-top" data-buy="${id}" aria-pressed="${isBought(id)}">${buyLabel(isBought(id))}</button></div>
-        ${g.zhName ? `<div class="zhn-d">中文名稱：${esc(g.zhName)}</div>` : ""}
+        ${g.zhName ? `<div class="zhn-d">原名：${esc(g.name)}</div>` : ""}
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
