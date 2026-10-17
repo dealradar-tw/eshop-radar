@@ -1,9 +1,0 @@
-ERR https://ec.nintendo.com/TW/zh/ HTTP Error 404: Not Found
-PAGE https://ec.nintendo.com/TW/zh/ 0
-ERR https://ec.nintendo.com/TW/zh/search HTTP Error 404: Not Found
-PAGE https://ec.nintendo.com/TW/zh/search 0
-ERR https://ec.nintendo.com/TW/zh/sale HTTP Error 404: Not Found
-PAGE https://ec.nintendo.com/TW/zh/sale 0
-ERR https://ec.nintendo.com/TW/zh/titles HTTP Error 404: Not Found
-PAGE https://ec.nintendo.com/TW/zh/titles 0
-chunks 0
