@@ -341,30 +341,38 @@ def fetch_dlc_lists(ids):
     return out
 
 
-def refresh_movies(games, limit=6000):
-    """台灣區商店多半沒放宣傳影片，改從港區商店（同一編號）補上 YouTube 影片。"""
-    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING and g.get("mv") != 1 and g.get("only") != "jp"][:limit]
+def refresh_movies(games, limit=3000):
+    """補宣傳影片：台灣區與港區（同一編號）都查，影片可能在遊戲上架後才放上去，所以每 7 天重查一次。
+    games[n]["mv"] 記錄上次檢查的日期序號（舊版寫 1，視為很久以前檢查過）。"""
+    day = datetime.now(timezone(timedelta(hours=8))).date().toordinal()
+    todo = [i for i, g in games.items() if g.get("meta") and g.get("status") in SELLING and g.get("only") != "jp"
+            and day - (g.get("mv") or 0) >= 7]
+    todo.sort(key=lambda n: (games[n].get("mv") or 0, -int(n)))
+    todo = todo[:limit]
     if not todo:
         return
-    log(f"補影片（港區）：{len(todo)} 款")
+    log(f"補影片（台灣＋港區）：{len(todo)} 款")
     added = 0
     mv = "movies { __typename ... on YoutubeMovie { youtubeId } }"
     try:
         for b in batches(todo, 20):
-            item = gql(" ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid {mv} }}" for i, n in enumerate(b)), HK_VARS) or {}
-            for i, n in enumerate(b):
-                ids = [m.get("youtubeId") for m in ((item.get(f"a{i}") or {}).get("movies") or []) if m and m.get("youtubeId")]
+            found = {n: [] for n in b}
+            for vars_ in (GQL_VARS, HK_VARS):
+                item = gql(" ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid {mv} }}" for i, n in enumerate(b)), vars_) or {}
+                for i, n in enumerate(b):
+                    found[n] += [m.get("youtubeId") for m in ((item.get(f"a{i}") or {}).get("movies") or []) if m and m.get("youtubeId")]
+                time.sleep(0.5)
+            for n in b:
                 p = os.path.join(DOCS, "d", n[-6:] + ".json")
-                if ids and os.path.exists(p):
+                if found[n] and os.path.exists(p):
                     with open(p, encoding="utf-8") as f:
                         det = json.load(f)
-                    merged = list(dict.fromkeys((det.get("vids") or []) + ids))
+                    merged = list(dict.fromkeys(found[n] + (det.get("vids") or [])))  # 台灣區的排前面
                     if merged != det.get("vids"):
                         det["vids"] = merged
                         save(p, det)
                         added += 1
-                games[n]["mv"] = 1
-            time.sleep(1.0)
+                games[n]["mv"] = day
     except Blocked as e:
         log(f"  資料介面暫時無法使用（{e}），下次再繼續")
     log(f"  補上影片 {added} 款")
