@@ -167,6 +167,7 @@ li{display:grid;grid-template-columns:168px minmax(0,1fr) auto 40px;align-items:
 @media (hover:hover){.star:not([aria-pressed="true"]):hover path{fill:var(--tag);fill-opacity:.35}}
 .more{display:block;margin:16px auto 0;font:inherit;font-weight:500;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 20px;cursor:pointer}
 .empty{text-align:center;color:var(--muted);padding:40px 0}
+header h1 .beta{display:inline-block;vertical-align:middle;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 8px;margin-left:6px}
 footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
 /* 手機：篩選收合，置頂只留搜尋列，讓清單有更多空間 */
 .ftoggle{display:none}
@@ -392,7 +393,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip mine-btn" id="openMine">我的收藏</button>
     <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
   </div>
-  <h1>特價雷達</h1>
+  <h1>特價雷達 <span class="beta">測試版</span></h1>
   <p>Nintendo eShop 特價與價格追蹤。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
   <div class="stats">
     <button class="st" data-view="deals" aria-pressed="false"><b id="sTotal">–</b><span>件特價中</span></button>
@@ -530,6 +531,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <div id="lightbox" hidden></div>
 
 <footer>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
