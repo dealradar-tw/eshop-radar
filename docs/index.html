@@ -520,7 +520,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 
 <footer>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
-  價格歷史從 2026-10-13 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
+  價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。
 </footer>
@@ -930,7 +930,7 @@ async function loadChart(id){
   const series = () => mainS ? [{...mainS, main: true}].concat(chartOthers && !noTw ? [hkS, jpS].filter(Boolean) : []) : [];
   const draw = () => {
     const days = RANGES.find(r => r[0] === chartRange)[2];
-    const since = mainS?.data.length ? mainS.data[0][0] : "";
+    const since = mainS?.data.length ? (mainS.data[0][0] < "2026-10-14" ? "2026-10-14" : mainS.data[0][0]) : "";
     box.innerHTML = `<div class="chart-head"><div class="seg">${RANGES.map(([k, t]) =>
         `<button data-range="${k}" aria-pressed="${k === chartRange}">${t}</button>`).join("")}</div></div>
       ${mainS?.data.length ? chartSVG(series(), g, days) + chartStats(mainS.data, g) + (noTw ? `<p class="cnote">台灣沒有販售，圖中是${mainS.label}區價格（以今天匯率換算成台幣）。</p>` : "") : '<p class="cnote">還沒有價格紀錄。</p>'}
@@ -1309,7 +1309,7 @@ function renderLows(h, g){
   const best = Math.min(...rows.map(r => r.twd));
   box.innerHTML = `<h3>各區史低</h3><table><tbody>${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>
       <td>${r.n}</td><td>${r.c}${nf(r.p)}</td><td>${r.c !== "NT$" ? `約 NT$${nf(r.twd)}` : ""}</td><td class="muted">${r.d}</td></tr>`).join("")}</tbody></table>
-    <p class="cnote">從開始記錄（2026-10-13 起）以來的最低價與日期；換算用今天的匯率。</p>`;
+    <p class="cnote">從開始記錄（2026-10-14 起）以來的最低價與日期；換算用今天的匯率。</p>`;
 }
 
 // ── 我的收藏（獨立頁面）：收藏＋備忘錄、已購買＋購買明細（只存在這台裝置） ──
