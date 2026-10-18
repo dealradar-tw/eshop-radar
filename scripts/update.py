@@ -724,6 +724,89 @@ def refresh_zhnames(games):
         save(path, {"asof": asof, "wd": wd, "n": out})
 
 
+def _title_keys(t):
+    """同一款遊戲的幾種寫法：原名、去掉括號（常附讀音或英文名）、只取括號裡的名字＋後綴。
+    例：「Xenoblade2 (ゼノブレイド2) Nintendo Switch 2 Edition」→ 也能對上「ゼノブレイド2 Nintendo Switch 2 Edition」。"""
+    keys = {_nz(t)}
+    paren = re.compile(r"\s*[（(]([^)）]*)[)）]\s*")
+    m = paren.search(t)
+    if m:
+        keys.add(_nz(paren.sub(" ", t)))                       # 去掉括號整段
+        keys.add(_nz(m.group(1) + " " + t[m.end():]))           # 括號裡的名字＋後綴
+        keys.add(_nz(m.group(1)))
+    for sep in (" | ", " / ", "｜", " — ", " - "):                # 「日文名 | 英文名」這類
+        if sep in t:
+            keys.update(_nz(x) for x in t.split(sep))
+    keys.discard("")
+    return keys
+
+
+def match_hot(items, games, jp):
+    """把 Fami通 排行的日文名稱對到商店裡的遊戲，寫入 id（合輯則寫 parts）。回傳對不到的數量。
+    對應順序：手動對照表 data/fami_alias.json → 日本區商品名（含括號變體）→
+    同一 applicationId 的台／港區遊戲 → 日本區限定條目本身 → 對應到這個日本編號的遊戲。"""
+    titles = jp.get("titles", {}); apps = jp.get("apps", {})
+    alias = {_nz(k): v for k, v in load("fami_alias.json", {}).items() if not k.startswith("_")}
+    idx = {}
+    for n, v in titles.items():
+        if isinstance(v, list):
+            for k in _title_keys(v[0]):
+                idx.setdefault((k, v[1]), []).append(n)
+    by_app, by_jp = {}, {}
+    for nid, g in games.items():
+        if g.get("status") not in SELLING:
+            continue
+        if g.get("app"):
+            by_app.setdefault(g["app"].lower(), []).append(nid)
+        if g.get("jpId"):
+            by_jp.setdefault(g["jpId"], []).append(nid)
+
+    def pick(cands, plat, used):
+        cands = [c for c in cands if c in games and (games[c].get("plat") or "HAC") == plat and c not in used]
+        cands.sort(key=lambda c: (games[c].get("only") or "", c))   # 台灣區優先，其次港區，最後日本限定
+        return cands[0] if cands else None
+
+    used, miss = set(), 0
+    for it in items:
+        it.pop("id", None); it.pop("parts", None)
+        plat = "BEE" if it["plat"] == "s2" else "HAC"
+        a = alias.get(_nz(it["title"]))
+        if isinstance(a, list):                       # 實體合輯：數位版分開賣
+            parts = [x for x in a if x in games]
+            if parts:
+                it["id"], it["parts"] = None, parts
+                continue
+        elif isinstance(a, str) and a in games:
+            it["id"] = a; used.add(a)
+            continue
+        found = None
+        for jn in idx.get((_nz(it["title"]), plat), []):
+            cands = list(by_app.get(apps.get(jn) or "-", [])) + [jn] + by_jp.get(jn, [])
+            found = pick(cands, plat, used)
+            if found:
+                break
+        it["id"] = found
+        if found:
+            used.add(found)
+        else:
+            miss += 1
+            log(f"    Fami通 #{it['fr']} 對不到商店：{it['title']}（可在 data/fami_alias.json 手動對照）")
+    return miss
+
+
+def rematch_hot(games, jp):
+    """沿用上次的排行，但重新對應商店（對照表或商店資料有更新時也會生效）。"""
+    path = os.path.join(DOCS, "hot.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            old = json.load(f)
+    except Exception:
+        return
+    if old.get("items"):
+        match_hot(old["items"], games, jp)
+        save_if_changed(path, old)
+
+
 def refresh_hot(games, jp):
     """熱門排行：抓 Fami通 每週銷量排行（日本實體＋下載卡等推估銷量），Switch／Switch 2 的全部列出，
     對得上商店的遊戲附上編號（可點進介紹頁）。"""
@@ -731,7 +814,7 @@ def refresh_hot(games, jp):
         h = get(FAMITSU, 40)
     except Exception as e:
         log(f"  Fami通排行抓取失敗，沿用上次：{e}")
-        return
+        return rematch_hot(games, jp)
     pat = re.compile(r'__ranking">(\d+)</div><div><div class="[^"]*__platform[^"]*?__(\w+)">[^<]*</div>'
                      r'<div class="[^"]*__title">([^<]*)</div><div class="[^"]*salesCountLine">'
                      r'<p class="[^"]*salesCount">([\d,]+)')
@@ -747,39 +830,11 @@ def refresh_hot(games, jp):
     period = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
     if not cards:
         log("  Fami通排行解析不到資料（網頁格式可能改了），沿用上次")
-        return
-    titles = jp.get("titles", {}); apps = jp.get("apps", {})
-    idx = {}
-    for n, v in titles.items():
-        if isinstance(v, list):
-            idx.setdefault((_nz(v[0]), v[1]), []).append(n)
-            short = re.sub(r"\s*[（(][^)）]*[)）]\s*$", "", v[0])  # 商店名稱後面常附讀音，例：「… 万紫千紅 (ばんしせんこう)」
-            if short != v[0]:
-                idx.setdefault((_nz(short), v[1]), []).append(n)
-    by_app = {}
-    for nid, g in games.items():
-        if g.get("app") and g.get("status") in SELLING:
-            by_app.setdefault(g["app"].lower(), []).append(nid)
-    items, used, miss = [], set(), 0
-    for rk, pl, title, sales, total, rel in cards:
-        if "switch" not in pl:
-            continue
-        s2 = "switch2" in pl
-        plat = "BEE" if s2 else "HAC"
-        found = None
-        for jn in idx.get((_nz(title), plat), []):
-            for nid in by_app.get(apps.get(jn, ""), []):
-                if (games[nid].get("plat") or "HAC") == plat and nid not in used:
-                    found = nid; break
-            if found:
-                break
-        if found:
-            used.add(found)
-        else:
-            miss += 1
-        items.append({"fr": int(rk), "plat": "s2" if s2 else "sw", "title": title.strip(),
-                      "sales": int(sales.replace(",", "")), "total": int(total.replace(",", "") or 0),
-                      "rel": rel, "id": found})
+        return rematch_hot(games, jp)
+    items = [{"fr": int(rk), "plat": "s2" if "switch2" in pl else "sw", "title": title.strip(),
+              "sales": int(sales.replace(",", "")), "total": int(total.replace(",", "") or 0), "rel": rel}
+             for rk, pl, title, sales, total, rel in cards if "switch" in pl]
+    miss = match_hot(items, games, jp)
     out = {"week": period, "src": "Fami通", "items": items}
     log(f"Fami通排行（{period}）：Switch／Switch 2 共 {len(items)} 款，商店找不到 {miss} 款")
     if items:

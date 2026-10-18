@@ -93,6 +93,8 @@ li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var
 li.hot-miss{display:flex;align-items:center;opacity:.9}
 li.hot-miss .rank{min-width:46px}
 li.hot-miss .name{font-weight:700;font-size:15px}
+.hot-parts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.hot-parts .chip{text-align:left}
 .rank{font-family:var(--display);font-weight:800;font-size:22px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
 .price .full{font-family:var(--display);font-size:18px;font-weight:800}
 .note{font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:16px 0 0;line-height:1.7}
@@ -684,6 +686,12 @@ function priceHTML(g){
   if (c.onSale) return `<s>NT$${nf(c.regTwd)}</s><b>${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
   return `<b class="full">${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
 }
+// 簡短價格文字（合輯拆開列出時用）：最便宜地區換算台幣，特價標折數
+function priceText(g){
+  if (g.reg === 0) return "免費";
+  const c = cheapest(g);
+  return c ? `NT$${nf(c.twd)}${c.onSale ? ` -${c.pct}%` : ""}` : "價格未定";
+}
 function metaLine(g){
   const tg = tagsOf(g.id);
   const parts = [badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
@@ -858,8 +866,13 @@ function renderHot(){
   $("#hotList").innerHTML = items.length ? items.map(h => {
     const g = h.id && BY.get(h.id.slice(-6));
     if (g) return row(g, h.fr, info(h));
+    const parts = (h.parts || []).map(id => BY.get(id.slice(-6))).filter(Boolean);
+    const platTag = h.plat === "s2" ? '<span class="plat">Switch 2</span>' : "Switch";
+    if (parts.length) return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(h.title || "")}</span>
+      <div class="meta">${platTag}<span class="muted">　實體合輯，數位版分開賣：</span></div>
+      <div class="hot-parts">${parts.map(p => `<button class="chip" data-open="${p.id}">${esc(p.zhName || p.name)}<span class="muted">　${priceText(p)}</span></button>`).join("")}</div>${info(h)}</div></li>`;
     return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(h.title || "")}</span>
-      <div class="meta">${h.plat === "s2" ? '<span class="plat">Switch 2</span>' : "Switch"}<span class="muted">　商店目前查不到這款</span></div>${info(h)}</div></li>`;
+      <div class="meta">${platTag}<span class="muted">　台、港、日商店都還查不到（可能只出實體版或尚未上架）</span></div>${info(h)}</div></li>`;
   }).join("") : '<li class="hot-miss"><div class="info">目前沒有資料。</div></li>';
 }
 function buildGenreChips(){
