@@ -1,7 +1,7 @@
 {
   "name": "特價雷達",
   "short_name": "特價雷達",
-  "description": "Nintendo eShop 特價與價格追蹤",
+  "description": "Nintendo eShop（Switch／Switch 2）遊戲特價、史低價與價格追蹤，台灣區優先",
   "lang": "zh-Hant-TW",
   "id": "./",
   "start_url": "./",
