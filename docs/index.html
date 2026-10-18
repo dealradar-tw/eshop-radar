@@ -409,6 +409,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="st" data-view="soon" aria-pressed="false"><b id="sSoon">–</b><span>件 3 天內結束</span></button>
     <button class="st" data-view="hot" aria-pressed="false"><b id="sHot">–</b><span>Fami通銷售排行</span></button>
     <button class="st" data-view="new" aria-pressed="false"><b id="sNew">–</b><span>近期發售</span></button>
+    <button class="st" data-view="up" aria-pressed="false"><b id="sUp">–</b><span>即將發售</span></button>
     <button class="st" data-view="rankfav" aria-pressed="false"><b id="sRankFav">–</b><span>關注特價排行</span></button>
     <button class="st" data-view="rankbuy" aria-pressed="false"><b id="sRankBuy">–</b><span>購買排行</span></button>
   </div>
@@ -429,6 +430,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-m="1" aria-pressed="false">1 個月內</button>
     <button class="chip" data-m="3" aria-pressed="false">3 個月內</button>
     <button class="chip" data-m="6" aria-pressed="true">6 個月內</button>
+  </div>
+  <div class="chips" id="upBox" role="group" aria-label="發售時間" hidden style="padding-top:2px">
+    <span class="lbl">發售時間</span>
+    <button class="chip" data-um="1" aria-pressed="false">1 個月內</button>
+    <button class="chip" data-um="3" aria-pressed="false">3 個月內</button>
+    <button class="chip" data-um="0" aria-pressed="true">全部</button>
   </div>
 </div>
 <div class="fpanel">
@@ -696,6 +703,7 @@ function metaLine(g){
   const tg = tagsOf(g.id);
   const parts = [badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
   if (tab === "new" && g.rel) { const [, m, d] = g.rel.split("-"); parts.push(`${+m}/${+d} 發售`); }
+  if (tab === "up") parts.push(upDate(g));
   if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
   else if (g.dlcN) parts.push(`${g.dlcN} 個 DLC`);
   return parts.filter(Boolean).join(" · ");
@@ -720,6 +728,7 @@ const SORTS = {
   deals: [["pct","折扣最多"],["save","省最多錢"],["end","最快結束"],["new","最新上架"], ...SORT_TAIL],
   new:   [["rel","發售日新到舊"],["relOld","發售日舊到新"],["pct","折扣最多"],["low","價格低到高"],["high","價格高到低"]],
   all:   [["new","最新上架"], ...SORT_TAIL, ["name","名稱"]],
+  up:    [["upNear","發售日近到遠"],["upFar","發售日遠到近"],["upFav","關注人數"],["new","最新上架"],["low","價格低到高"]],
 };
 const sorters = {
   pct:  (a,b) => b.dealPct - a.dealPct || b.dealSave - a.dealSave,
@@ -731,7 +740,27 @@ const sorters = {
   rel:  (a,b) => (!a.rel - !b.rel) || (b.rel || "").localeCompare(a.rel || "") || full(b.id).localeCompare(full(a.id)),
   relOld: (a,b) => (!a.rel - !b.rel) || (a.rel || "").localeCompare(b.rel || "") || full(a.id).localeCompare(full(b.id)),
   name: (a,b) => (a.name || "￿").localeCompare(b.name || "￿", "zh-Hant"),
+  // 即將發售：沒有發售日的排最後
+  upNear: (a,b) => (!upKey(a) - !upKey(b)) || upKey(a).localeCompare(upKey(b)) || full(a.id).localeCompare(full(b.id)),
+  upFar:  (a,b) => (!upKey(a) - !upKey(b)) || upKey(b).localeCompare(upKey(a)) || full(b.id).localeCompare(full(a.id)),
+  upFav:  (a,b) => favCount(b.id) - favCount(a.id) || sorters.upNear(a, b),
 };
+// 即將發售：預購中、尚未發售，或發售日在今天之後
+let upM = store.get("upM", 0);
+const upTo = () => { if (!upM) return "9999"; const d = new Date(today); d.setMonth(d.getMonth() + upM); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const isUpcoming = g => g.status === 1 || g.status === 2 || (!!g.rel && g.rel > TODAY_STR);
+// 發售日排序用：只有年份的（例如「2027」）排在該年最後，「TBD」之類視為未定
+const upKey = g => /^\d{4}-\d{2}-\d{2}$/.test(g.rel || "") ? (g.rel >= TODAY_STR ? g.rel : "") : /^\d{4}$/.test(g.rel || "") ? g.rel + "-99" : /^\d{4}-\d{2}$/.test(g.rel || "") ? g.rel + "-99" : "";
+const inUpRange = g => isUpcoming(g) && (!upM || (/^\d{4}-\d{2}-\d{2}$/.test(g.rel || "") && g.rel >= TODAY_STR && g.rel <= upTo()));
+function upDate(g){
+  if (/^\d{4}(-\d{2})?$/.test(g.rel || "")) { const [y, m] = g.rel.split("-"); return m ? `${y}/${+m} 發售` : `${y} 年發售`; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(g.rel || "")) return "發售日未定";
+  const [y, m, d] = g.rel.split("-"), n = Math.round((new Date(g.rel + "T00:00:00+08:00") - today) / 864e5);
+  const when = `${+y !== today.getFullYear() ? y + "/" : ""}${+m}/${+d} 發售`;
+  if (n < 0) return "發售日未定";  // 商店上的日期已過但還沒開賣，多半是資料沒更新
+  return n === 0 ? `${when}（今天）` : n <= 30 ? `${when}（${n} 天後）` : when;
+}
+const favCount = id => { const x = (RANKS?.fav || []).find(r => r.id === id); return x ? x.n : 0; };
 // 近期發售：發售日在今天往前 6 個月內（不含尚未發售）
 let recentM = store.get("recentM", 6);
 const recentFrom = () => { const d = new Date(today); d.setMonth(d.getMonth() - recentM); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
@@ -757,10 +786,10 @@ function filtered(){
   return ITEMS.filter(g =>
     !!g.name &&  // 還查不到名稱的商品先不列出
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
-    (tab === "all" || (tab === "new" ? isRecent(g) : g.dealAny)) &&
+    (tab === "all" || (tab === "new" ? isRecent(g) : tab === "up" ? inUpRange(g) : g.dealAny)) &&
     (plat === "all" || +g.s2 === +plat) &&
     (regF === "all" || (regF === "tw" ? !g.only : onlyKind(g) === regF)) &&
-    inTier(g) && gameFilters(g) &&
+    (inTier(g) || (tab === "up" && g.price == null && g.minTwd == null)) && gameFilters(g) &&
     (!lowOnly || g.isLow) &&
     (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
     (!demoOnly || g.demo) &&
@@ -839,6 +868,7 @@ function updTiles(){
   $("#sLow").textContent = nf(deals.filter(g => g.isLow).length);
   $("#sHot").textContent = nf((HOT.items || []).length);
   $("#sNew").textContent = nf(named.filter(isRecent).length);
+  $("#sUp").textContent = nf(named.filter(g => !g.isDlc && inUpRange(g)).length);
   $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
   updRankTiles();
 }
@@ -883,14 +913,15 @@ function buildGenreChips(){
     list.map(([x]) => `<button class="chip" data-g="${esc(x)}" aria-pressed="${genresF.has(x)}">${esc(x)}</button>`).join("");
 }
 function setSortOptions(){
-  const key = tab === "all" || tab === "new" ? tab : "deals";
+  const key = tab === "all" || tab === "new" || tab === "up" ? tab : "deals";
   const saved = store.get("sort_" + key, SORTS[key][0][0]);
-  $("#sort").innerHTML = SORTS[key].map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
-  $("#sort").value = SORTS[key].some(([v]) => v === saved) ? saved : SORTS[key][0][0];
+  const opts = SORTS[key].filter(([v]) => v !== "upFav" || rankOn());  // 排行功能啟用後才能依關注人數排
+  $("#sort").innerHTML = opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
+  $("#sort").value = opts.some(([v]) => v === saved) ? saved : opts[0][0];
 }
 // 上方四個數字：點了就切到對應的清單
 function setStatActive(){
-  const cur = tab === "rankfav" || tab === "rankbuy" ? tab : tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
+  const cur = tab === "rankfav" || tab === "rankbuy" ? tab : tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "up" ? "up" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
   $$(".stats .st").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === cur));
 }
 function showTab(t){
@@ -901,15 +932,18 @@ function showTab(t){
   const isRank = t === "rankfav" || t === "rankbuy";
   $("#pList").hidden = t === "hot" || isRank; $("#pHot").hidden = t !== "hot"; $("#pRank").hidden = !isRank;
   $("#recentBox").hidden = t !== "new";
-  $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : "搜尋特價遊戲名稱";
+  $("#upBox").hidden = t !== "up";
+  $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : t === "up" ? "搜尋即將發售" : "搜尋特價遊戲名稱";
   page = 1;
   if (t === "hot") renderHot(); else if (isRank) renderRank(t); else { setSortOptions(); render(); }
+  if (t === "up" && $("#sort").value === "upFav" && !RANKS) loadRanks().then(() => tab === "up" && render());
   setStatActive();
 }
 function setChips(){
   $$(".plats [data-p]").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === plat));
   $$("[data-k]").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
   $$("#recentBox [data-m]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.m === recentM));
+  $$("#upBox [data-um]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.um === upM));
   $$("#regs [data-r]").forEach(b => b.setAttribute("aria-pressed", b.dataset.r === regF));
   $$("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
   $("#prange").hidden = tier !== "custom";
@@ -1227,7 +1261,7 @@ document.addEventListener("click", e => {
     const w = sv.dataset.view;
     clearFilters();  // 先清掉其他篩選，清單數量才會跟上面的數字一致
     lowOnly = w === "low"; soonOnly = w === "soon";
-    showTab(["all", "hot", "new", "rankfav", "rankbuy"].includes(w) ? w : "deals");
+    showTab(["all", "hot", "new", "up", "rankfav", "rankbuy"].includes(w) ? w : "deals");
     if (w === "soon") { $("#sort").value = "end"; render(); }
     setChips();
     return;
@@ -1236,6 +1270,8 @@ document.addEventListener("click", e => {
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
   const rm = t.closest("#recentBox [data-m]");
   if (rm) { recentM = +rm.dataset.m; store.set("recentM", recentM); updTiles(); rerender(); return; }
+  const um = t.closest("#upBox [data-um]");
+  if (um) { upM = +um.dataset.um; store.set("upM", upM); updTiles(); rerender(); return; }
   const rg2 = t.closest("#regs [data-r]");
   if (rg2) { regF = rg2.dataset.r; store.set("regF", regF); rerender(); return; }
   const k = t.closest("[data-k]");
@@ -1290,7 +1326,11 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !$("#sheet").hidden) closeDetail();
 });
 $("#q").addEventListener("input", () => { page = 1; render(); });
-$("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab === "all" || tab === "new" ? tab : "deals"), $("#sort").value); render(); });
+$("#sort").addEventListener("change", async () => {
+  page = 1; store.set("sort_" + (tab === "all" || tab === "new" || tab === "up" ? tab : "deals"), $("#sort").value);
+  if ($("#sort").value === "upFav") await loadRanks();
+  render();
+});
 
 // ── 載入資料 ──
 (async () => {
@@ -1325,7 +1365,7 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     updTiles();
     buildGenreChips();
     setChips();
-    showTab(["deals", "hot", "new", "all", "rankfav", "rankbuy"].includes(tab) ? tab : "deals");
+    showTab(["deals", "hot", "new", "up", "all", "rankfav", "rankbuy"].includes(tab) ? tab : "deals");
     loadRanks().then(updRankTiles);
   } catch (e) {
     console.error(e);
