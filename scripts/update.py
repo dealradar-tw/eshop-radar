@@ -1055,7 +1055,7 @@ def fetch_fx(prev):
     return out
 
 
-# ───────────── 成人內容旗標（預設在網站上隱藏，使用者自己確認年滿 18 歲後才顯示） ─────────────
+# ───────────── 成人內容：不公開（不放進網站資料；編號記在 data/adult_ids.json，之後每次都排除） ─────────────
 ADULT_NAME = re.compile(r"hentai|\bnude|naked|erotic|ecchi|waifu|sex(?:y)?[ -]*(?:girls?|women|ladies|babes|puzzle|slave|date)|"
                         r"エロ|ヌード|18禁|R-?18|成人向|セクシー|えっち|エッチ|裸|情色|色情|成人遊戲", re.I)
 ADULT_DESC = re.compile(r"裸露|裸體|性愛|色情|成人向|情色|性行為|nudity|sexual content|erotic|hentai|エロ|18禁|性的表現|ヌード|性的な", re.I)
@@ -1075,16 +1075,18 @@ def adult_flag(g, det):
 def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
     backfill_filters(games)
     backfill_zh(games)
-    dlc_count = {}
-    for d in dlcs.values():
-        if d.get("status") in SELLING and d.get("parent"):
-            dlc_count[d["parent"]] = dlc_count.get(d["parent"], 0) + 1
-    rows = []
+    # 成人內容整個排除：名稱／分級判斷到的編號會累積記在 data/adult_ids.json（網站不公開），之後每次都不輸出
+    ap = os.path.join(DATA, "adult_ids.json")
+    adult_ids = set()
+    if os.path.exists(ap):
+        try:
+            with open(ap, encoding="utf-8") as f:
+                adult_ids = set(json.load(f))
+        except Exception:
+            adult_ids = set()
     for nsuid, g in games.items():
-        if g.get("status") not in SELLING:
+        if g.get("status") not in SELLING or nsuid[-6:] in adult_ids:
             continue
-        low, low_date, n = low_info(hist.get(nsuid, []))
-        hk = g.get("hk") or {}
         det = {}
         dp = os.path.join(DOCS, "d", nsuid[-6:] + ".json")
         if os.path.exists(dp):
@@ -1093,24 +1095,45 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
                     det = json.load(f)
             except Exception:
                 det = {}
+        if adult_flag(g, det):
+            adult_ids.add(nsuid[-6:])
+    save(ap, sorted(adult_ids))
+    removed = 0
+    for i6 in adult_ids:  # 清掉已公開的詳細資料檔
+        for rel in (os.path.join("d", i6 + ".json"),):
+            fp = os.path.join(DOCS, rel)
+            if os.path.exists(fp):
+                os.remove(fp); removed += 1
+    adult_full = {n for n in games if n[-6:] in adult_ids}
+    log(f"成人內容排除：{len(adult_ids)} 款（清掉公開檔 {removed} 個）")
+    dlc_count = {}
+    for d in dlcs.values():
+        if d.get("status") in SELLING and d.get("parent"):
+            dlc_count[d["parent"]] = dlc_count.get(d["parent"], 0) + 1
+    rows = []
+    for nsuid, g in games.items():
+        if g.get("status") not in SELLING or nsuid in adult_full:
+            continue
+        low, low_date, n = low_info(hist.get(nsuid, []))
+        hk = g.get("hk") or {}
         rows.append([nsuid[-6:], g.get("name", ""), 1 if g.get("plat") == "BEE" else 0, g.get("img", ""),
                      g.get("reg"), g.get("sale"), (g.get("end") or "")[:10], low, low_date,
                      n, STATUS_CODE[g["status"]], g.get("first_seen", ""), 1 if g.get("meta") else 0,
                      g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0),
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
-                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", ""), adult_flag(g, det)])
+                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", "")])
     rows.sort(key=lambda r: r[0])
     save(os.path.join(DOCS, "data.json"), {
         "asof": asof,
         "fx": fx or {},
         "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                   "jpReg", "jpSale", "jpId", "rel", "demo", "only", "adult"],
+                   "jpReg", "jpSale", "jpId", "rel", "demo", "only"],
         "rows": rows})
 
     drows = []
     for nsuid, d in dlcs.items():
-        if d.get("status") not in SELLING:
+        if d.get("status") not in SELLING or (d.get("parent") or "")[-6:] in adult_ids:
             continue
         low, low_date, n = low_info(hist.get(nsuid, []))
         hk = d.get("hk") or {}
@@ -1132,6 +1155,11 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
     hist_jp = hist_jp or {}
     jp_only = {n for n, g in games.items() if g.get("only") == "jp" and hist_jp.get(n)}
     for nsuid in set(hist) | set(hist_hk) | jp_only:
+        if nsuid[-6:] in adult_ids:
+            hp = os.path.join(hdir, nsuid + ".json")
+            if os.path.exists(hp):
+                os.remove(hp)
+            continue
         obj = {"tw": hist.get(nsuid, []), "hk": hist_hk.get(nsuid, [])}
         jid = (games.get(nsuid) or {}).get("jpId")
         if jid and hist_jp.get(jid):

@@ -451,11 +451,6 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip" data-k="both" aria-pressed="false">遊戲＋DLC</button>
     <button class="chip demo-chip" id="demoOnly" aria-pressed="false" title="只看有體驗版的遊戲">體驗版</button>
   </div>
-  <div class="chips" role="group" aria-label="成人內容">
-    <span class="lbl">成人內容</span>
-    <button class="chip" data-adult="0" aria-pressed="true">隱藏</button>
-    <button class="chip" data-adult="1" aria-pressed="false">顯示（需年滿 18 歲）</button>
-  </div>
   <div class="chips" id="tiers" role="group" aria-label="價格區間">
     <span class="lbl">價格</span>
     <button class="chip" data-t="all" aria-pressed="false">全部</button>
@@ -564,7 +559,7 @@ let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = sto
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
 let regF = store.get("regF", "all");
 let favOnly = false, lowOnly = false, soonOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
-let adultOn = store.get("adultOn", false), GAMES = [];  // 成人內容預設隱藏；GAMES：全部遊戲（算上方數字用）
+let GAMES = [];  // GAMES：全部遊戲（算上方數字用）
 const today = new Date(); today.setHours(0, 0, 0, 0);
 
 function daysLeft(end){
@@ -761,7 +756,6 @@ function filtered(){
     (!lowOnly || g.isLow) &&
     (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
     (!demoOnly || g.demo) &&
-    (adultOn || !g.adult) &&
     (!favOnly || favs.has(g.id)) &&
     (!q || (g.name || "").toLowerCase().includes(q) || (g.zhName || "").toLowerCase().includes(q) || tagsOf(g.id).some(t => t.toLowerCase().includes(q))
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
@@ -824,13 +818,13 @@ async function loadRanks(){
 }
 function rankLists(){
   const R = RANKS || {fav: [], buy: []};
-  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && x.g.dealAny && (adultOn || !x.g.adult))
+  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && x.g.dealAny)
     .sort((a, b) => b.n - a.n || b.g.dealPct - a.g.dealPct);
-  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && (adultOn || !x.g.adult));
+  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc);
   return {fav, buy};
 }
 function updTiles(){
-  const named = GAMES.filter(g => g.name && (adultOn || !g.adult));  // 還查不到名稱的不算；成人內容隱藏時也不算
+  const named = GAMES.filter(g => g.name);  // 還查不到名稱的不算；成人內容隱藏時也不算
   const deals = named.filter(g => g.dealAny);
   $("#sTotal").textContent = nf(deals.length);
   $("#sAll").textContent = nf(named.length);
@@ -914,7 +908,6 @@ function setChips(){
   $("#favOnly").setAttribute("aria-pressed", favOnly);
   setStatActive();
   $("#demoOnly").setAttribute("aria-pressed", demoOnly);
-  $$("[data-adult]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.adult === "1") === adultOn));
 }
 function clearFilters(){
   plat = "all"; regF = "all"; store.set("regF", "all"); kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; soonOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
@@ -1244,12 +1237,6 @@ document.addEventListener("click", e => {
   if (ge) { const x = ge.dataset.g; genresF.has(x) ? genresF.delete(x) : genresF.add(x); store.set("genres", [...genresF]); rerender(); return; }
   const ft = t.closest("#fToggle");
   if (ft) { const open = $(".fpanel").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? "▴" : "▾"; return; }
-  const ad = t.closest("[data-adult]");
-  if (ad) {
-    const on = ad.dataset.adult === "1";
-    if (on && !adultOn && !confirm("這會顯示成人向、限制級的遊戲內容。\n請確認你已年滿 18 歲。")) return;
-    adultOn = on; store.set("adultOn", adultOn); updTiles(); rerender(); return;
-  }
   if (t.id === "demoOnly") { demoOnly = !demoOnly; store.set("demoOnly", demoOnly); rerender(); return; }
   if (t.id === "clearF") { clearFilters(); return; }
   if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
