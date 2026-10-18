@@ -38,7 +38,7 @@ header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats .st{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .stats .st[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .stats .st[aria-pressed="true"] span{color:var(--bg);opacity:.8}
-@media (min-width:900px){.stats{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (min-width:900px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .stats .st{display:flex;flex-direction:column}
 .stats b{font-family:var(--display);font-size:27px;font-weight:800;line-height:1.15}
 .stats span{font-size:15px;color:var(--muted);letter-spacing:.02em;line-height:1.3}
@@ -401,6 +401,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="st" data-view="soon" aria-pressed="false"><b id="sSoon">–</b><span>件 3 天內結束</span></button>
     <button class="st" data-view="hot" aria-pressed="false"><b id="sHot">–</b><span>Fami通銷售排行</span></button>
     <button class="st" data-view="new" aria-pressed="false"><b id="sNew">–</b><span>近期發售</span></button>
+    <button class="st" data-view="rankfav" aria-pressed="false"><b id="sRankFav">–</b><span>關注特價排行</span></button>
+    <button class="st" data-view="rankbuy" aria-pressed="false"><b id="sRankBuy">–</b><span>購買排行</span></button>
   </div>
 </header>
 
@@ -485,6 +487,10 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 <nav class="pager" id="pager" aria-label="換頁" hidden></nav>
 </section>
 
+<section id="pRank" hidden>
+  <p class="note" id="rankNote"></p>
+  <ul id="rankList" style="margin-top:12px"></ul>
+</section>
 <section id="pHot" hidden>
   <p class="note" id="hotNote">依日本 Fami通 每週銷量排行。</p>
   <div class="chips plats" role="group" aria-label="主機" style="margin-top:14px">
@@ -767,6 +773,65 @@ function render(){
   $("#fBadge").textContent = m; $("#fBadge").classList.toggle("on", m > 0);
   $("#clearF").hidden = !(m || $("#q").value);
 }
+// ── 人氣排行（關注／購買）：匿名統計，只記「裝置隨機編號＋遊戲編號」，不收個資 ──
+// 在 Supabase 建好專案後，把網址和公開金鑰（anon key）填在這裡；沒填的話排行頁會顯示「尚未啟用」。
+const RANK_CFG = {url: "", key: ""};
+const rankOn = () => !!(RANK_CFG.url && RANK_CFG.key);
+const sbHeaders = () => ({apikey: RANK_CFG.key, Authorization: "Bearer " + RANK_CFG.key, "Content-Type": "application/json"});
+let RANKS = null, syncTimer = 0;
+const deviceId = () => { let d = store.get("dev", ""); if (!d) { d = crypto.randomUUID(); store.set("dev", d); } return d; };
+function markIds(){ return {fav: [...favs].filter(i => /^\d{6}$/.test(i)), buy: Object.keys(MINE).filter(i => MINE[i]?.b && /^\d{6}$/.test(i))}; }
+function queueSync(){
+  if (!rankOn()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(async () => {
+    const m = markIds(), sig = JSON.stringify(m);
+    if (store.get("syncSig", "") === sig) return;
+    try {
+      for (const kind of ["fav", "buy"]) {
+        const r = await fetch(RANK_CFG.url + "/rest/v1/rpc/sync_marks", {method: "POST", headers: sbHeaders(), body: JSON.stringify({p_device: deviceId(), p_kind: kind, p_ids: m[kind]})});
+        if (!r.ok) throw new Error(r.status);
+      }
+      store.set("syncSig", sig); RANKS = null;
+    } catch (_) { /* 下次再試 */ }
+  }, 1500);
+}
+async function loadRanks(){
+  if (!rankOn()) return null;
+  if (RANKS) return RANKS;
+  try {
+    const get = async kind => (await (await fetch(`${RANK_CFG.url}/rest/v1/mark_counts?select=id,n&kind=eq.${kind}&order=n.desc&limit=1000`, {headers: sbHeaders()})).json());
+    const [fav, buy] = await Promise.all([get("fav"), get("buy")]);
+    if (!Array.isArray(fav) || !Array.isArray(buy)) throw new Error("bad");
+    RANKS = {fav, buy};
+  } catch (_) { RANKS = null; }
+  queueSync();
+  return RANKS;
+}
+function rankLists(){
+  const R = RANKS || {fav: [], buy: []};
+  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && x.g.dealAny)
+    .sort((a, b) => b.n - a.n || b.g.dealPct - a.g.dealPct);
+  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc);
+  return {fav, buy};
+}
+function updRankTiles(){
+  if (!RANKS) return;
+  const L = rankLists();
+  $("#sRankFav").textContent = nf(L.fav.length); $("#sRankBuy").textContent = nf(L.buy.length);
+}
+async function renderRank(t){
+  const isFav = t === "rankfav";
+  $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序。" : "使用者標記為「已購買」的遊戲，依購買人數排序。";
+  const ul = $("#rankList");
+  if (!rankOn()) { ul.innerHTML = '<li class="hot-miss"><div class="info">排行功能尚未啟用。</div></li>'; return; }
+  ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
+  await loadRanks(); updRankTiles();
+  if (!RANKS) { ul.innerHTML = '<li class="hot-miss"><div class="info">暫時讀不到排行資料，請稍後再試。</div></li>'; return; }
+  const list = (isFav ? rankLists().fav : rankLists().buy).slice(0, 100);
+  ul.innerHTML = list.length ? list.map((x, i) => row(x.g, i + 1, `<div class="hotinfo"><b>${nf(x.n)}</b> 人${isFav ? "關注" : "購買"}</div>`)).join("")
+    : `<li class="hot-miss"><div class="info">${isFav ? "目前沒有被關注又有特價的遊戲。" : "還沒有人標記已購買。"}</div></li>`;
+}
 function renderHot(){
   const items = (HOT.items || []).filter(h => plat === "all" || (plat === "1") === (h.plat === "s2"));
   if (HOT.week) $("#hotNote").textContent = `依日本 Fami通 每週銷量排行（${HOT.week}）`;
@@ -793,7 +858,7 @@ function setSortOptions(){
 }
 // 上方四個數字：點了就切到對應的清單
 function setStatActive(){
-  const cur = tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
+  const cur = tab === "rankfav" || tab === "rankbuy" ? tab : tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
   $$(".stats .st").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === cur));
 }
 function showTab(t){
@@ -801,11 +866,12 @@ function showTab(t){
   const tabsTop = $("#tabsAnchor").getBoundingClientRect().top + window.scrollY + 22;
   if (tab !== t && window.scrollY > tabsTop) window.scrollTo(0, tabsTop);
   tab = t; store.set("tab", t);
-  $("#pList").hidden = t === "hot"; $("#pHot").hidden = t !== "hot";
+  const isRank = t === "rankfav" || t === "rankbuy";
+  $("#pList").hidden = t === "hot" || isRank; $("#pHot").hidden = t !== "hot"; $("#pRank").hidden = !isRank;
   $("#recentBox").hidden = t !== "new";
   $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : "搜尋特價遊戲名稱";
   page = 1;
-  if (t === "hot") renderHot(); else { setSortOptions(); render(); }
+  if (t === "hot") renderHot(); else if (isRank) renderRank(t); else { setSortOptions(); render(); }
   setStatActive();
 }
 function setChips(){
@@ -1102,6 +1168,7 @@ $("#lightbox").addEventListener("touchend", e => {
 function toggleFav(id){
   favs.has(id) ? favs.delete(id) : favs.add(id);
   store.set("favs", [...favs]);
+  queueSync();
   $$(`.star[data-id="${id}"]`).forEach(s => s.setAttribute("aria-pressed", favs.has(id)));
   if (!$("#minePage").hidden) renderMine();
 }
@@ -1128,7 +1195,7 @@ document.addEventListener("click", e => {
     const w = sv.dataset.view;
     clearFilters();  // 先清掉其他篩選，清單數量才會跟上面的數字一致
     lowOnly = w === "low"; soonOnly = w === "soon";
-    showTab(w === "all" ? "all" : w === "hot" ? "hot" : w === "new" ? "new" : "deals");
+    showTab(["all", "hot", "new", "rankfav", "rankbuy"].includes(w) ? w : "deals");
     if (w === "soon") { $("#sort").value = "end"; render(); }
     setChips();
     return;
@@ -1232,7 +1299,8 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
     $("#sSoon").textContent = nf(deals.filter(g => g.days !== null && g.days >= 0 && g.days <= 3).length);
     buildGenreChips();
     setChips();
-    showTab(["deals", "hot", "new", "all"].includes(tab) ? tab : "deals");
+    showTab(["deals", "hot", "new", "all", "rankfav", "rankbuy"].includes(tab) ? tab : "deals");
+    loadRanks().then(updRankTiles);
   } catch (e) {
     console.error(e);
     $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
@@ -1331,7 +1399,7 @@ const buyLabel = on => BAG_SVG.replace("<svg", `<svg class="ico-bag${on ? " on" 
 const TYPES = {dl: "數位版", pk: "實體版", key: "鑰匙卡"};
 const REGIONS = {tw: "台灣", hk: "香港", jp: "日本", us: "美國", eu: "歐洲", other: "其他"};
 const CURS = {TWD: "NT$", HKD: "HK$", JPY: "¥", USD: "US$"};
-const saveMine = () => { for (const k in MINE) { const m = MINE[k]; if (!m.b && !m.p?.length && !m.n && !m.fn && !m.tags?.length) delete MINE[k]; } store.set("mine", MINE); };
+const saveMine = () => { for (const k in MINE) { const m = MINE[k]; if (!m.b && !m.p?.length && !m.n && !m.fn && !m.tags?.length) delete MINE[k]; } store.set("mine", MINE); queueSync(); };
 const toTwd = (a, c) => c === "TWD" ? a : FX[c] ? Math.round(a * FX[c]) : null;
 function mineSpent(id){
   let twd = 0, unknown = false, qty = 0;
