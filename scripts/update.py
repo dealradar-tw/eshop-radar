@@ -13,7 +13,7 @@
 只用 Python 標準函式庫。
 """
 import argparse, json, os, re, sys, time, unicodedata, urllib.error, urllib.parse, urllib.request
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA, DOCS = os.path.join(ROOT, "data"), os.path.join(ROOT, "docs")
@@ -521,7 +521,13 @@ def refresh_jp(games, jp, limit=6000):
     for nid, g in games.items():
         a = (g.get("app") or "").lower()
         if g.get("only") != "jp" and a in by_app and g.get("status") in SELLING:
-            cands[nid] = by_app[a]
+            cands[nid] = list(by_app[a])
+    # applicationId 各區不同的（不少 Switch 2 遊戲如此）：用 link_regions 比對出來的對應
+    for jn, nids in jp.get("link", {}).items():
+        for nid in nids:
+            g = games.get(nid)
+            if g and g.get("only") != "jp" and g.get("status") in SELLING and jn not in cands.get(nid, []):
+                cands.setdefault(nid, []).append(jn)
     ids = sorted({n for c in cands.values() for n in c})
     prices = {}
     try:
@@ -864,13 +870,14 @@ def refresh_jponly(games, jp):
     """日本區有、台灣與香港都沒有的遊戲：以日本區編號建立商品，價格用日圓。"""
     titles, apps = jp.get("titles", {}), jp.get("apps", {})
     owned = {(g.get("app") or "").lower() for g in games.values() if g.get("app") and g.get("only") != "jp"}
-    for n in [n for n, g in games.items() if g.get("only") == "jp" and (g.get("app") or "").lower() in owned]:
+    linked = set(jp.get("link", {}))
+    for n in [n for n, g in games.items() if g.get("only") == "jp" and ((g.get("app") or "").lower() in owned or n in linked)]:
         del games[n]  # 後來發現台灣或香港也有賣，併回原本的商品
     first = not any(g.get("only") == "jp" for g in games.values())
     added = 0
     for n, a in apps.items():
         t = titles.get(n)
-        if not a or a in owned or n in games or not isinstance(t, list):
+        if not a or a in owned or n in linked or n in games or not isinstance(t, list):
             continue
         games[n] = {"name": t[0], "plat": t[1] if t[1] in ("HAC", "BEE") else "HAC", "img": "", "meta": False,
                     "only": "jp", "first_seen": "" if first else TODAY, "status": "onsale",
@@ -929,6 +936,89 @@ def refresh_meta_jponly(games, limit):
     except Blocked as e:
         log(f"  資料介面暫時無法使用（{e}），下次再繼續")
     log(f"  日本限定商品資料完成 {ok} 筆，查無 {nodata} 筆")
+
+
+def _shots(nid):
+    """介紹頁截圖的圖檔編號（各區商店常共用同一批截圖，可用來認出同一款遊戲）。"""
+    p = os.path.join(DOCS, "d", nid[-6:] + ".json")
+    try:
+        with open(p, encoding="utf-8") as f:
+            return set(re.findall(r"/i/([0-9a-f]{40,})", " ".join(json.load(f).get("shots") or [])))
+    except Exception:
+        return set()
+
+
+def _days(a, b):
+    try:
+        return abs((date.fromisoformat(a[:10]) - date.fromisoformat(b[:10])).days)
+    except Exception:
+        return 9999
+
+
+def link_regions(games, jp):
+    """台灣／港區與日本區 applicationId 不同的同一款遊戲（多數是 Switch 2 版，也有部分發行商各區分開上架），
+    用下列任一條件認定為同一款（都要同平台）：
+      1. 封面圖相同
+      2. 名稱＋發售日都相同
+      3. 介紹頁截圖有 3 張以上相同，或 2 張相同且發售日差 3 天內
+    台灣那筆補上日本區價格，原本另外列出的「日本限定」條目併掉。對應記在 jp.json 的 link，之後每次沿用。"""
+    link = jp.setdefault("link", {})          # 日本編號 → [台灣／港區編號]
+    by_img, by_name, by_shot, shots = {}, {}, {}, {}
+    for nid, g in games.items():
+        if g.get("only") == "jp" or g.get("status") not in SELLING or g.get("jp"):
+            continue
+        plat = g.get("plat") or "HAC"
+        if g.get("img"):
+            by_img.setdefault((g["img"], plat), []).append(nid)
+        if g.get("name") and g.get("rel"):
+            by_name.setdefault((norm_title(g["name"]), plat, g["rel"][:10]), []).append(nid)
+        shots[nid] = _shots(nid)
+        for h in shots[nid]:
+            by_shot.setdefault((h, plat), []).append(nid)
+    new = 0
+    for n, g in list(games.items()):
+        if g.get("only") != "jp" or not g.get("meta") or n in link:
+            continue
+        plat, rel = g.get("plat") or "HAC", g.get("rel") or ""
+        c = set(by_img.get((g.get("img"), plat), [])) if g.get("img") else set()
+        if g.get("name") and rel:
+            c |= set(by_name.get((norm_title(g["name"]), plat, rel[:10]), []))
+        if not c:
+            cnt = {}
+            for h in _shots(n):
+                for x in by_shot.get((h, plat), []):
+                    cnt[x] = cnt.get(x, 0) + 1
+            ok = {x: v for x, v in cnt.items() if v >= 3 or (v >= 2 and _days(rel, games[x].get("rel") or "") <= 3)}
+            if ok:
+                top = max(ok.values())
+                best = [x for x, v in ok.items() if v == top]
+                if len({norm_title(games[x].get("name")) for x in best}) == 1:   # 同分但名稱不同（例如普通版／豪華版）就不猜
+                    c = set(best)
+        c = sorted(x for x in c if not games[x].get("jp") or games[x].get("jpId") == n)
+        if not c:
+            continue
+        link[n] = c
+        new += 1
+        for nid in c:                          # 這次就先用日本限定條目已查到的價格，下次起由 refresh_jp 查
+            if g.get("jp") and not games[nid].get("jp"):
+                games[nid]["jp"], games[nid]["jpId"] = g["jp"], n
+        del games[n]
+        for sub in ("d", "h"):                 # 舊的日本限定介紹頁／歷史頁不再使用
+            f = os.path.join(DOCS, sub, n[-6:] + ".json")
+            if os.path.exists(f):
+                os.remove(f)
+    log(f"跨區對應（applicationId 不同）：共 {len(link)} 款，本次新增 {new} 款")
+    return link
+
+
+def moved_ids(games, jp):
+    """併掉的日本限定條目：舊網頁編號 → 現在對應的遊戲編號（台灣區優先）。"""
+    out = {}
+    for jn, nids in jp.get("link", {}).items():
+        c = [x for x in nids if x in games]
+        if c:
+            out[jn[-6:]] = min(c, key=lambda x: (games[x].get("only") or "", x))[-6:]
+    return out
 
 
 def refresh_all_dlc_lists(games, dlcs):
@@ -1127,7 +1217,7 @@ def adult_flag(g, det):
     return 0
 
 
-def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
+def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=None):
     backfill_filters(games)
     backfill_zh(games)
     # 成人內容整個排除：名稱／分級判斷到的編號會累積記在 data/adult_ids.json（網站不公開），之後每次都不輸出
@@ -1181,6 +1271,7 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None):
     save(os.path.join(DOCS, "data.json"), {
         "asof": asof,
         "fx": fx or {},
+        "moved": moved or {},   # 併掉的舊編號 → 新編號（網頁會把收藏、已購買等搬過去）
         "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
                    "jpReg", "jpSale", "jpId", "rel", "demo", "only"],
@@ -1387,6 +1478,7 @@ def main():
     refresh_jp(games, jp)
     refresh_jponly(games, jp)
     refresh_meta_jponly(games, 6000)
+    link_regions(games, jp)
     refresh_hot(games, jp)
     refresh_zhnames(games)
 
@@ -1405,7 +1497,7 @@ def main():
     save(os.path.join(DATA, "history_hk.json"), hist_hk)
     save(os.path.join(DATA, "jp.json"), jp)
     save(os.path.join(DATA, "history_jp.json"), hist_jp)
-    build_site(games, dlcs, hist, hist_hk, asof, cat["fx"], hist_jp)
+    build_site(games, dlcs, hist, hist_hk, asof, cat["fx"], hist_jp, moved_ids(games, jp))
     log(f"今日降價：{len(drops)} 筆")
     notify(items, drops, cat.get("fx") or {})
 

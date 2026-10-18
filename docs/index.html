@@ -1303,6 +1303,7 @@ $("#sort").addEventListener("change", () => { page = 1; store.set("sort_" + (tab
       fetch("zhnames.json").then(r => r.ok ? r.json() : {}).catch(() => ({})),
     ]);
     ASOF = data.asof;
+    migrateMoved(data.moved);
     FX = data.fx || {};
     const games = data.rows.map(r => fromRow(data.fields, r, {isDlc: false}));
     games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; g.zhName = (zhn.n || {})[g.id] || ""; BY.set(g.id, g); });
@@ -1426,6 +1427,22 @@ const REGIONS = {tw: "台灣", hk: "香港", jp: "日本", us: "美國", eu: "�
 const CURS = {TWD: "NT$", HKD: "HK$", JPY: "¥", USD: "US$"};
 const saveMine = () => { for (const k in MINE) { const m = MINE[k]; if (!m.b && !m.p?.length && !m.n && !m.fn && !m.tags?.length) delete MINE[k]; } store.set("mine", MINE); queueSync(); };
 const toTwd = (a, c) => c === "TWD" ? a : FX[c] ? Math.round(a * FX[c]) : null;
+// 同一款遊戲原本被拆成兩筆（例如「日本限定」後來對到台灣區）：把收藏、目標價、已購買紀錄搬到新編號
+function migrateMoved(mv){
+  let ch = false;
+  for (const [o, n] of Object.entries(mv || {})) {
+    if (o === n) continue;
+    if (favs.has(o)) { favs.delete(o); favs.add(n); ch = true; }
+    if (o in targets) { if (!(n in targets)) targets[n] = targets[o]; delete targets[o]; ch = true; }
+    if (MINE[o]) {
+      const a = MINE[o], b = MINE[n];
+      MINE[n] = b ? {...a, ...b, b: a.b || b.b, p: [...(b.p || []), ...(a.p || [])], tags: [...new Set([...(b.tags || []), ...(a.tags || [])])],
+        n: [b.n, a.n].filter(Boolean).join("\n"), fn: [b.fn, a.fn].filter(Boolean).join("\n")} : a;
+      delete MINE[o]; ch = true;
+    }
+  }
+  if (ch) { store.set("favs", [...favs]); store.set("targets", targets); saveMine(); }
+}
 function mineSpent(id){
   let twd = 0, unknown = false, qty = 0;
   for (const x of MINE[id]?.p || []) { qty += 1; if (x.a == null) continue; const v = toTwd(x.a, x.c); v == null ? unknown = true : twd += v; }
