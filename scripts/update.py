@@ -685,7 +685,7 @@ def refresh_zhnames(games):
     if not fresh:
         try:
             url = WD_ENDPOINT + "?format=json&query=" + urllib.parse.quote(WD_QUERY)
-            req = urllib.request.Request(url, headers={"User-Agent": "eshop-radar/1.0 (github.com/jackie-1002/eshop-radar)",
+            req = urllib.request.Request(url, headers={"User-Agent": "eshop-radar/1.0 (github.com/dealradar-tw/eshop-radar)",
                                                        "Accept": "application/sparql-results+json"})
             with urllib.request.urlopen(req, timeout=180) as r:
                 rows = json.loads(r.read().decode("utf-8"))["results"]["bindings"]
@@ -1348,7 +1348,7 @@ def cheaper_region(g, fx):
 
 # ntfy 推播：手機裝 ntfy App、訂閱這個主題名稱就能收到。可用 GitHub 密鑰 NTFY_TOPIC 改成別的名稱。
 NTFY_TOPIC = "eshop-radar-pw0ssnkn6ggo"
-SITE = "https://jackie-1002.github.io/eshop-radar/"
+SITE = "https://dealradar-tw.github.io/eshop-radar/"
 
 
 def send_ntfy(topic, title, lines, tags):
