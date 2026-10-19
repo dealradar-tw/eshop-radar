@@ -840,9 +840,9 @@ function render(){
 }
 // ── 人氣排行（關注／購買）：匿名統計，只記「裝置隨機編號＋遊戲編號」，不收個資 ──
 // 在 Supabase 建好專案後，把網址和公開金鑰（anon key）填在這裡；沒填的話排行頁會顯示「尚未啟用」。
-const RANK_CFG = {url: "", key: ""};
+const RANK_CFG = {url: "https://uvjioxaubsjxibvhsqgf.supabase.co", key: "sb_publishable_LLpV_PtbZXbmjRX-Okkn0Q_utokEh-i"};
 const rankOn = () => !!(RANK_CFG.url && RANK_CFG.key);
-const sbHeaders = () => ({apikey: RANK_CFG.key, Authorization: "Bearer " + RANK_CFG.key, "Content-Type": "application/json"});
+const sbHeaders = () => { const h = {apikey: RANK_CFG.key, "Content-Type": "application/json"}; if (RANK_CFG.key.startsWith("eyJ")) h.Authorization = "Bearer " + RANK_CFG.key; return h; };  // 新版 sb_publishable_ 金鑰不是 JWT，只送 apikey
 let RANKS = null, syncTimer = 0;
 const deviceId = () => { let d = store.get("dev", ""); if (!d) { d = crypto.randomUUID(); store.set("dev", d); } return d; };
 function markIds(){ return {fav: [...favs].filter(i => /^\d{6}$/.test(i)), buy: Object.keys(MINE).filter(i => MINE[i]?.b && /^\d{6}$/.test(i))}; }
