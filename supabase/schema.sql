@@ -119,3 +119,20 @@ $$;
 revoke all on function public.sync_marks(uuid, text, text[]) from public;
 grant execute on function public.sync_marks(uuid, text, text[]) to anon;
 grant select on public.mark_counts to anon;
+
+-- ───────────── 使用者自行刪除自己的排行資料 ─────────────
+create or replace function public.delete_my_marks(p_device uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_device is null then raise exception 'bad device'; end if;
+  delete from public.marks where device = p_device;
+  delete from public.devices where device = p_device;
+end
+$$;
+
+revoke all on function public.delete_my_marks(uuid) from public;
+grant execute on function public.delete_my_marks(uuid) to anon;

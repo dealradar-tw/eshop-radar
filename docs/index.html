@@ -538,6 +538,10 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     </nav>
     <div class="mine-sum" id="mineSum"></div>
     <ul id="mineList"></ul>
+    <div class="cnote" id="rankPriv" style="margin:16px 0 0" hidden>
+      <b>人氣排行</b>：<span id="rankPrivState"></span>
+      <div style="margin-top:8px"><button class="chip" id="rankOptBtn"></button></div>
+    </div>
     <p class="cnote" style="margin:16px 0 40px">收藏和購買紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先按右上角「匯出備份」，之後用「匯入備份」就能還原。</p>
   </div>
 </div>
@@ -846,8 +850,30 @@ const sbHeaders = () => { const h = {apikey: RANK_CFG.key, "Content-Type": "appl
 let RANKS = null, syncTimer = 0;
 const deviceId = () => { let d = store.get("dev", ""); if (!d) { d = crypto.randomUUID(); store.set("dev", d); } return d; };
 function markIds(){ return {fav: [...favs].filter(i => /^\d{6}$/.test(i)).slice(0, 500), buy: Object.keys(MINE).filter(i => MINE[i]?.b && /^\d{6}$/.test(i)).slice(0, 500)}; }  // 資料庫每種清單最多收 500 筆
+const rankOut = () => store.get("rankOut", false);
+function updRankPriv(){
+  const box = $("#rankPriv"); if (!box) return;
+  box.hidden = !rankOn();
+  const out = rankOut();
+  $("#rankPrivState").textContent = out ? "你已停止上傳，收藏與購買紀錄不會被計入排行。" : "你的收藏與已購買會匿名計入排行（只傳隨機裝置編號和遊戲編號）。";
+  $("#rankOptBtn").textContent = out ? "重新參與排行" : "刪除我的排行資料並停止上傳";
+}
+async function toggleRankOpt(){
+  if (!rankOut()) {
+    if (!confirm("會刪除你已上傳到排行資料庫的收藏與購買統計，並停止上傳。你手機裡的收藏不受影響。確定嗎？")) return;
+    try {
+      const r = await fetch(RANK_CFG.url + "/rest/v1/rpc/delete_my_marks", {method: "POST", headers: sbHeaders(), body: JSON.stringify({p_device: deviceId()})});
+      if (!r.ok) throw new Error(r.status);
+      store.set("rankOut", true); store.set("syncSig", ""); RANKS = null;
+      alert("已刪除，並停止上傳。");
+    } catch (_) { alert("刪除失敗，請稍後再試。"); }
+  } else {
+    store.set("rankOut", false); store.set("syncSig", ""); RANKS = null; queueSync();
+  }
+  updRankPriv();
+}
 function queueSync(){
-  if (!rankOn()) return;
+  if (!rankOn() || rankOut()) return;
   clearTimeout(syncTimer);
   syncTimer = setTimeout(async () => {
     const m = markIds(), sig = JSON.stringify(m);
@@ -1573,6 +1599,7 @@ function openMine(){
 }
 function closeMineNow(){ $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
 function renderMine(){
+  updRankPriv();
   const favIds = [...favs].reverse().filter(id => BY.has(id));
   const boughtIds = Object.keys(MINE).filter(id => MINE[id].b && BY.has(id))
     .sort((a, b) => ((MINE[b].p?.at(-1)?.d) || "").localeCompare((MINE[a].p?.at(-1)?.d) || ""));
@@ -1651,6 +1678,7 @@ document.addEventListener("click", e => {
     }
     return;
   }
+  if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
   if (t.id === "mineExport") {
     const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 2, at: new Date().toISOString(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
