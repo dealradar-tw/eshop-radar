@@ -70,7 +70,10 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .pager .chip{padding:8px 14px}
 .pager .chip:disabled{opacity:.4;cursor:default}
 .pager select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px}
-.to-top{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:7;font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:10px 16px;box-shadow:0 4px 14px rgb(0 0 0 / .18);cursor:pointer}
+.to-top{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:25;width:48px;height:48px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:50%;box-shadow:0 4px 14px rgb(0 0 0 / .22);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .2s,transform .2s}
+.to-top svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.to-top:active{transform:scale(.92)}
+@media (max-width:480px){.to-top{right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:44px;height:44px}}
 /* 很窄的畫面（或瀏覽器字體放大）：縮小封面、價格可換行，讓名稱有空間 */
 @media (max-width:360px){
   li{grid-template-columns:104px minmax(0,1fr) auto!important;gap:8px!important;padding:8px 6px 8px 8px}
@@ -589,7 +592,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </div>
 <div id="dlg" class="dlg-bg" hidden></div>
 <div id="sheet" hidden></div>
-<button class="to-top" id="toTop" hidden aria-label="回到最上面">↑ 回頂端</button>
+<button class="to-top" id="toTop" hidden aria-label="回到最上面" title="回到最上面"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M12 20V9M7 13.5 12 8.5l5 5"/></svg></button>
 <div id="lightbox" hidden></div>
 
 <footer>
@@ -1569,8 +1572,20 @@ document.addEventListener("wheel", collapseBar, {passive: true});
 })();
 document.documentElement.style.setProperty("--tabs-h", "0px");
 new ResizeObserver(() => document.documentElement.style.setProperty("--bar-h", $(".bar").offsetHeight + "px")).observe($(".bar"));
-window.addEventListener("scroll", () => { $("#toTop").hidden = window.scrollY < 1200; }, {passive: true});
-$("#toTop").addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
+// 回頂端：依目前最上層正在看的畫面（遊戲詳情 → 我的收藏 → 主畫面）決定要捲哪一個
+function topScroller(){
+  if (!$("#sheet").hidden) return $("#sheet .sheet");
+  if (!$("#minePage").hidden) return $("#minePage");
+  return document.scrollingElement;
+}
+function updToTop(){
+  const sc = topScroller();
+  const hide = !sc || sc.scrollTop < 400;
+  if ($("#toTop").hidden !== hide) $("#toTop").hidden = hide;  // 只在有變化時才改，避免觸發觀察器無限循環
+}
+document.addEventListener("scroll", updToTop, {passive: true, capture: true});
+new MutationObserver(updToTop).observe(document.body, {subtree: true, attributes: true, attributeFilter: ["hidden"]});
+$("#toTop").addEventListener("click", () => topScroller()?.scrollTo({top: 0, behavior: "smooth"}));
 
 // 各區史低（從價格歷史算出來，換算台幣後標出最低的地區）
 function renderLows(h, g){
