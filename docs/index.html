@@ -845,7 +845,7 @@ const rankOn = () => !!(RANK_CFG.url && RANK_CFG.key);
 const sbHeaders = () => { const h = {apikey: RANK_CFG.key, "Content-Type": "application/json"}; if (RANK_CFG.key.startsWith("eyJ")) h.Authorization = "Bearer " + RANK_CFG.key; return h; };  // 新版 sb_publishable_ 金鑰不是 JWT，只送 apikey
 let RANKS = null, syncTimer = 0;
 const deviceId = () => { let d = store.get("dev", ""); if (!d) { d = crypto.randomUUID(); store.set("dev", d); } return d; };
-function markIds(){ return {fav: [...favs].filter(i => /^\d{6}$/.test(i)), buy: Object.keys(MINE).filter(i => MINE[i]?.b && /^\d{6}$/.test(i))}; }
+function markIds(){ return {fav: [...favs].filter(i => /^\d{6}$/.test(i)).slice(0, 500), buy: Object.keys(MINE).filter(i => MINE[i]?.b && /^\d{6}$/.test(i)).slice(0, 500)}; }  // 資料庫每種清單最多收 500 筆
 function queueSync(){
   if (!rankOn()) return;
   clearTimeout(syncTimer);
