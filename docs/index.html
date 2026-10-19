@@ -620,6 +620,51 @@ function fromRow(fields, r, extra){
   return common(Object.assign(o, extra));
 }
 
+// 首頁資料的欄式格式（scripts/update.py 的 pack_rows）→ 一款一個物件
+function unpackV2(d){
+  const F = d.fields, C = d.cols, n = C[0].length, gt = d.genres || [], out = new Array(n);
+  let prev = 0;
+  for (let i = 0; i < n; i++) {
+    const o = {};
+    for (let j = 0; j < F.length; j++) {
+      let v = C[j][i];
+      if (F[j] === "id") { prev += v; v = String(prev).padStart(6, "0"); }
+      else if (F[j] === "jpId") { if (v && v.length < 14) v = "70010000" + v; }
+      else if (F[j] === "genres") v = v.map(x => gt[x]);
+      o[F[j]] = v;
+    }
+    o.isDlc = false;
+    out[i] = common(o);
+  }
+  return out;
+}
+let IMG_READY = Promise.resolve(), DLC_P = null;
+// 圖片雜湊晚一點才到：把已經畫出來、還沒有圖的縮圖補上
+function fillThumbs(){
+  $$(".thumb[data-open]").forEach(t => {
+    if (t.querySelector("img")) return;
+    const g = BY.get(t.dataset.open);
+    if (g?.img) t.insertAdjacentHTML("afterbegin", `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="this.remove()">`);
+  });
+}
+// DLC 清單（約 260 KB）改成需要時才載入：看 DLC、打開有 DLC 的遊戲、收藏裡有 DLC 時
+function ensureDlc(){
+  if (DLC_P) return DLC_P;
+  DLC_P = fetch("dlc.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : {fields: [], rows: []}).catch(() => ({fields: [], rows: []})).then(dlc => {
+    const dlcs = (dlc.rows || []).map(r => fromRow(dlc.fields, r, {isDlc: true}));
+    dlcs.forEach(d => {
+      const p = BY.get(d.parent);
+      d.s2 = !!p?.s2; d.membersOnly = !!d.membersOnly;
+      BY.set(d.id, d);
+      if (!DLC_BY_PARENT.has(d.parent)) DLC_BY_PARENT.set(d.parent, []);
+      DLC_BY_PARENT.get(d.parent).push(d);
+    });
+    GAMES.forEach(g => { g.dlcN = (DLC_BY_PARENT.get(g.id) || []).length || g.dlcN || 0; });
+    ITEMS = GAMES.concat(dlcs);
+  });
+  return DLC_P;
+}
+
 // ── 清單列 ──
 const thumb = g => `<div class="thumb" data-open="${g.id}">${g.img ? `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}${g.s2 ? '<span class="s2mark" aria-hidden="true">Switch 2</span>' : ""}`;
 function endText(g){
@@ -1131,6 +1176,8 @@ async function openDetail(id, fromHistory){
   const parent = g.isDlc ? BY.get(g.parent) : null;
   let det = {};
   if (!g.isDlc && g.hasDetail) { try { det = await (await fetch(`d/${id}.json`)).json(); } catch (e) {} }
+  if (!g.isDlc && g.dlcN) await ensureDlc();
+  await IMG_READY;
   const hot = (HOT.items || []).filter(h => h.id && h.id.slice(-6) === id).map(h => [h, h.plat === "s2" ? "Switch 2" : "Switch"])[0];
   const ch = cheapest(g);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
@@ -1326,7 +1373,7 @@ document.addEventListener("click", e => {
   const rg2 = t.closest("#regs [data-r]");
   if (rg2) { regF = rg2.dataset.r; store.set("regF", regF); rerender(); return; }
   const k = t.closest("[data-k]");
-  if (k) { kind = k.dataset.k; store.set("kind", kind); rerender(); return; }
+  if (k) { kind = k.dataset.k; store.set("kind", kind); (kind === "game" ? Promise.resolve() : ensureDlc()).then(rerender); return; }
   const ti = t.closest("#tiers [data-t]");
   if (ti) { tier = ti.dataset.t; store.set("tier", tier); rerender(); return; }
   const zh = t.closest("[data-zh]");
@@ -1387,32 +1434,29 @@ $("#sort").addEventListener("change", async () => {
 (async () => {
   $("#list").innerHTML = '<li class="loading" style="display:block">載入中…</li>';
   try {
-    const [data, dlc, hot, zhn] = await Promise.all([
+    const imgP = fetch("img.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : null).catch(() => null);   // 圖片雜湊另外載入，不擋住清單
+    const [data, hot, zhn] = await Promise.all([
       fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
-      fetch("dlc.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : {fields: [], rows: []}).catch(() => ({fields: [], rows: []})),
       fetch("hot.json").then(r => r.json()).catch(() => ({items: []})),
       fetch("zhnames.json").then(r => r.ok ? r.json() : {}).catch(() => ({})),
     ]);
     ASOF = data.asof;
     migrateMoved(data.moved);
     FX = data.fx || {};
-    const games = data.rows.map(r => fromRow(data.fields, r, {isDlc: false}));
+    const games = (data.v === 2 ? unpackV2(data) : data.rows.map(r => fromRow(data.fields, r, {isDlc: false})));
     games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; g.zhName = (zhn.n || {})[g.id] || ""; BY.set(g.id, g); });
-    const dlcs = (dlc.rows || []).map(r => fromRow(dlc.fields, r, {isDlc: true}));
-    dlcs.forEach(d => {
-      const p = BY.get(d.parent);
-      d.s2 = !!p?.s2; d.membersOnly = !!d.membersOnly;
-      BY.set(d.id, d);
-      if (!DLC_BY_PARENT.has(d.parent)) DLC_BY_PARENT.set(d.parent, []);
-      DLC_BY_PARENT.get(d.parent).push(d);
+    ITEMS = games;
+    IMG_READY = imgP.then(j => {
+      if (!j || !j.img) return;
+      j.img.forEach((h, i) => { if (games[i] && h) games[i].img = h; });
+      fillThumbs();
     });
-    games.forEach(g => { g.dlcN = (DLC_BY_PARENT.get(g.id) || []).length || g.dlcN || 0; });
-    ITEMS = games.concat(dlcs);
     if (!hot.items) hot.items = [...(hot.s2 || []).map(h => ({...h, plat: "s2", fr: h.fr || h.rank})), ...(hot.sw || []).map(h => ({...h, plat: "sw", fr: h.fr || h.rank}))].sort((a, b) => a.fr - b.fr);  // 舊格式
     HOT = hot;
     HOT_IDS = new Set((hot.items || []).filter(h => h.id).map(h => h.id.slice(-6)));
     $("#asof").textContent = ASOF;
     GAMES = games;
+    if (kind !== "game" || [...favs, ...Object.keys(MINE)].some(i => i.length === 14)) await ensureDlc();   // 平常不載入 DLC 清單，需要時才抓
     updTiles();
     buildGenreChips();
     setChips();

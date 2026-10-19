@@ -1233,6 +1233,23 @@ def adult_flag(g, det):
     return 0
 
 
+def pack_rows(rows, fields):
+    """首頁資料瘦身：改成「欄式」格式（每個欄位一整串，壓縮效果更好）。
+    id 只存與前一筆的差值、jpId 去掉共同前綴 70010000、遊戲類型改存編號表；
+    圖片雜湊（最大宗）拆到 img.json，網頁先顯示清單、圖片之後再補上。
+    回傳 (data.json 的欄位們, 圖片雜湊串列)。"""
+    cols = {k: [r[i] for r in rows] for i, k in enumerate(fields)}
+    ids = [int(x) for x in cols["id"]]
+    cols["id"] = ([ids[0]] + [b - a for a, b in zip(ids, ids[1:])]) if ids else []
+    cols["jpId"] = [(x[8:] if x and x.startswith("70010000") else x) for x in cols["jpId"]]
+    table = sorted({g for gs in cols["genres"] for g in gs})
+    gi = {g: i for i, g in enumerate(table)}
+    cols["genres"] = [[gi[g] for g in gs] for gs in cols["genres"]]
+    img = cols.pop("img")
+    keep = [k for k in fields if k != "img"]
+    return {"fields": keep, "genres": table, "cols": [cols[k] for k in keep]}, img
+
+
 def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=None):
     backfill_filters(games)
     backfill_zh(games)
@@ -1284,14 +1301,16 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=No
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
                      g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", "")])
     rows.sort(key=lambda r: r[0])
+    packed, img = pack_rows(rows, ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
+                                   "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
+                                   "jpReg", "jpSale", "jpId", "rel", "demo", "only"])
     save(os.path.join(DOCS, "data.json"), {
+        "v": 2,
         "asof": asof,
         "fx": fx or {},
         "moved": moved or {},   # 併掉的舊編號 → 新編號（網頁會把收藏、已購買等搬過去）
-        "fields": ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
-                   "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                   "jpReg", "jpSale", "jpId", "rel", "demo", "only"],
-        "rows": rows})
+        **packed})
+    save(os.path.join(DOCS, "img.json"), {"v": 2, "asof": asof, "img": img})   # 與 data.json 同一個順序
 
     drows = []
     for nsuid, d in dlcs.items():
