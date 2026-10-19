@@ -805,9 +805,13 @@ function filtered(){
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
-// 「歷史新低」說明提示：按「知道了」後 30 天內不再出現；沒按的話一天最多出現一次
+// 「歷史新低」說明提示：按「知道了」後 7 天內不再出現；沒按的話一天最多出現一次
 let lowTipNow = false;
+const LOW_TIP_DAYS = 7;
+const daysLater = n => { const d = new Date(today); d.setDate(d.getDate() + n); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
 function lowTipDue(){
+  const off = store.get("lowTipOff", "");
+  if (off > daysLater(LOW_TIP_DAYS)) store.set("lowTipOff", daysLater(LOW_TIP_DAYS));  // 舊版設的 30 天，縮短為 7 天
   if (store.get("lowTipOff", "") > TODAY_STR) return false;
   if (store.get("lowTipDay", "") === TODAY_STR) return false;
   store.set("lowTipDay", TODAY_STR);
@@ -1288,8 +1292,7 @@ document.addEventListener("click", e => {
   const rm = t.closest("#recentBox [data-m]");
   if (rm) { recentM = +rm.dataset.m; store.set("recentM", recentM); updTiles(); rerender(); return; }
   if (t.closest("#lowTipOk")) {
-    const d = new Date(today); d.setDate(d.getDate() + 30);
-    store.set("lowTipOff", new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10));
+    store.set("lowTipOff", daysLater(LOW_TIP_DAYS));
     lowTipNow = false; $("#lowTip").hidden = true; return;
   }
   const um = t.closest("#upBox [data-um]");
