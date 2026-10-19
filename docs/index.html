@@ -393,6 +393,47 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .yt-link{font-size:13px;color:var(--accent);text-decoration:none;margin-left:auto}
 #exitToast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:rgba(20,24,30,.92);color:#fff;font-size:14px;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999}
 #exitToast.on{opacity:1;transform:translate(-50%,0)}
+/* 手機精簡版面：字級、間距、封面、按鈕都縮小，讓一頁看得到更多內容（手機字體放大時也不擠） */
+@media (max-width:480px){
+  body{font-size:14px}
+  .wrap{padding-block:14px 40px}
+  header h1{font-size:23px;word-break:keep-all}
+  header h1 .beta{font-size:10.5px;padding:0 6px;margin-left:4px}
+  header p{font-size:12px;margin-top:4px;line-height:1.45}
+  .hdr-btns{gap:4px;margin:0 0 0 6px}
+  .hdr-btns .chip{font-size:12px;padding:3px 9px}
+  .stats{gap:5px;margin-top:10px}
+  .stats .st{padding:6px 8px;border-radius:8px}
+  .stats b{font-size:clamp(15px,5vw,19px);white-space:nowrap;letter-spacing:-.01em}
+  .stats span{font-size:11.5px;line-height:1.25;letter-spacing:0}
+  .bar{margin-top:10px}
+  .row1 input[type=search],.row1 select,.row1 .favonly,.row1 .ftoggle{font-size:13px;padding-block:6px}
+  .row1 .favonly svg{width:18px;height:18px}
+  .tab{font-size:13px;padding:6px 9px 7px}
+  .count{font-size:12px;margin:8px 0 4px}
+  li{grid-template-columns:104px minmax(0,1fr) auto;gap:8px;padding:7px 4px 7px 7px;border-width:2px}
+  .thumb{min-height:60px}
+  .thumb .tag{font-size:12px;padding:1px 6px}
+  .thumb .s2mark{font-size:10px;padding:0 5px}
+  .thumb .rank{font-size:12px;padding:0 6px}
+  .name{font-size:13.5px;line-height:1.35}
+  .name .zhn{font-size:11px}
+  .meta{font-size:11px;line-height:1.4}
+  .zh,.plat,.low-badge,.demo-badge{font-size:10px;padding:0 5px;margin-right:4px}
+  .new-badge,.hot-badge{font-size:10px;margin-right:4px}
+  .star,.buy{width:30px;height:30px}
+  .star svg,.buy svg{width:23px;height:23px}
+  .price{gap:6px}
+  .price b{font-size:16px}
+  .price s,.price .twd,.price b small{font-size:10.5px}
+  .rank{font-size:18px}
+  h2.sec{font-size:17px;margin:16px 0 8px}
+  .note{font-size:13px;padding:10px 12px}
+}
+@media (max-width:360px){
+  li{grid-template-columns:92px minmax(0,1fr) auto!important}
+  header h1{font-size:21px}
+}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
