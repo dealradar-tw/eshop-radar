@@ -1,6 +1,8 @@
 name: 每日更新價格
 
 on:
+  push:
+    paths: [".trigger/run"]   # 推送這個檔案就啟動更新（內容寫 full 則完整重掃）
   schedule:
     - cron: "10 18 * * *"   # 台灣時間每天 02:10
     - cron: "10 6 * * *"    # 台灣時間每天 14:10
@@ -46,7 +48,7 @@ jobs:
         run: |
           if [ "${{ inputs.test_notify }}" = "true" ]; then
             python scripts/update.py --test-notify
-          elif [ "${{ github.event.schedule }}" = "40 19 * * 0" ] || [ "${{ inputs.full }}" = "true" ]; then
+          elif [ "${{ github.event.schedule }}" = "40 19 * * 0" ] || [ "${{ inputs.full }}" = "true" ] || { [ "${{ github.event_name }}" = "push" ] && grep -q full .trigger/run; }; then
             python scripts/update.py --full
           else
             python scripts/update.py
