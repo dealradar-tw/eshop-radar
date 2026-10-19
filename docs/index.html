@@ -97,6 +97,9 @@ li.hot-miss .name{font-weight:700;font-size:15px}
 .hot-parts .chip{text-align:left}
 .rank{font-family:var(--display);font-weight:800;font-size:22px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
 .price .full{font-family:var(--display);font-size:18px;font-weight:800}
+.low-tip{display:flex;align-items:center;gap:10px;font-size:14px;line-height:1.6;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-left:4px solid #178a4c;border-radius:10px;padding:10px 12px;margin:12px 0 0}
+.low-tip span{flex:1}
+.low-tip .chip{flex:0 0 auto;white-space:nowrap}
 .note{font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:16px 0 0;line-height:1.7}
 h2.sec{font-family:var(--display);font-size:20px;font-weight:800;margin:24px 0 10px}
 .count{font-size:13px;color:var(--muted);margin:12px 0 6px;font-variant-numeric:tabular-nums}
@@ -497,6 +500,10 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <p class="fnote">類型、中文、人數篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
   </div>
 </div>
+<div class="low-tip" id="lowTip" hidden role="status">
+  <span>「史低」是價格從 <b>2026-10-14</b> 開始記錄以來的最低價，記錄時間還短，之後會越來越準。</span>
+  <button class="chip" id="lowTipOk">知道了</button>
+</div>
 <p class="count" id="count"></p>
 <ul id="list"></ul>
 <nav class="pager" id="pager" aria-label="換頁" hidden></nav>
@@ -798,7 +805,16 @@ function filtered(){
         || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
+// 「歷史新低」說明提示：按「知道了」後 30 天內不再出現；沒按的話一天最多出現一次
+let lowTipNow = false;
+function lowTipDue(){
+  if (store.get("lowTipOff", "") > TODAY_STR) return false;
+  if (store.get("lowTipDay", "") === TODAY_STR) return false;
+  store.set("lowTipDay", TODAY_STR);
+  return true;
+}
 function render(){
+  $("#lowTip").hidden = !(lowOnly && lowTipNow);
   const rows = filtered();
   const pages = Math.max(1, Math.ceil(rows.length / pageSize));
   if (page > pages) page = pages;
@@ -1261,6 +1277,7 @@ document.addEventListener("click", e => {
     const w = sv.dataset.view;
     clearFilters();  // 先清掉其他篩選，清單數量才會跟上面的數字一致
     lowOnly = w === "low"; soonOnly = w === "soon";
+    lowTipNow = lowOnly && lowTipDue();
     showTab(["all", "hot", "new", "up", "rankfav", "rankbuy"].includes(w) ? w : "deals");
     if (w === "soon") { $("#sort").value = "end"; render(); }
     setChips();
@@ -1270,6 +1287,11 @@ document.addEventListener("click", e => {
   if (p) { plat = p.dataset.p; store.set("plat", plat); rerender(); return; }
   const rm = t.closest("#recentBox [data-m]");
   if (rm) { recentM = +rm.dataset.m; store.set("recentM", recentM); updTiles(); rerender(); return; }
+  if (t.closest("#lowTipOk")) {
+    const d = new Date(today); d.setDate(d.getDate() + 30);
+    store.set("lowTipOff", new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10));
+    lowTipNow = false; $("#lowTip").hidden = true; return;
+  }
   const um = t.closest("#upBox [data-um]");
   if (um) { upM = +um.dataset.um; store.set("upM", upM); updTiles(); rerender(); return; }
   const rg2 = t.closest("#regs [data-r]");
