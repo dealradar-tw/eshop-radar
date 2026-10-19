@@ -669,6 +669,21 @@ def series_zh(name):
     return ""
 
 
+try:
+    from opencc import OpenCC
+    _S2T = OpenCC("s2twp")  # 簡體→台灣正體（含台灣慣用詞）
+except Exception:
+    _S2T = None
+
+
+def to_tw(t):
+    """維基數據的中文標題有些是簡體，一律轉成台灣用字；沒裝轉換套件就原樣回傳。"""
+    try:
+        return _S2T.convert(t) if _S2T else t
+    except Exception:
+        return t
+
+
 def refresh_zhnames(games):
     """中文名稱：商店名稱是英文或日文的遊戲，優先用維基數據（Wikidata）裡 Switch 遊戲的中文標題（原名完全對得上才用），
     對不上再用知名系列名稱規則（SERIES_ZH）。維基數據每週更新一次，失敗就沿用上次。"""
@@ -715,6 +730,7 @@ def refresh_zhnames(games):
                 if hit and norm_title(hit[1]) != norm_title(nm):
                     wd[nid[-6:]] = hit[1]
                     break
+    wd = {k: to_tw(v) for k, v in wd.items()}
     out = dict(wd)
     nser = 0
     for nid, g in games.items():
