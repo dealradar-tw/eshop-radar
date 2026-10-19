@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-19 14:47",
+"asof":"2026-10-19 21:28",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -435069,15 +435069,15 @@
 "meta":true,
 "only":"jp",
 "first_seen":"",
-"status":"preorder",
+"status":"onsale",
 "reg":null,
 "sale":null,
 "end":"",
 "app":"0100b1c0249b4000",
 "jp":{
 "reg":3400,
-"sale":2380,
-"end":"2026-10-19T12:59:59Z"
+"sale":null,
+"end":""
 },
 "jpId":"70010000122351",
 "nodata":false,
@@ -450468,8 +450468,8 @@
 "app":"010054e0247d2000",
 "jp":{
 "reg":1980,
-"sale":1485,
-"end":"2026-10-19T07:59:59Z"
+"sale":null,
+"end":""
 },
 "jpId":"70010000106392",
 "nodata":false,
