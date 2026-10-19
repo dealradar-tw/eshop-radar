@@ -505,11 +505,12 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
     <button class="chip demo-chip" id="demoOnly" aria-pressed="false" title="只看有體驗版的遊戲">體驗版</button>
   </div>
   <div class="chips" id="tiers" role="group" aria-label="價格區間">
-    <span class="lbl">價格</span>
+    <span class="lbl">價格 NT$</span>
     <button class="chip" data-t="all" aria-pressed="false">全部</button>
-    <button class="chip" data-t="lt100" aria-pressed="false">NT$100 以下</button>
-    <button class="chip" data-t="100" aria-pressed="true">NT$100 以上</button>
-    <button class="chip" data-t="500" aria-pressed="false">NT$500 以上</button>
+    <button class="chip" data-t="lt100" aria-pressed="false">100 以下</button>
+    <button class="chip" data-t="100-300" aria-pressed="false">100～300</button>
+    <button class="chip" data-t="300-500" aria-pressed="false">300～500</button>
+    <button class="chip" data-t="500" aria-pressed="false">500 以上</button>
     <button class="chip" data-t="custom" aria-pressed="false">自訂</button>
   </div>
   <div class="prange" id="prange" hidden>
@@ -616,7 +617,8 @@ const store = {
 let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {items: []}, HOT_IDS = new Set(), ASOF = "", FX = {};
 let favs = new Set(store.get("favs", []).map(String));
 let targets = store.get("targets", {});  // 收藏的目標價 {編號: 台幣}
-let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "100");
+let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = store.get("tier", "all");
+if (!["all", "lt100", "100-300", "300-500", "500", "custom"].includes(tier)) { tier = "all"; store.set("tier", tier); }  // 舊版的「100 以上」已改成區間
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
 let regF = store.get("regF", "all");
 let favOnly = false, lowOnly = false, soonOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
@@ -869,7 +871,9 @@ function inTier(g){
   const p = g.minTwd ?? g.price;  // 與卡片顯示的最便宜地區價格一致
   if (p == null) return false;
   if (tier === "custom") return (pMin == null || p >= pMin) && (pMax == null || p <= pMax);
-  return tier === "lt100" ? p < 100 : p >= +tier;
+  if (tier === "lt100") return p < 100;
+  if (tier.includes("-")) { const [a, b] = tier.split("-").map(Number); return p >= a && p < b; }  // 含下限、不含上限
+  return p >= +tier;
 }
 function gameFilters(g){
   if (g.isDlc) return true;
