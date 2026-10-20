@@ -323,6 +323,9 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .target input{font:inherit;width:8em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .target .cnote{flex-basis:100%;margin:0}
 .only-badge{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#7a4bd1;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.nz{display:inline-block;font-size:10px;font-weight:700;color:#b42318;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px;vertical-align:1px;line-height:1.4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nz{color:#ff8a80}}
+:root[data-theme="dark"] .nz{color:#ff8a80}
 .hk-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--hk,#b4530b);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
 .region h3{font-size:15px;margin:0 0 6px}
 .region table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
@@ -750,7 +753,7 @@ function regionBox(g, id){
     {flag: "台灣", cur: "NT$", local: twd, reg: g.reg, sale: g.sale, twd},
     {flag: "香港", cur: "HK$", local: g.hkNow, reg: g.hkReg, sale: g.hkSale, twd: g.hkTwd,
      url: g.isDlc ? "" : `https://ec.nintendo.com/HK/zh/titles/${full(id)}`},
-    {flag: "日本", cur: "¥", local: g.jpNow, reg: g.jpReg, sale: g.jpSale, twd: g.jpTwd,
+    {flag: "日本", nz: !!g.jpNz, cur: "¥", local: g.jpNow, reg: g.jpReg, sale: g.jpSale, twd: g.jpTwd,
      url: g.jpId ? `https://store-jp.nintendo.com/item/software/D${g.jpId}` : ""},
   ].filter(r => r.local != null).sort((a, b) => (a.twd ?? 1e12) - (b.twd ?? 1e12));  // 換算台幣後最便宜的排最上面
   if (!rows.length) return "";
@@ -758,11 +761,11 @@ function regionBox(g, id){
   return `<div class="region"><h3>各區價格比較</h3><table>
     <thead><tr><th>地區</th><th>當地價格</th><th>約合台幣</th></tr></thead><tbody>
     ${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>
-      <td>${r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${r.flag} ↗</a>` : r.flag}</td>
+      <td>${r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${r.flag} ↗</a>` : r.flag}${r.nz ? ' <span class="nz">無中文</span>' : ""}</td>
       <td>${r.sale != null && r.sale < r.reg ? `<s>${r.cur}${nf(r.reg)}</s> ` : ""}${r.cur}${nf(r.local)}</td>
       <td>${r.twd != null ? `NT$${nf(r.twd)}` : "–"}${r.twd === best ? " <b>最便宜</b>" : ""}</td></tr>`).join("")}
     </tbody></table>
-    <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣、1 日圓 ≈ ${FX.JPY} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。日本區只對應遊戲本體，DLC 暫不比較。實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
+    <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣、1 日圓 ≈ ${FX.JPY} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。日本區只對應遊戲本體，DLC 暫不比較。${g.jpNz ? "這款的日區是另外發行的日文版，<b>沒有中文</b>。" : ""}實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
 }
 const FLAG = {
   tw: '<svg class="fl" viewBox="0 0 24 16" aria-label="台灣"><rect width="24" height="16" fill="#fe0000"/><rect width="12" height="8" fill="#000095"/><polygon points="6.00,0.50 6.52,2.07 7.75,0.97 7.41,2.59 9.03,2.25 7.93,3.48 9.50,4.00 7.93,4.52 9.03,5.75 7.41,5.41 7.75,7.03 6.52,5.93 6.00,7.50 5.48,5.93 4.25,7.03 4.59,5.41 2.97,5.75 4.07,4.52 2.50,4.00 4.07,3.48 2.97,2.25 4.59,2.59 4.25,0.97 5.48,2.07" fill="#fff"/><circle cx="6" cy="4" r="2" fill="#000095"/><circle cx="6" cy="4" r="1.6" fill="#fff"/></svg>',
@@ -790,7 +793,8 @@ function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
   const c = cheapest(g);
   if (!c) return '<b class="full" style="font-size:14px">價格未定</b>';
-  const loc = c.tw ? "" : `<span class="twd">${c.cur}${nf(c.onSale ? c.sale : c.reg)}</span>`;
+  const nz = c.cur === "¥" && g.jpNz ? ' <span class="nz">無中文</span>' : "";  // 日區是另一個版本、沒有中文
+  const loc = c.tw ? "" : `<span class="twd">${c.cur}${nf(c.onSale ? c.sale : c.reg)}${nz}</span>`;
   const fl = `${c.flag}`;
   if (c.onSale) return `<s>NT$${nf(c.regTwd)}</s><b>${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
   return `<b class="full">${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
@@ -1230,7 +1234,7 @@ async function openDetail(id, fromHistory){
   const ch = cheapest(g);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
     : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b>${ch.flag}<small>NT$</small>${nf(ch.twd)}</b></div>
-       <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}　·　${g.reg != null ? `台灣 NT$${nf(g.sale ?? g.reg)}` : "台灣沒有販售"}</div>`
+       <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}${ch.cur === "¥" && g.jpNz ? "（日區無中文）" : ""}　·　${g.reg != null ? `台灣 NT$${nf(g.sale ?? g.reg)}` : "台灣沒有販售"}</div>`
     : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b>${FLAG.tw}<small>NT$</small>${nf(g.sale)}</b></div>
        <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}${g.isLow ? "　<b style='color:#178a4c;font-size:13px'>目前是史低價</b>" : ""}</div>`
     : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"

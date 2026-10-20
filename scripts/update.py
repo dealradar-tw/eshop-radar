@@ -622,6 +622,7 @@ SERIES_ZH = [
     (["NARUTO－ナルト－ 疾風伝", "NARUTO SHIPPUDEN", "NARUTO: Ultimate Ninja STORM"], "火影忍者 疾風傳"),
     (["Naruto", "NARUTO", "ナルト"], "火影忍者"),
     (["Street Fighter", "ストリートファイター"], "快打旋風"),
+    (["Sniper Elite", "スナイパーエリート"], "狙擊之神"),
     (["Tekken", "鉄拳"], "鐵拳"),
     (["Kingdom Hearts", "キングダム ハーツ", "キングダムハーツ"], "王國之心"),
     (["Metal Gear Solid", "メタルギア ソリッド", "メタルギアソリッド"], "潛龍諜影"),
@@ -971,15 +972,32 @@ def _days(a, b):
         return 9999
 
 
+LATIN_STOP = {"nintendo", "switch", "edition", "the", "for", "of", "and", "hd", "dx", "ver", "version", "2"}
+
+
+def latin_key(t):
+    """名稱裡的英文部分（例如「罪惡王權／Monark」→ "monark"），用來比對各區譯名不同的同一款遊戲。
+    英文部分太短、或只有 Nintendo Switch 這類通用字時回傳空字串。"""
+    t = unicodedata.normalize("NFKC", re.sub(r"[™®©]", "", t or "")).lower()
+    words = re.findall(r"[a-z0-9]+", t)
+    core = [w for w in words if w not in LATIN_STOP]
+    if sum(len(w) for w in core if re.search(r"[a-z]", w)) < 4:
+        return ""
+    return " ".join(words)
+
+
 def link_regions(games, jp):
     """台灣／港區與日本區 applicationId 不同的同一款遊戲（多數是 Switch 2 版，也有部分發行商各區分開上架），
     用下列任一條件認定為同一款（都要同平台）：
       1. 封面圖相同
       2. 名稱＋發售日都相同
       3. 介紹頁截圖有 3 張以上相同，或 2 張相同且發售日差 3 天內
+      4. 名稱裡的英文部分完全相同（例如「罪惡王權／Monark」與「モナーク／Monark」），而且兩邊都只對得到這一款：
+         台灣／港區只有一個名稱、日本那邊全是同一個 applicationId（本體與特典版），類型也要有重疊。
+         這種多半是亞洲中文版另外上架，日本版常常沒有中文，所以會標記 jpNoZh 讓網頁註明「日區無中文」
     台灣那筆補上日本區價格，原本另外列出的「日本限定」條目併掉。對應記在 jp.json 的 link，之後每次沿用。"""
     link = jp.setdefault("link", {})          # 日本編號 → [台灣／港區編號]
-    by_img, by_name, by_shot, shots = {}, {}, {}, {}
+    by_img, by_name, by_shot, shots, by_latin = {}, {}, {}, {}, {}
     for nid, g in games.items():
         if g.get("only") == "jp" or g.get("status") not in SELLING or g.get("jp"):
             continue
@@ -988,9 +1006,16 @@ def link_regions(games, jp):
             by_img.setdefault((g["img"], plat), []).append(nid)
         if g.get("name") and g.get("rel"):
             by_name.setdefault((norm_title(g["name"]), plat, g["rel"][:10]), []).append(nid)
+        if latin_key(g.get("name")):
+            by_latin.setdefault((latin_key(g["name"]), plat), []).append(nid)
         shots[nid] = _shots(nid)
         for h in shots[nid]:
             by_shot.setdefault((h, plat), []).append(nid)
+    jp_latin, jp_app = {}, {}
+    for n, g in games.items():
+        if g.get("only") == "jp" and g.get("meta") and latin_key(g.get("name")):
+            jp_app[n] = (g.get("app") or n).lower()
+            jp_latin.setdefault((latin_key(g["name"]), g.get("plat") or "HAC"), []).append(n)
     new = 0
     for n, g in list(games.items()):
         if g.get("only") != "jp" or not g.get("meta") or n in link:
@@ -1010,9 +1035,24 @@ def link_regions(games, jp):
                 best = [x for x, v in ok.items() if v == top]
                 if len({norm_title(games[x].get("name")) for x in best}) == 1:   # 同分但名稱不同（例如普通版／豪華版）就不猜
                     c = set(best)
-        c = sorted(x for x in c if not games[x].get("jp") or games[x].get("jpId") == n)
+        by_latin_rule, jp_side = False, []
+        if not c and latin_key(g.get("name")):
+            key = (latin_key(g["name"]), plat)
+            tw = by_latin.get(key, [])
+            jp_side = list(jp_latin.get(key, []))   # 含這次迴圈已併掉的特典版，才能把本體也併到同一筆
+            gen = set(g.get("genres") or [])
+            if (tw and len({norm_title(games[x].get("name")) for x in tw}) == 1
+                    and len({jp_app.get(x, x) for x in jp_side}) == 1
+                    and all(not gen or not games[x].get("genres") or gen & set(games[x]["genres"]) for x in tw)):
+                c, by_latin_rule = set(tw), True
+        ok_jp = {n} | (set(jp_side) if by_latin_rule else set())   # 同一款的本體與特典版可以都併到同一筆
+        c = sorted(x for x in c if not games[x].get("jp") or games[x].get("jpId") in ok_jp)
         if not c:
             continue
+        if by_latin_rule and not g.get("zh"):
+            for nid in c:
+                if games[nid].get("zh"):
+                    games[nid]["jpNoZh"] = True
         link[n] = c
         new += 1
         for nid in c:                          # 這次就先用日本限定條目已查到的價格，下次起由 refresh_jp 查
@@ -1025,6 +1065,29 @@ def link_regions(games, jp):
                 os.remove(f)
     log(f"跨區對應（applicationId 不同）：共 {len(link)} 款，本次新增 {new} 款")
     return link
+
+
+def hk_dupes(games):
+    """港區另外上架、但台灣區也有賣的同一款（applicationId 相同、同平台）：港區編號 → 台灣編號。
+    台灣 eShop 開張後不少遊戲在台灣用新編號上架，港區仍用舊編號，查港區價格時用台灣編號查不到，
+    原本會分成「台灣」「港區限定」兩筆；網站輸出時把港區價格併進台灣那筆。"""
+    tw = {}
+    for n, g in games.items():
+        if not g.get("only") and g.get("app") and g.get("status") in SELLING:
+            tw.setdefault((g["app"].lower(), g.get("plat") or "HAC"), []).append(n)
+    out, used = {}, set()
+    hk_items = sorted((n for n, g in games.items() if g.get("only") == "hk" and g.get("app") and g.get("status") in SELLING),
+                      key=lambda n: ((games[n].get("hk") or {}).get("reg") or 1e12, n))
+    for h in hk_items:
+        g = games[h]
+        c = [t for t in tw.get((g["app"].lower(), g.get("plat") or "HAC"), [])
+             if t not in used and not (games[t].get("hk") or {}).get("reg")]
+        if not c:
+            continue
+        c.sort(key=lambda t: (norm_title(games[t].get("name")) != norm_title(g.get("name")), t))
+        out[h] = c[0]
+        used.add(c[0])
+    return out
 
 
 def moved_ids(games, jp):
@@ -1288,22 +1351,33 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=No
     for d in dlcs.values():
         if d.get("status") in SELLING and d.get("parent"):
             dlc_count[d["parent"]] = dlc_count.get(d["parent"], 0) + 1
+    hk2tw = hk_dupes(games)
+    tw2hk = {t: h for h, t in hk2tw.items()}
+    moved = dict(moved or {})
+    moved.update({h[-6:]: t[-6:] for h, t in hk2tw.items()})
+    log(f"港區另外上架、併進台灣區的遊戲：{len(hk2tw)} 款")
     rows = []
     for nsuid, g in games.items():
-        if g.get("status") not in SELLING or nsuid in adult_full:
+        if g.get("status") not in SELLING or nsuid in adult_full or nsuid in hk2tw:
             continue
         low, low_date, n = low_info(hist.get(nsuid, []))
         hk = g.get("hk") or {}
+        if nsuid in tw2hk:                       # 港區價格、日本對應都用港區那筆
+            hg = games[tw2hk[nsuid]]
+            hk = hg.get("hk") or {}
+            if not g.get("jp") and hg.get("jp"):
+                g = {**g, "jp": hg["jp"], "jpId": hg.get("jpId"), "jpNoZh": hg.get("jpNoZh")}
         rows.append([nsuid[-6:], g.get("name", ""), 1 if g.get("plat") == "BEE" else 0, g.get("img", ""),
                      g.get("reg"), g.get("sale"), (g.get("end") or "")[:10], low, low_date,
                      n, STATUS_CODE[g["status"]], g.get("first_seen", ""), 1 if g.get("meta") else 0,
-                     g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0),
+                     g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0) + dlc_count.get(tw2hk.get(nsuid), 0),
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
-                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", "")])
+                     g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", ""),
+                     1 if g.get("jpNoZh") and g.get("jp") else 0])
     rows.sort(key=lambda r: r[0])
     packed, img = pack_rows(rows, ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                                   "jpReg", "jpSale", "jpId", "rel", "demo", "only"])
+                                   "jpReg", "jpSale", "jpId", "rel", "demo", "only", "jpNz"])
     save(os.path.join(DOCS, "data.json"), {
         "v": 2,
         "asof": asof,
@@ -1318,7 +1392,7 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=No
             continue
         low, low_date, n = low_info(hist.get(nsuid, []))
         hk = d.get("hk") or {}
-        drows.append([nsuid, d.get("name", ""), d.get("parent", "")[-6:], d.get("img", ""),
+        drows.append([nsuid, d.get("name", ""), hk2tw.get(d.get("parent", ""), d.get("parent", ""))[-6:], d.get("img", ""),
                       d.get("reg"), d.get("sale"), (d.get("end") or "")[:10], low, low_date, n,
                       STATUS_CODE[d["status"]], d.get("first_seen", ""), 1 if d.get("mem") else 0,
                       hk.get("reg"), hk.get("sale"), (d.get("date") or "")[:10]])
@@ -1335,14 +1409,14 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=No
     changed = 0
     hist_jp = hist_jp or {}
     jp_only = {n for n, g in games.items() if g.get("only") == "jp" and hist_jp.get(n)}
-    for nsuid in set(hist) | set(hist_hk) | jp_only:
+    for nsuid in set(hist) | set(hist_hk) | jp_only | set(tw2hk):
         if nsuid[-6:] in adult_ids:
             hp = os.path.join(hdir, nsuid + ".json")
             if os.path.exists(hp):
                 os.remove(hp)
             continue
-        obj = {"tw": hist.get(nsuid, []), "hk": hist_hk.get(nsuid, [])}
-        jid = (games.get(nsuid) or {}).get("jpId")
+        obj = {"tw": hist.get(nsuid, []), "hk": hist_hk.get(nsuid, []) or hist_hk.get(tw2hk.get(nsuid), [])}
+        jid = (games.get(nsuid) or {}).get("jpId") or (games.get(tw2hk.get(nsuid)) or {}).get("jpId")
         if jid and hist_jp.get(jid):
             obj["jp"] = hist_jp[jid]
         changed += save_if_changed(os.path.join(hdir, nsuid + ".json"), obj)
