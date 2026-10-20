@@ -623,6 +623,7 @@ SERIES_ZH = [
     (["Naruto", "NARUTO", "ナルト"], "火影忍者"),
     (["Street Fighter", "ストリートファイター"], "快打旋風"),
     (["Sniper Elite", "スナイパーエリート"], "狙擊之神"),
+    (["Little Nightmares", "リトルナイトメア"], "小小夢魘"),
     (["Tekken", "鉄拳"], "鐵拳"),
     (["Kingdom Hearts", "キングダム ハーツ", "キングダムハーツ"], "王國之心"),
     (["Metal Gear Solid", "メタルギア ソリッド", "メタルギアソリッド"], "潛龍諜影"),
