@@ -1561,7 +1561,10 @@ document.addEventListener("wheel", collapseBar, {passive: true});
   addEventListener("scroll", () => {
     const y = window.scrollY, dy = y - lastY;
     lastY = y;
-    if (y < 120) { acc = 0; root.classList.remove("hdr-hide"); return; }
+    // 搜尋列原本的位置還沒完全捲出畫面前不收起來，否則它原本的位置會空一塊
+    const after = $(".bar").nextElementSibling;
+    const slotEnd = after ? after.getBoundingClientRect().top + y : 120;
+    if (y < Math.max(120, slotEnd)) { acc = 0; root.classList.remove("hdr-hide"); return; }
     if (dy * acc < 0) acc = 0;  // 方向改變就重新累計
     acc += dy;
     const a = document.activeElement;
