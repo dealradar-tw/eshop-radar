@@ -609,6 +609,11 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 </div>
 
 <script>
+// 封面載入失敗：有些商品的圖是 png，換副檔名再試一次；還是不行才拿掉（留灰底）
+function imgErr(el){
+  if (el.dataset.r || !/\.jpg$/.test(el.src)) { el.remove(); return; }
+  el.dataset.r = "1"; el.src = el.src.replace(/\.jpg$/, ".png");
+}
 const IMG = h => h ? `https://img-eshop.cdn.nintendo.net/i/${h}.jpg` : "";
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -693,7 +698,7 @@ function fillThumbs(){
   $$(".thumb[data-open]").forEach(t => {
     if (t.querySelector("img")) return;
     const g = BY.get(t.dataset.open);
-    if (g?.img) t.insertAdjacentHTML("afterbegin", `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="this.remove()">`);
+    if (g?.img) t.insertAdjacentHTML("afterbegin", `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="imgErr(this)">`);
   });
 }
 // DLC 清單（約 260 KB）改成需要時才載入：看 DLC、打開有 DLC 的遊戲、收藏裡有 DLC 時
@@ -715,7 +720,7 @@ function ensureDlc(){
 }
 
 // ── 清單列 ──
-const thumb = g => `<div class="thumb" data-open="${g.id}">${g.img ? `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}${g.s2 ? '<span class="s2mark" aria-hidden="true">Switch 2</span>' : ""}`;
+const thumb = g => `<div class="thumb" data-open="${g.id}">${g.img ? `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="imgErr(this)">` : ""}${g.s2 ? '<span class="s2mark" aria-hidden="true">Switch 2</span>' : ""}`;
 function endText(g){
   if (g.status === 1) return "預購中";
   if (g.status === 2) return "尚未發售";
@@ -1261,7 +1266,7 @@ async function openDetail(id, fromHistory){
   const dlcs = (DLC_BY_PARENT.get(id) || []).slice().sort((a, b) => (b.onSale - a.onSale) || (a.price ?? 0) - (b.price ?? 0));
   $("#sheet").innerHTML = `<div class="sheet-bg" data-close>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
-      <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
+      <div class="hero">${g.img ? `<img src="${IMG(g.img)}" alt="" onerror="imgErr(this)">` : ""}<button class="x" data-close aria-label="關閉">×</button></div>
       <div class="body">
         <div class="title-row"><h2 id="dTitle">${esc(g.zhName || g.name || "名稱待補")}</h2>
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button>
