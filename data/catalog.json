@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-20 14:05",
+"asof":"2026-10-20 14:41",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -14264,8 +14264,8 @@
 "nodata":false,
 "app":"0100e7b016778000",
 "jp":{
-"reg":7975,
-"sale":500,
+"reg":5775,
+"sale":288,
 "end":"2026-11-13T14:59:59Z"
 },
 "rel":"2025-09-09",
@@ -14274,7 +14274,7 @@
 "mv":739906,
 "mv2":739907,
 "jpNoZh":true,
-"jpId":"70010000049979"
+"jpId":"70010000043080"
 },
 "70010000046610":{
 "name":"右腦達人 找錯糾察隊 for Nintendo Switch",
@@ -642810,6 +642810,24 @@
 "reg":null,
 "sale":null,
 "end":"",
+"jp":null
+},
+"70010000140857":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-10-20",
+"status":"unreleased",
+"reg":110,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":35,
+"sale":null,
+"end":""
+},
 "jp":null
 }
 },
