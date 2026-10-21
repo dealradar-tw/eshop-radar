@@ -95,6 +95,8 @@ li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var
 .hotinfo b{color:var(--ink);font-variant-numeric:tabular-nums}
 li.hot-miss{display:flex;align-items:center;opacity:.9}
 li.hot-miss .rank{min-width:46px}
+li.hot-miss .thumb{flex:0 0 112px;width:112px;margin-right:10px;align-self:flex-start;aspect-ratio:16/9;height:auto;min-height:0}
+@media (max-width:480px){li.hot-miss .thumb{flex-basis:96px;width:96px;margin-right:8px;aspect-ratio:16/9;height:auto;min-height:0}li.hot-miss .rank{min-width:34px}}
 li.hot-miss .name{font-weight:700;font-size:15px}
 .hot-parts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .hot-parts .chip{text-align:left}
@@ -1046,7 +1048,7 @@ function renderHot(){
     if (g) return row(g, h.fr, info(h));
     const parts = (h.parts || []).map(id => BY.get(id.slice(-6))).filter(Boolean);
     const platTag = h.plat === "s2" ? '<span class="plat">Switch 2</span>' : "Switch";
-    if (parts.length) return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(h.title || "")}</span>
+    if (parts.length) return `<li class="hot-miss"><div class="rank">#${h.fr}</div>${thumb(parts[0])}</div><div class="info"><span class="name">${esc(h.title || "")}</span>
       <div class="meta">${platTag}<span class="muted">　實體合輯，數位版分開賣：</span></div>
       <div class="hot-parts">${parts.map(p => `<button class="chip" data-open="${p.id}">${esc(p.zhName || p.name)}<span class="muted">　${priceText(p)}</span></button>`).join("")}</div>${info(h)}</div></li>`;
     return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(h.title || "")}</span>
