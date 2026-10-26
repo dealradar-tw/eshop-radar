@@ -992,11 +992,11 @@ function updRankPriv(){
   box.hidden = !rankOn();
   const out = rankOut();
   $("#rankPrivState").textContent = out ? "你已停止上傳，收藏與購買紀錄不會被計入排行。" : "你的收藏與已購買會匿名計入排行（只傳隨機裝置編號和遊戲編號）。";
-  $("#rankOptBtn").textContent = out ? "重新參與排行" : "刪除我的排行資料與留言並停止上傳";
+  $("#rankOptBtn").textContent = out ? "重新參與排行" : "刪除我的排行資料並停止上傳";
 }
 async function toggleRankOpt(){
   if (!rankOut()) {
-    if (!confirm("會刪除你已上傳的收藏與購買統計、以及你發表的所有留言，並停止上傳。你手機裡的收藏不受影響。確定嗎？")) return;
+    if (!confirm("會刪除你已上傳的收藏與購買統計，並停止上傳。你手機裡的收藏不受影響。確定嗎？")) return;
     try {
       const r = await fetch(RANK_CFG.url + "/rest/v1/rpc/delete_my_marks", {method: "POST", headers: sbHeaders(), body: JSON.stringify({p_device: deviceId()})});
       if (!r.ok) throw new Error(r.status);
@@ -1039,6 +1039,7 @@ async function loadRanks(){
 let STATM_T = 0;
 // ── 每款遊戲的統計（點擊／收藏／購買／留言）與評論區 ──
 // 資料來自 Supabase（見 supabase/schema.sql）：點擊數 view_counts、收藏／購買 mark_counts、留言數 comment_counts
+const COMMENTS_ON = false;   // 評論區先不開放，等點閱數到一定程度再改成 true
 let STATM = null;   // {view, fav, buy, cmt}: Map(編號 → 人數)，重新整理排行時沿用上一份，不會讓卡片上的數字消失
 const IC = {
   eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -1051,7 +1052,7 @@ function statInner(id, big){
   if (!STATM) return "";
   const it = (ic, k, label, n) => `<span title="${label}${nf(n)}">${IC[ic]}${big ? label : ""}${nf(n)}</span>`;
   return it("eye", "view", big ? "點擊 " : "點擊", stat("view", id)) + it("star", "fav", big ? "收藏 " : "收藏", stat("fav", id))
-    + it("bag", "buy", big ? "購買 " : "購買", stat("buy", id)) + (big ? it("chat", "cmt", "留言 ", stat("cmt", id)) : "");
+    + it("bag", "buy", big ? "購買 " : "購買", stat("buy", id)) + (big && COMMENTS_ON ? it("chat", "cmt", "留言 ", stat("cmt", id)) : "");
 }
 function statsHTML(g, big){
   if (g.isDlc || !rankOn()) return "";
@@ -1512,7 +1513,7 @@ async function openDetail(id, fromHistory){
           <div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
           <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}</div>
         </div>` : ""}
-        ${!g.isDlc && rankOn() ? cmSkeleton(id) : ""}
+        ${!g.isDlc && rankOn() && COMMENTS_ON ? cmSkeleton(id) : ""}
         ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li data-card="${d.id}">
             ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
@@ -1525,7 +1526,7 @@ async function openDetail(id, fromHistory){
   $("#sheet .sheet").scrollTop = 0;
   $("#sheet .x").focus();
   loadChart(id);
-  if (!g.isDlc && rankOn()) { logView(id); initComments(id); }
+  if (!g.isDlc && rankOn()) { logView(id); if (COMMENTS_ON) initComments(id); }
 }
 // 手機「返回」：打開詳細頁／截圖時記一筆瀏覽紀錄，按返回就只關掉它，不會離開網站
 function closeDetail(){
