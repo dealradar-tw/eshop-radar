@@ -486,20 +486,20 @@ html{zoom:1}
   header h1{font-size:21px}
 }
 /* 卡片：封面 | 金額（下方是收藏／購買圖示）| 名稱與標籤一路排到右側；點閱／收藏／購買數併進標籤那一行 */
-li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr)}
-.side{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:0;min-width:0}
+li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr) auto}
+.side{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;min-width:0}
 .side .price{grid-column:auto;grid-row:auto;display:block;text-align:right}
 .side .price s,.side .price .twd{display:block}
-.side .acts{grid-column:auto;grid-row:auto;flex-direction:row;gap:0;align-self:flex-end;justify-self:auto}
-.meta .gstat{display:inline-flex;margin:0 0 0 2px;vertical-align:middle}
+.side .gstat{margin:0;gap:2px 7px;justify-content:flex-end;flex-wrap:nowrap}
 .info{grid-column:3;grid-row:1/3}
+.acts{grid-column:4;grid-row:1/3;flex-direction:column;gap:2px;align-self:center;justify-self:end}
 @media (max-width:700px){
   /* 封面貼齊卡片左、上、下邊，放大填滿 */
-  li[data-card]{padding:0 6px 0 0;overflow:hidden;gap:8px;grid-template-columns:var(--thumb-w,124px) auto minmax(0,1fr)}
+  li[data-card]{padding:0 6px 0 0;overflow:hidden;gap:8px;grid-template-columns:var(--thumb-w,124px) auto minmax(0,1fr) auto}
   li[data-card] .thumb{grid-column:1;grid-row:1/3;border-radius:0;aspect-ratio:auto;height:auto;align-self:stretch;min-height:88px}
-  li[data-card] .info,li[data-card] .side{padding-block:7px}
+  li[data-card] .info,li[data-card] .side,li[data-card] .acts{padding-block:7px}
 }
-@media (max-width:360px){ li[data-card]{grid-template-columns:104px auto minmax(0,1fr)!important} }
+@media (max-width:360px){ li[data-card]{grid-template-columns:104px auto minmax(0,1fr) auto!important} }
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -665,7 +665,7 @@ li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr)}
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v98・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v99・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
@@ -887,10 +887,10 @@ function row(g, rank, extra = ""){
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.zhName || g.name)}${g.zhName ? `<small class="zhn">${esc(g.name)}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
-      <div class="meta">${metaLine(g) || "&nbsp;"}${statsHTML(g)}</div>${extra}
+      <div class="meta">${metaLine(g) || "&nbsp;"}</div>${extra}
     </div>
-    <div class="side"><div class="price">${priceHTML(g)}</div>
-    <div class="acts"><button class="star" data-id="${g.id}" aria-pressed="${favs.has(g.id)}" aria-label="收藏">${STAR_SVG}</button><button class="buy" data-buy="${g.id}" aria-pressed="${isBought(g.id)}" aria-label="已購買">${BAG_SVG}</button></div></div>
+    <div class="side"><div class="price">${priceHTML(g)}</div>${statsHTML(g)}</div>
+    <div class="acts"><button class="star" data-id="${g.id}" aria-pressed="${favs.has(g.id)}" aria-label="收藏">${STAR_SVG}</button><button class="buy" data-buy="${g.id}" aria-pressed="${isBought(g.id)}" aria-label="已購買">${BAG_SVG}</button></div>
   </li>`;
 }
 
