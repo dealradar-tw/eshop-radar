@@ -493,7 +493,9 @@ li.hot-miss .info{display:block;flex:1 1 0;min-width:0}
 .info .name{grid-column:2/4;grid-row:1;align-self:start;text-align:left}
 .nw,.soon{white-space:nowrap}
 .xtra{grid-column:2/4;grid-row:2;align-self:start;margin-top:-2px}
-.xtra .hotinfo{margin:0}
+.xtra .hotinfo{margin:0;font-size:12.5px;white-space:nowrap}
+li.has-x.x-low .xtra{grid-column:2/5;grid-row:3;margin-top:0;padding-bottom:6px}
+li.has-x.x-low .mx,li.has-x.x-low .side{grid-row:2}
 li.has-x .mx,li.has-x .side{grid-row:3}
 li.has-x .acts,li.has-x[data-card] .thumb{grid-row:1/4}
 .mx{grid-column:3;grid-row:2;align-self:start;min-width:0;margin-top:2px}
@@ -677,7 +679,7 @@ li.has-x .acts,li.has-x[data-card] .thumb{grid-row:1/4}
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v108・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v109・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
@@ -1310,7 +1312,7 @@ const dec = t => String(t).replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"')
 function renderHot(){
   const items = (HOT.items || []).filter(h => plat === "all" || (plat === "1") === (h.plat === "s2"));
   if (HOT.week) $("#hotNote").textContent = `依日本 Fami通 每週銷量排行（${HOT.week}）`;
-  const info = h => `<div class="hotinfo"><span class="nw">本週約 <b>${nf(h.sales)}</b> 本${h.total ? "　·" : ""}</span>${h.total ? ` <span class="nw">累計 ${nf(h.total)} 本</span>` : ""}</div>`;
+  const info = h => `<div class="hotinfo"><span class="nw">本週約 <b>${nf(h.sales)}</b> 本${h.total ? " ·" : ""}</span>${h.total ? ` <span class="nw">累計 ${nf(h.total)} 本</span>` : ""}</div>`;
   $("#hotList").innerHTML = items.length ? items.map(h => {
     const g = h.id && BY.get(h.id.slice(-6));
     if (g) return row(g, h.fr, info(h));
@@ -1322,7 +1324,17 @@ function renderHot(){
     return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(dec(h.title || ""))}</span>
       <div class="meta">${platTag}<span class="muted">　台、港、日商店都還查不到（可能只出實體版或尚未上架）</span></div>${info(h)}</div></li>`;
   }).join("") : '<li class="hot-miss"><div class="info">目前沒有資料。</div></li>';
+  fitHotInfo();
 }
+// 銷量資訊放不進名稱下方同一排時，整排移到卡片最下方（可延伸到收藏／購買圖示下方）
+function fitHotInfo(){
+  $$("#hotList li.has-x").forEach(li => {
+    li.classList.remove("x-low");
+    const x = li.querySelector(".xtra .hotinfo"); if (!x) return;
+    if (x.scrollWidth > x.parentElement.clientWidth + 1) li.classList.add("x-low");
+  });
+}
+addEventListener("resize", () => { if ($("#hotList")) fitHotInfo(); });
 function buildGenreChips(){
   const cnt = new Map();
   ITEMS.forEach(g => (g.genres || []).forEach(x => cnt.set(x, (cnt.get(x) || 0) + 1)));
