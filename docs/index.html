@@ -328,7 +328,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .favonly{flex:0 0 auto;white-space:nowrap;border-radius:8px;padding:0 12px}
 .hdr-btns{float:right;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:6px 0 0 8px}
 .theme-btn{white-space:nowrap}
-html{zoom:var(--ui-zoom,1)}
+html{zoom:.88}
 .install{font-weight:700;background:var(--tag);color:var(--tag-ink);border-color:var(--tag)}
 .target{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--bg);border-radius:10px;padding:10px 12px}
 .target label{font-size:13px;font-weight:700}
@@ -494,7 +494,6 @@ html{zoom:var(--ui-zoom,1)}
   <div class="hdr-btns">
     <button class="chip mine-btn" id="openMine">我的收藏</button>
     <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
-    <button class="chip theme-btn" id="sizeBtn" aria-label="切換顯示大小"></button>
   </div>
   <h1>特價雷達 <span class="beta">測試版</span></h1>
   <p>非官方 Nintendo eShop 特價與價格追蹤。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
@@ -651,7 +650,7 @@ html{zoom:var(--ui-zoom,1)}
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v89・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v90・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
@@ -1814,17 +1813,7 @@ $("#themeBtn").addEventListener("click", () => {
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
 applyTheme();
 
-// ── 顯示大小：小／標準／大／特大（App 模式不能雙指縮放，所以網站內自己提供）──
-const SIZES = [["s", "Aa 小", 0.88], ["m", "Aa 標準", 1], ["l", "Aa 大", 1.15], ["xl", "Aa 特大", 1.3]];
-let uiSize = store.get("uiSize", "m");
-function applySize(){
-  const z = SIZES.find(x => x[0] === uiSize) || SIZES[1];
-  document.documentElement.style.setProperty("--ui-zoom", z[2]);
-  $("#sizeBtn").textContent = z[1];
-}
-$("#sizeBtn").addEventListener("click", () => {
-  uiSize = SIZES[(SIZES.findIndex(x => x[0] === uiSize) + 1) % SIZES.length][0];
-  store.set("uiSize", uiSize); applySize();
+
 });
 applySize();
 
