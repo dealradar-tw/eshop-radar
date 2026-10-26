@@ -493,6 +493,13 @@ li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr)}
 .side .acts{grid-column:auto;grid-row:auto;flex-direction:row;gap:0;align-self:flex-end;justify-self:auto}
 .meta .gstat{display:inline-flex;margin:0 0 0 2px;vertical-align:middle}
 .info{grid-column:3;grid-row:1/3}
+@media (max-width:480px){
+  /* 封面貼齊卡片左、上、下邊，放大填滿 */
+  li[data-card]{padding:0 6px 0 0;overflow:hidden;gap:8px;grid-template-columns:var(--thumb-w,124px) auto minmax(0,1fr)}
+  li[data-card] .thumb{border-radius:0;aspect-ratio:auto;height:auto;align-self:stretch;min-height:88px}
+  li[data-card] .info,li[data-card] .side{padding-block:7px}
+}
+@media (max-width:360px){ li[data-card]{grid-template-columns:104px auto minmax(0,1fr)!important} }
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -658,7 +665,7 @@ li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr)}
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v96・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v97・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
