@@ -328,6 +328,38 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .nz{display:inline-block;font-size:10px;font-weight:700;color:#b42318;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px;vertical-align:1px;line-height:1.4}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nz{color:#ff8a80}}
 :root[data-theme="dark"] .nz{color:#ff8a80}
+/* 每款遊戲的統計與評論區 */
+.gstat{display:flex;flex-wrap:wrap;gap:2px 10px;margin-top:3px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.5}
+.gstat span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.gstat svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round;flex:0 0 auto}
+.gstat.big{font-size:13px;gap:4px 14px;margin:0}
+.gstat.big svg{width:15px;height:15px}
+.cmts{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.cmts h3{margin:0;font-size:17px;font-family:var(--display);font-weight:800}
+.cm-form,.cm-rform{display:flex;flex-direction:column;gap:6px}
+.cm-form input,.cm-form textarea,.cm-rform input,.cm-rform textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;box-sizing:border-box;resize:vertical}
+.cm-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
+.cm-foot .cm-msg{flex:1 1 auto;min-width:0}
+.cm-msg{font-size:12px;color:var(--muted)} .cm-msg.err{color:var(--urgent);font-weight:700} .cm-msg.ok{color:#178a4c;font-weight:700}
+.cm-send{font-weight:700;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cm-send:disabled{opacity:.5}
+.cm-note{margin:0;font-size:12px;color:var(--muted);line-height:1.6}
+.cm-list{display:flex;flex-direction:column;gap:10px}
+.cm{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.cm-replies{margin:8px 0 0 10px;padding-left:10px;border-left:3px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.cm-replies .cm{background:var(--surface)}
+.cm-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:12px;color:var(--muted)}
+.cm-nickname{color:var(--ink);font-size:14px}
+.cm-me{font-size:10px;font-weight:700;border:1px solid currentColor;border-radius:4px;padding:0 4px;color:var(--accent)}
+.cm-text{margin:6px 0 4px;font-size:14px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.cm-acts{display:flex;flex-wrap:wrap;gap:2px 14px}
+.cm-act{font:inherit;font-size:12px;color:var(--muted);background:none;border:0;padding:4px 0;cursor:pointer}
+.cm-act:hover:not(:disabled){color:var(--ink);text-decoration:underline}
+.cm-act.on{color:#178a4c;font-weight:700}
+.cm-act:disabled{cursor:default;opacity:.7}
+.cm-slot:not(:empty){margin-top:6px}
+.cm-report{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px}
+.cm-more{align-self:center}
 .hk-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--hk,#b4530b);border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
 .region h3{font-size:15px;margin:0 0 6px}
 .region table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
@@ -828,7 +860,7 @@ function row(g, rank, extra = ""){
     ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.zhName || g.name)}${g.zhName ? `<small class="zhn">${esc(g.name)}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
-      <div class="meta">${metaLine(g) || "&nbsp;"}</div>${extra}
+      <div class="meta">${metaLine(g) || "&nbsp;"}</div>${statsHTML(g)}${extra}
     </div>
     <div class="price">${priceHTML(g)}</div>
     <div class="acts"><button class="star" data-id="${g.id}" aria-pressed="${favs.has(g.id)}" aria-label="收藏">${STAR_SVG}</button><button class="buy" data-buy="${g.id}" aria-pressed="${isBought(g.id)}" aria-label="已購買">${BAG_SVG}</button></div>
@@ -960,11 +992,11 @@ function updRankPriv(){
   box.hidden = !rankOn();
   const out = rankOut();
   $("#rankPrivState").textContent = out ? "你已停止上傳，收藏與購買紀錄不會被計入排行。" : "你的收藏與已購買會匿名計入排行（只傳隨機裝置編號和遊戲編號）。";
-  $("#rankOptBtn").textContent = out ? "重新參與排行" : "刪除我的排行資料並停止上傳";
+  $("#rankOptBtn").textContent = out ? "重新參與排行" : "刪除我的排行資料與留言並停止上傳";
 }
 async function toggleRankOpt(){
   if (!rankOut()) {
-    if (!confirm("會刪除你已上傳到排行資料庫的收藏與購買統計，並停止上傳。你手機裡的收藏不受影響。確定嗎？")) return;
+    if (!confirm("會刪除你已上傳的收藏與購買統計、以及你發表的所有留言，並停止上傳。你手機裡的收藏不受影響。確定嗎？")) return;
     try {
       const r = await fetch(RANK_CFG.url + "/rest/v1/rpc/delete_my_marks", {method: "POST", headers: sbHeaders(), body: JSON.stringify({p_device: deviceId()})});
       if (!r.ok) throw new Error(r.status);
@@ -1001,8 +1033,199 @@ async function loadRanks(){
     RANKS = {fav, buy};
   } catch (_) { RANKS = null; }
   queueSync();
+  if (!STATM || Date.now() - STATM_T > 60000) { STATM_T = Date.now(); loadStats(); }
   return RANKS;
 }
+let STATM_T = 0;
+// ── 每款遊戲的統計（點擊／收藏／購買／留言）與評論區 ──
+// 資料來自 Supabase（見 supabase/schema.sql）：點擊數 view_counts、收藏／購買 mark_counts、留言數 comment_counts
+let STATM = null;   // {view, fav, buy, cmt}: Map(編號 → 人數)，重新整理排行時沿用上一份，不會讓卡片上的數字消失
+const IC = {
+  eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+  bag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z"/></svg>',
+};
+const stat = (k, id) => STATM?.[k]?.get(id) || 0;
+function statInner(id, big){
+  if (!STATM) return "";
+  const it = (ic, k, label, n) => `<span title="${label}${nf(n)}">${IC[ic]}${big ? label : ""}${nf(n)}</span>`;
+  return it("eye", "view", big ? "點擊 " : "點擊", stat("view", id)) + it("star", "fav", big ? "收藏 " : "收藏", stat("fav", id))
+    + it("bag", "buy", big ? "購買 " : "購買", stat("buy", id)) + (big ? it("chat", "cmt", "留言 ", stat("cmt", id)) : "");
+}
+function statsHTML(g, big){
+  if (g.isDlc || !rankOn()) return "";
+  return `<div class="gstat${big ? " big" : ""}" data-id="${g.id}">${statInner(g.id, big)}</div>`;
+}
+function fillStats(){
+  $$(".gstat[data-id]").forEach(el => { el.innerHTML = statInner(el.dataset.id, el.classList.contains("big")); });
+  const c = $("#cmtN"); if (c) c.textContent = nf(stat("cmt", $("#cmts")?.dataset.id));
+}
+async function loadStats(){
+  const get = async (view, extra = "") => {
+    const r = await fetch(`${RANK_CFG.url}/rest/v1/${view}?select=id,n${extra}&order=n.desc&limit=1000`, {headers: sbHeaders()});
+    const j = await r.json(); if (!Array.isArray(j)) throw new Error("bad"); return j;
+  };
+  try {
+    const [fav, buy, view, cmt] = await Promise.all([get("mark_counts", "&kind=eq.fav"), get("mark_counts", "&kind=eq.buy"), get("view_counts"), get("comment_counts")]);
+    const m = a => new Map(a.map(x => [x.id, x.n]));
+    STATM = {fav: m(fav), buy: m(buy), view: m(view), cmt: m(cmt)};
+    fillStats();
+  } catch (_) {}
+}
+// 呼叫 Supabase 函式；失敗時丟出 Error(伺服器訊息)
+async function rpc(fn, body){
+  const r = await fetch(`${RANK_CFG.url}/rest/v1/rpc/${fn}`, {method: "POST", headers: sbHeaders(), body: JSON.stringify(body)});
+  let j = null; try { j = await r.json(); } catch (_) {}
+  if (!r.ok) throw new Error(j?.message || "failed");
+  return j;
+}
+// 點擊數：每台裝置每天每款最多算 1 次（本機先擋一次，伺服器也會去重）
+function logView(id){
+  if (!rankOn() || rankOut() || !/^\d{6}$/.test(id)) return;
+  let v = store.get("viewed", {}); if (v.day !== TODAY_STR) v = {day: TODAY_STR, ids: []};
+  if (v.ids.includes(id)) return;
+  v.ids.push(id); store.set("viewed", v);
+  rpc("log_view", {p_device: deviceId(), p_id: id}).then(() => {
+    if (STATM) { STATM.view.set(id, stat("view", id) + 1); fillStats(); }
+  }).catch(() => { v.ids = v.ids.filter(x => x !== id); store.set("viewed", v); });
+}
+
+// ── 評論區 ──
+const CM_ERR = {"rate limited": "操作太頻繁，請稍後再試", "slow down": "留言太快了，請稍等幾分鐘再發", "daily limit": "今天的留言次數已達上限",
+  "duplicate": "你今天已經發過一樣的內容了", "no links": "留言不能放網址", "reserved nick": "暱稱不能使用這個名稱",
+  "bad nick": "暱稱要 1～20 個字", "bad body": "內容要 1～500 個字", "bad parent": "要回覆的留言已不存在", "not found": "這則留言已不存在",
+  "own comment": "不能對自己的留言這樣做", "too many new devices": "操作太頻繁，請稍後再試"};
+const cmErr = e => CM_ERR[e?.message] || "送出失敗，請稍後再試";
+const pad2 = n => String(n).padStart(2, "0");
+function cmTime(iso){
+  const d = new Date(iso); if (isNaN(d)) return "";
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false}).formatToParts(d).map(x => [x.type, x.value]));
+  const abs = `${p.year}-${p.month}-${p.day} ${p.hour === "24" ? "00" : p.hour}:${p.minute}`;
+  const s = (Date.now() - d) / 1000;
+  const rel = s < 60 ? "剛剛" : s < 3600 ? `${Math.floor(s / 60)} 分鐘前` : s < 86400 ? `${Math.floor(s / 3600)} 小時前` : s < 86400 * 7 ? `${Math.floor(s / 86400)} 天前` : "";
+  return `<time datetime="${esc(iso)}" title="${abs}">${abs}${rel ? `<span class="muted">（${rel}）</span>` : ""}</time>`;
+}
+let CM = {id: "", list: [], shown: 8};
+function cmSkeleton(id){
+  const nick = store.get("nick", "");
+  return `<section class="cmts" id="cmts" data-id="${id}">
+    <h3>評論區（<span id="cmtN">${nf(stat("cmt", id))}</span>）</h3>
+    <form class="cm-form" data-cm-form="">
+      <input class="cm-nick" type="text" maxlength="20" placeholder="暱稱（1～20 字，公開顯示）" value="${esc(nick)}" aria-label="暱稱" autocomplete="off">
+      <textarea class="cm-body" rows="3" maxlength="500" placeholder="分享你的心得或價格資訊…" aria-label="留言內容"></textarea>
+      <div class="cm-foot"><span class="cm-count muted">0 / 500</span><span class="cm-msg" role="status"></span><button type="submit" class="chip cm-send">送出留言</button></div>
+      <p class="cm-note">留言會公開顯示，並記錄時間。請勿張貼個資、網址或不當內容；暱稱請勿用真實姓名。</p>
+    </form>
+    <div class="cm-list" id="cmList"><p class="muted">載入中…</p></div></section>`;
+}
+async function initComments(id){
+  CM = {id, list: [], shown: 8};
+  await refreshComments();
+}
+async function refreshComments(){
+  const box = $("#cmList"); if (!box || !$("#cmts")) return;
+  const id = CM.id;
+  try {
+    const list = await rpc("list_comments", {p_game: id, p_device: deviceId()});
+    if (!$("#cmts") || $("#cmts").dataset.id !== id) return;
+    CM.list = list;
+    if (STATM) { STATM.cmt.set(id, list.length); fillStats(); }
+    renderComments();
+  } catch (_) { if ($("#cmList")) $("#cmList").innerHTML = '<p class="muted">暫時讀不到留言，請稍後再試。</p>'; }
+}
+function cmItem(c, replies){
+  return `<article class="cm" data-cid="${c.id}">
+    <div class="cm-head"><b class="cm-nickname">${esc(c.nick)}</b>${c.mine ? '<span class="cm-me">我</span>' : ""}${cmTime(c.created_at)}</div>
+    <p class="cm-text">${esc(c.body)}</p>
+    <div class="cm-acts">
+      <button class="cm-act${c.helped ? " on" : ""}" data-cm="help" ${c.helped || c.mine ? "disabled" : ""} title="${c.mine ? "不能對自己的留言按" : c.helped ? "你已經按過了" : "這則留言對我有幫助"}">👍 有幫助${c.n_helpful ? ` ${c.n_helpful}` : ""}</button>
+      ${c.parent ? "" : '<button class="cm-act" data-cm="reply">回覆</button>'}
+      ${c.mine ? '<button class="cm-act" data-cm="del">刪除</button>' : '<button class="cm-act" data-cm="report">檢舉</button>'}
+    </div>
+    <div class="cm-slot"></div>
+    ${replies && replies.length ? `<div class="cm-replies">${replies.map(r => cmItem(r)).join("")}</div>` : ""}
+  </article>`;
+}
+function renderComments(){
+  const box = $("#cmList"); if (!box) return;
+  const tops = CM.list.filter(c => !c.parent);
+  const rep = new Map();
+  CM.list.filter(c => c.parent).sort((a, b) => a.created_at < b.created_at ? -1 : 1).forEach(c => { (rep.get(c.parent) || rep.set(c.parent, []).get(c.parent)).push(c); });
+  if (!tops.length) { box.innerHTML = '<p class="muted">還沒有人留言，來當第一個吧。</p>'; return; }
+  const open = new Set([...box.querySelectorAll(".cm-slot:not(:empty)")].map(s => s.closest(".cm")?.dataset.cid));
+  box.innerHTML = tops.slice(0, CM.shown).map(c => cmItem(c, rep.get(c.id))).join("")
+    + (tops.length > CM.shown ? `<button class="chip cm-more" data-cm="more">顯示更多（還有 ${tops.length - CM.shown} 則）</button>` : "");
+}
+function cmMsg(el, text, ok){
+  const m = el?.querySelector?.(".cm-msg"); if (!m) return;
+  m.textContent = text; m.className = "cm-msg" + (ok ? " ok" : " err");
+}
+async function cmSubmit(form, parent){
+  const nickEl = form.querySelector(".cm-nick"), bodyEl = form.querySelector(".cm-body"), btn = form.querySelector(".cm-send");
+  const nick = nickEl.value.trim(), body = bodyEl.value.trim();
+  if (!nick) { cmMsg(form, "請先輸入暱稱"); nickEl.focus(); return; }
+  if (!body) { cmMsg(form, "請輸入留言內容"); bodyEl.focus(); return; }
+  btn.disabled = true; cmMsg(form, "送出中…", true);
+  try {
+    await rpc("post_comment", {p_device: deviceId(), p_game: CM.id, p_parent: parent || null, p_nick: nick, p_body: body});
+    store.set("nick", nick);
+    bodyEl.value = ""; form.querySelector(".cm-count") && (form.querySelector(".cm-count").textContent = "0 / 500");
+    if (parent) form.closest(".cm-slot").innerHTML = "";
+    else cmMsg(form, "已送出", true);
+    await refreshComments();
+  } catch (e) { cmMsg(form, cmErr(e)); }
+  btn.disabled = false;
+}
+document.addEventListener("submit", e => {
+  const f = e.target.closest?.(".cm-form, .cm-rform"); if (!f) return;
+  e.preventDefault();
+  cmSubmit(f, f.dataset.parent ? +f.dataset.parent : null);
+});
+document.addEventListener("input", e => {
+  if (e.target.classList?.contains("cm-body")) { const c = e.target.closest("form")?.querySelector(".cm-count"); if (c) c.textContent = `${e.target.value.length} / 500`; }
+});
+document.addEventListener("click", async e => {
+  const b = e.target.closest?.("[data-cm]"); if (!b) return;
+  const act = b.dataset.cm, art = b.closest(".cm"), cid = art ? +art.dataset.cid : 0, slot = art?.querySelector(".cm-slot");
+  if (act === "more") { CM.shown += 8; renderComments(); return; }
+  if (act === "reply") {
+    if (slot.querySelector(".cm-rform")) { slot.innerHTML = ""; return; }
+    document.querySelectorAll(".cm-slot").forEach(s => s.innerHTML = "");
+    slot.innerHTML = `<form class="cm-rform" data-parent="${cid}">
+      <input class="cm-nick" type="text" maxlength="20" placeholder="暱稱（1～20 字）" value="${esc(store.get("nick", ""))}" aria-label="暱稱" autocomplete="off">
+      <textarea class="cm-body" rows="2" maxlength="500" placeholder="回覆這則留言…" aria-label="回覆內容"></textarea>
+      <div class="cm-foot"><span class="cm-count muted">0 / 500</span><span class="cm-msg" role="status"></span><button type="button" class="chip" data-cm="cancel">取消</button><button type="submit" class="chip cm-send">送出回覆</button></div></form>`;
+    slot.querySelector(store.get("nick", "") ? ".cm-body" : ".cm-nick").focus();
+    return;
+  }
+  if (act === "cancel") { slot.innerHTML = ""; return; }
+  if (act === "help") {
+    b.disabled = true;
+    try { const n = await rpc("mark_helpful", {p_device: deviceId(), p_comment: cid}); const c = CM.list.find(x => x.id === cid); if (c) { c.helped = true; c.n_helpful = n; } renderComments(); }
+    catch (er) { b.disabled = false; b.title = cmErr(er); }
+    return;
+  }
+  if (act === "report") {
+    if (slot.querySelector(".cm-report")) { slot.innerHTML = ""; return; }
+    document.querySelectorAll(".cm-slot").forEach(s => s.innerHTML = "");
+    slot.innerHTML = `<div class="cm-report"><span>檢舉原因：</span>
+      <button class="chip" data-cm="rp" data-r="abuse">用詞不當</button><button class="chip" data-cm="rp" data-r="spam">廣告洗版</button><button class="chip" data-cm="rp" data-r="other">其他</button>
+      <button class="chip" data-cm="cancel">取消</button><span class="cm-msg" role="status"></span></div>`;
+    return;
+  }
+  if (act === "rp") {
+    const box = slot.querySelector(".cm-report"); box.querySelectorAll("button").forEach(x => x.disabled = true);
+    try { await rpc("report_comment", {p_device: deviceId(), p_comment: cid, p_reason: b.dataset.r}); cmMsg(box, "已收到檢舉，謝謝你；管理者會查看", true); setTimeout(refreshComments, 1200); }
+    catch (er) { cmMsg(box, cmErr(er)); box.querySelectorAll("button").forEach(x => x.disabled = false); }
+    return;
+  }
+  if (act === "del") {
+    if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "再按一次確認刪除"; setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.textContent = "刪除"; } }, 3000); return; }
+    try { await rpc("delete_my_comment", {p_device: deviceId(), p_comment: cid}); await refreshComments(); } catch (er) { b.textContent = cmErr(er); }
+  }
+});
+
 function rankLists(){
   const R = RANKS || {fav: [], buy: []};
   const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && x.g.dealAny)
@@ -1274,6 +1497,7 @@ async function openDetail(id, fromHistory){
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button>
           <button class="fav-top buy-top" data-buy="${id}" aria-pressed="${isBought(id)}">${buyLabel(isBought(id))}</button></div>
         ${g.zhName ? `<div class="zhn-d">原名：${esc(g.name)}</div>` : ""}
+        ${statsHTML(g, true)}
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
@@ -1288,6 +1512,7 @@ async function openDetail(id, fromHistory){
           <div class="vid" id="vid"><button data-yt="${vids[0]}" style="background-image:url(https://i.ytimg.com/vi/${vids[0]}/hqdefault.jpg)"><span>▶ 播放影片</span></button></div>
           <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}</div>
         </div>` : ""}
+        ${!g.isDlc && rankOn() ? cmSkeleton(id) : ""}
         ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li data-card="${d.id}">
             ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
@@ -1300,6 +1525,7 @@ async function openDetail(id, fromHistory){
   $("#sheet .sheet").scrollTop = 0;
   $("#sheet .x").focus();
   loadChart(id);
+  if (!g.isDlc && rankOn()) { logView(id); initComments(id); }
 }
 // 手機「返回」：打開詳細頁／截圖時記一筆瀏覽紀錄，按返回就只關掉它，不會離開網站
 function closeDetail(){
