@@ -490,6 +490,7 @@ html{zoom:1}
 li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr) auto;align-items:stretch}
 .info{display:contents}
 .info .name{grid-column:2/4;grid-row:1;align-self:start;text-align:left}
+.nw,.soon{white-space:nowrap}
 .mx{grid-column:3;grid-row:2;align-self:start;min-width:0;margin-top:2px}
 .side{grid-column:2;grid-row:2;align-self:start;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-start;gap:2px;min-width:0}
 .side .price{grid-column:auto;grid-row:auto;display:block;text-align:right}
@@ -671,7 +672,7 @@ li[data-card]{grid-template-columns:var(--thumb-w,104px) auto minmax(0,1fr) auto
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v106・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v107・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
@@ -789,14 +790,14 @@ function ensureDlc(){
 // ── 清單列 ──
 const thumb = g => `<div class="thumb" data-open="${g.id}">${g.img ? `<img src="${IMG(g.img)}" alt="" loading="lazy" onerror="imgErr(this)">` : ""}${g.s2 ? '<span class="s2mark" aria-hidden="true">Switch 2</span>' : ""}`;
 function endText(g){
-  if (g.status === 1) return "預購中";
-  if (g.status === 2) return "尚未發售";
+  if (g.status === 1) return '<span class="nw">預購中</span>';
+  if (g.status === 2) return '<span class="nw">尚未發售</span>';
   if (!g.onSale || g.days === null) return "";
   if (g.days < 0) return '<span class="soon">已結束</span>';
   if (g.days === 0) return '<span class="soon">今天結束</span>';
   if (g.days <= 3) return `<span class="soon">剩 ${g.days} 天</span>`;
   const [, m, d] = g.end.split("-");
-  return `${+m}/${+d} 結束`;
+  return `<span class="nw">${+m}/${+d} 結束</span>`;
 }
 // 中文支援標籤：繁體中文／簡體中文／部分中文／無中文（沒有介紹資料的不標）
 function zhInfo(g){
@@ -884,7 +885,8 @@ function metaLine(g){
   if (tab === "up") parts.push(upDate(g));
   if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
   else if (g.dlcN) parts.push(`${g.dlcN} 個 DLC`);
-  return parts.filter(Boolean).join(" · ");
+  // 每段資訊（結束日、DLC 數量…）不拆開換行；段與段之間用「·」連接，盡量排在同一行
+  return parts.filter(Boolean).map((p, i) => i ? `<span class="nw">· ${p}</span>` : p).join(" ");
 }
 const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg>';
 const favLabel = on => STAR_SVG.replace("<svg", `<svg class="ico-star${on ? " on" : ""}"`) + (on ? " 已收藏" : " 收藏");
