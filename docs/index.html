@@ -514,6 +514,19 @@ li.has-x .acts,li.has-x[data-card] .thumb{grid-row:1/4}
   li[data-card] .acts{padding-block:7px}
 }
 @media (max-width:360px){ li[data-card]{grid-template-columns:84px auto minmax(0,1fr) auto!important} }
+/* Fami通：實體合輯列 */
+li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto!important;gap:6px 10px;padding:8px 6px 8px 8px;align-items:center}
+.hc-rank{grid-column:1;grid-row:1;text-align:center;font-family:var(--display);font-weight:800;font-size:18px;color:var(--muted)}
+.hc-head{grid-column:2;grid-row:1;font-weight:700;font-size:15px;line-height:1.35;align-self:end}
+.hc-head .plat{font-size:10px;white-space:nowrap}
+.hc-acts{grid-column:3;grid-row:1/3;align-self:center}
+.hc-sales{grid-column:2;grid-row:2;align-self:start}
+.hc-sales .hotinfo{margin:0;font-size:12.5px}
+.hc-th{grid-column:1;border-radius:6px;overflow:hidden}
+.hc-th .thumb{border-radius:0}
+.hc-th.s2o{outline:2px solid var(--s2,#8f5bd6);outline-offset:-2px}
+.hc-game{grid-column:2/4;text-align:left;font:inherit;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;line-height:1.35}
+.hc-game small{font-size:12px}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -679,7 +692,7 @@ li.has-x .acts,li.has-x[data-card] .thumb{grid-row:1/4}
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v109・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v110・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
@@ -1309,6 +1322,23 @@ async function renderRank(t){
     : `<li class="hot-miss"><div class="info">${isFav ? "目前沒有被關注又有特價的遊戲。" : "還沒有人標記已購買。"}</div></li>`;
 }
 const dec = t => String(t).replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+// 實體合輯（數位版分開賣）：排名＋合輯名稱＋銷量在上，下面逐款列出各數位版（封面＋名稱＋價格）；右上角的星號與購物袋對整套合輯一起操作
+function collRow(h, parts, platTag, infoHtml){
+  const ids = parts.map(p => p.id).join(",");
+  const allFav = parts.every(p => favs.has(p.id)), allBuy = parts.every(p => isBought(p.id));
+  return `<li class="hot-coll${h.plat === "s2" ? " s2" : ""}">
+    <div class="hc-rank">#${h.fr}</div>
+    <div class="hc-head"><span class="hc-name">${esc(dec(h.title || ""))}</span> ${platTag}</div>
+    <div class="acts hc-acts"><button class="star" data-cfav="${ids}" aria-pressed="${allFav}" aria-label="收藏整套">${STAR_SVG}</button><button class="buy" data-cbuy="${ids}" aria-pressed="${allBuy}" aria-label="整套已購買">${BAG_SVG}</button></div>
+    <div class="hc-sales">${infoHtml}</div>
+    ${parts.map((p, k) => `<div class="hc-th${p.s2 ? " s2o" : ""}" style="grid-row:${3 + k}">${thumb(p)}</div></div>
+    <button class="hc-game" data-open="${p.id}" style="grid-row:${3 + k}"><span>${esc(p.zhName || p.name)}</span><small class="muted">${priceText(p)}</small></button>`).join("")}
+  </li>`;
+}
+function refreshColl(){
+  $$("[data-cfav]").forEach(b => b.setAttribute("aria-pressed", b.dataset.cfav.split(",").every(i => favs.has(i))));
+  $$("[data-cbuy]").forEach(b => b.setAttribute("aria-pressed", b.dataset.cbuy.split(",").every(i => isBought(i))));
+}
 function renderHot(){
   const items = (HOT.items || []).filter(h => plat === "all" || (plat === "1") === (h.plat === "s2"));
   if (HOT.week) $("#hotNote").textContent = `依日本 Fami通 每週銷量排行（${HOT.week}）`;
@@ -1318,9 +1348,7 @@ function renderHot(){
     if (g) return row(g, h.fr, info(h));
     const parts = (h.parts || []).map(id => BY.get(id.slice(-6))).filter(Boolean);
     const platTag = h.plat === "s2" ? '<span class="plat">Switch 2</span>' : "Switch";
-    if (parts.length) return `<li class="hot-miss"><div class="rank">#${h.fr}</div>${thumb(parts[0])}</div><div class="info"><span class="name">${esc(dec(h.title || ""))}</span>
-      <div class="meta">${platTag}<span class="muted">　實體合輯，數位版分開賣：</span></div>
-      <div class="hot-parts">${parts.map(p => `<button class="chip" data-open="${p.id}">${esc(p.zhName || p.name)}<span class="muted">　${priceText(p)}</span></button>`).join("")}</div>${info(h)}</div></li>`;
+    if (parts.length) return collRow(h, parts, platTag, info(h));
     return `<li class="hot-miss"><div class="rank">#${h.fr}</div><div class="info"><span class="name">${esc(dec(h.title || ""))}</span>
       <div class="meta">${platTag}<span class="muted">　台、港、日商店都還查不到（可能只出實體版或尚未上架）</span></div>${info(h)}</div></li>`;
   }).join("") : '<li class="hot-miss"><div class="info">目前沒有資料。</div></li>';
@@ -1690,6 +1718,7 @@ function toggleFav(id){
   store.set("favs", [...favs]);
   queueSync();
   $$(`.star[data-id="${id}"]`).forEach(s => s.setAttribute("aria-pressed", favs.has(id)));
+  refreshColl();
   if (!$("#minePage").hidden) renderMine();
 }
 
@@ -1697,6 +1726,20 @@ function toggleFav(id){
 document.addEventListener("click", e => {
   const t = e.target;
   if (t.closest("#lightbox")) return;
+  const cf = t.closest("[data-cfav]");
+  if (cf) {  // 整套合輯：有任何一款沒收藏 → 全部加入；全部都已收藏 → 全部取消
+    const ids = cf.dataset.cfav.split(","), all = ids.every(i => favs.has(i));
+    ids.forEach(i => all ? favs.delete(i) : favs.add(i));
+    store.set("favs", [...favs]); queueSync();
+    ids.forEach(i => $$(`.star[data-id="${i}"]`).forEach(x => x.setAttribute("aria-pressed", favs.has(i))));
+    refreshColl(); return;
+  }
+  const cb = t.closest("[data-cbuy]");
+  if (cb) {  // 整套合輯：還有沒標記的 → 全部標記已購買；已全部標記 → 不動作（各款的明細請點進該遊戲）
+    const ids = cb.dataset.cbuy.split(",");
+    ids.forEach(i => { if (!isBought(i)) { (MINE[i] ||= {p: []}).b = true; MINE[i].p ||= []; } });
+    saveMine(); ids.forEach(refreshBuyIcons); refreshColl(); return;
+  }
   const star = t.closest(".star");
   if (star) { toggleFav(star.dataset.id); if (favOnly && tab !== "hot") render(); return; }
   const shot = t.closest("[data-shot]");
@@ -1962,6 +2005,7 @@ function mineSpent(id){
   return {twd, unknown, qty};
 }
 function refreshBuyIcons(id){
+  if (typeof refreshColl === "function") refreshColl();
   $$(`[data-buy="${id}"]`).forEach(b => { b.setAttribute("aria-pressed", isBought(id)); if (b.classList.contains("buy-top")) b.innerHTML = buyLabel(isBought(id)); });
   if (!$("#minePage").hidden) renderMine();
 }
