@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-28 02:47",
+"asof":"2026-10-28 14:53",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -93543,14 +93543,14 @@
 "img":"caa3b264d046131320f998064d8198e5ba49b91b475e931d236e02a55bfaac57",
 "status":"onsale",
 "reg":174,
-"sale":null,
-"end":"",
+"sale":139,
+"end":"2026-11-23T23:59:59Z",
 "meta":true,
 "first_seen":"2026-10-13",
 "hk":{
 "reg":58,
-"sale":null,
-"end":""
+"sale":46,
+"end":"2026-11-23T23:59:59Z"
 },
 "nodata":false,
 "dv":4,
@@ -93568,8 +93568,8 @@
 "jpId":"70010000110770",
 "jp":{
 "reg":1200,
-"sale":null,
-"end":""
+"sale":960,
+"end":"2026-11-23T23:59:59Z"
 },
 "rel":"2026-04-02",
 "demo":0,
@@ -118663,14 +118663,14 @@
 "img":"caa3b264d046131320f998064d8198e5ba49b91b475e931d236e02a55bfaac57",
 "status":"onsale",
 "reg":174,
-"sale":null,
-"end":"",
+"sale":139,
+"end":"2026-11-23T23:59:59Z",
 "meta":true,
 "first_seen":"2026-10-13",
 "hk":{
 "reg":58,
-"sale":null,
-"end":""
+"sale":46,
+"end":"2026-11-23T23:59:59Z"
 },
 "nodata":false,
 "dv":4,
@@ -118688,8 +118688,8 @@
 "jpId":"70010000118554",
 "jp":{
 "reg":1200,
-"sale":null,
-"end":""
+"sale":960,
+"end":"2026-11-23T23:59:59Z"
 },
 "rel":"2026-04-02",
 "demo":0,
@@ -318520,10 +318520,9 @@
 "plat":"HAC",
 "img":"e16fb5b31e13359b68232ee4fdfe8f3593bffb4cab3a63caef4d3c62dd050246",
 "meta":true,
-"only":"hk",
 "first_seen":"",
-"status":"onsale",
-"reg":null,
+"status":"unreleased",
+"reg":450,
 "sale":null,
 "end":"",
 "hk":{
@@ -354360,8 +354359,8 @@
 "jpId":"70010000082230",
 "jp":{
 "reg":3520,
-"sale":880,
-"end":"2026-10-27T23:59:59Z"
+"sale":null,
+"end":""
 },
 "mv2":739914
 },
@@ -438475,8 +438474,8 @@
 "app":"040080d0277c6000",
 "jp":{
 "reg":2300,
-"sale":null,
-"end":""
+"sale":1840,
+"end":"2026-11-23T23:59:59Z"
 },
 "jpId":"70010000120765",
 "nodata":false,
@@ -591908,8 +591907,8 @@
 "app":"0100c34010bea000",
 "jp":{
 "reg":1500,
-"sale":375,
-"end":"2026-10-27T23:59:59Z"
+"sale":null,
+"end":""
 },
 "jpId":"70010000027377",
 "nodata":false,
@@ -633831,8 +633830,8 @@
 "app":"0100db0007ff6000",
 "jp":{
 "reg":1200,
-"sale":300,
-"end":"2026-10-27T23:59:59Z"
+"sale":null,
+"end":""
 },
 "jpId":"70010000003661",
 "nodata":false,
@@ -645366,9 +645365,9 @@
 }
 },
 "fx":{
-"HKD":4.1521,
-"JPY":0.2069,
+"HKD":4.1354,
+"JPY":0.2054,
 "date":"2026-10-28",
-"USD":32.5924
+"USD":32.4391
 }
 }
