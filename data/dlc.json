@@ -4695,7 +4695,7 @@
 },
 "70050000063512":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"動畫《鬼滅之刃》主題曲＆配樂組合包",
 "img":"c204e18c084554e592f5b89c30fe7b3b8a95db1d9fad6e340d314e8b715c4e8a",
 "mem":false,
@@ -28007,12 +28007,12 @@
 "date":"2026-05-14",
 "status":"onsale",
 "reg":197,
-"sale":137,
-"end":"2026-10-28T15:59:59Z",
+"sale":null,
+"end":"",
 "hk":{
 "reg":48,
-"sale":33,
-"end":"2026-10-28T15:59:59Z"
+"sale":null,
+"end":""
 }
 },
 "70050000071427":{
@@ -28075,12 +28075,12 @@
 "date":"2026-05-14",
 "status":"onsale",
 "reg":197,
-"sale":137,
-"end":"2026-10-28T15:59:59Z",
+"sale":null,
+"end":"",
 "hk":{
 "reg":48,
-"sale":33,
-"end":"2026-10-28T15:59:59Z"
+"sale":null,
+"end":""
 }
 },
 "70050000069940":{
@@ -52089,7 +52089,7 @@
 },
 "70050000064218":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「獪岳」角色包",
 "img":"8b3dd3597d60b25d7ef739c364a3a1fd725fd68188c9103728dab211f4f306c4",
 "mem":false,
@@ -52106,7 +52106,7 @@
 },
 "70050000064219":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「我妻善逸（無限城篇）」角色包",
 "img":"dbf83591720da6d4df9d79dc0d5f7a81f0f0646398e38905513df324e14a710a",
 "mem":false,
@@ -52123,7 +52123,7 @@
 },
 "70050000064220":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「猗窩座（無限城篇）」角色包",
 "img":"2423e65021e33f041ea062aae50b5c168af5624f185b0f0c239ae80e44608d8e",
 "mem":false,
@@ -52140,7 +52140,7 @@
 },
 "70050000064221":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「竈門炭治郎（無限城篇）」角色包",
 "img":"bef38979cd38e9639697f1a1cb87902120792d31880d6fe47ab77c184b437aac",
 "mem":false,
@@ -52157,7 +52157,7 @@
 },
 "70050000064222":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「富岡義勇（無限城篇）」角色包",
 "img":"f781843186291cbde6c5e114bdb42316ce1b373995a1a65da6c922a238260286",
 "mem":false,
@@ -52174,7 +52174,7 @@
 },
 "70050000064223":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「胡蝶忍（無限城篇）」角色包",
 "img":"53de4f43faf560b1747ca346a7016c6f79fbd934cd6557dcda901b6cf9d8039e",
 "mem":false,
@@ -52191,7 +52191,7 @@
 },
 "70050000064224":{
 "first_seen":"2026-10-14",
-"parent":"70010000086955",
+"parent":"70010000134435",
 "name":"「童磨」角色包",
 "img":"3252349fbea94146821d8143f0f2a5d181bdc78ee64df09ac4b73f74b8baaef7",
 "mem":false,
@@ -64705,7 +64705,7 @@
 "img":"bfce94689aa2192adf4caf00ce2f02bff0b99171c2e5caac9a414751820fc08e",
 "mem":false,
 "date":"2026-10-29",
-"status":"preorder",
+"status":"onsale",
 "reg":126,
 "sale":88,
 "end":"2026-11-10T15:59:59Z",
@@ -64722,7 +64722,7 @@
 "img":"b9ea3785a4a06bf753c68dcc9d0c88d12f8ccf43bc0f91d0cea03a1928abee7e",
 "mem":false,
 "date":"2026-10-29",
-"status":"preorder",
+"status":"onsale",
 "reg":94,
 "sale":65,
 "end":"2026-11-10T15:59:59Z",
@@ -64841,7 +64841,7 @@
 "img":"940a354c4778247bc652729b6f36c5be9ee8f6081cc5bc1ea3dec3588c2d190f",
 "mem":false,
 "date":"2026-10-29",
-"status":"preorder",
+"status":"onsale",
 "reg":127,
 "sale":88,
 "end":"2026-11-10T15:59:59Z",
@@ -64858,7 +64858,7 @@
 "img":"e5b0e314af00b283bb6185fce39344ffd3f97e50031b6c2208716994e06119f3",
 "mem":false,
 "date":"2026-10-29",
-"status":"preorder",
+"status":"onsale",
 "reg":95,
 "sale":66,
 "end":"2026-11-10T15:59:59Z",
@@ -64898,6 +64898,23 @@
 "end":"",
 "hk":{
 "reg":69,
+"sale":null,
+"end":""
+}
+},
+"70050000083630":{
+"first_seen":"2026-10-29",
+"parent":"70010000139863",
+"name":"FlipFlipJigsaw Additional Stage Pack Vol.1",
+"img":"251f22d49a85d7fa62399613f2e33926f08b764089ea78f4f46341d43ed2f16b",
+"mem":false,
+"date":"2026-11-05",
+"status":"preorder",
+"reg":100,
+"sale":null,
+"end":"",
+"hk":{
+"reg":26,
 "sale":null,
 "end":""
 }
