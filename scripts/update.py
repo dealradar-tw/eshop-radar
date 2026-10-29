@@ -748,6 +748,44 @@ def refresh_zhnames(games):
         save(path, {"asof": asof, "wd": wd, "n": out})
 
 
+EN_VARS = {"shopId": 3, "country": "TW", "language": "en"}
+EN_HK_VARS = {"shopId": 3, "country": "HK", "language": "en"}
+
+
+def refresh_ennames(games, limit=1500):
+    """英文名稱（方便用英文搜尋）：只補商店名稱含中日文字的遊戲；查商店英文版，台區沒有就查港區。
+    結果存 data/en_names.json 與 docs/ennames.json；查不到的記 "-"，不再重查。每次最多查 limit 款。"""
+    path = os.path.join(DATA, "en_names.json")
+    en = load("en_names.json", {})
+    todo = [nid for nid, g in games.items()
+            if (g.get("name") or "") and (HAN.search(g["name"]) or re.search(r"[\u3040-\u30ff]", g["name"]))
+            and nid[-6:] not in en]
+    todo = todo[:limit]
+    got = 0
+    for vars_ in (EN_VARS, EN_HK_VARS):
+        left = [n for n in todo if en.get(n[-6:]) in (None, "")]
+        for i in range(0, len(left), 30):
+            chunk = left[i:i + 30]
+            try:
+                fields = " ".join(f"a{j}: applicationItem(nsUid: {n}) {{ formalName }}" for j, n in enumerate(chunk))
+                item = gql(fields, vars_)
+            except Exception as e:
+                log(f"  英文名稱查詢失敗：{e}")
+                break
+            if not item:
+                continue
+            for j, n in enumerate(chunk):
+                nm = ((item.get(f"a{j}") or {}).get("formalName") or "").strip()
+                if nm and not HAN.search(nm) and not re.search(r"[\u3040-\u30ff]", nm):
+                    en[n[-6:]] = nm; got += 1
+            time.sleep(0.5)
+    for n in todo:
+        en.setdefault(n[-6:], "-")
+    log(f"  英文名稱：本次新增 {got} 款，累計 {sum(1 for v in en.values() if v != '-')} 款")
+    save(path, en)
+    save(os.path.join(DOCS, "ennames.json"), {"n": {k: v for k, v in en.items() if v != "-"}})
+
+
 def _title_keys(t):
     """同一款遊戲的幾種寫法：原名、去掉括號（常附讀音或英文名）、只取括號裡的名字＋後綴。
     例：「Xenoblade2 (ゼノブレイド2) Nintendo Switch 2 Edition」→ 也能對上「ゼノブレイド2 Nintendo Switch 2 Edition」。"""
@@ -1591,6 +1629,7 @@ def main():
     link_regions(games, jp)
     refresh_hot(games, jp)
     refresh_zhnames(games)
+    refresh_ennames(games)
 
     items = {**games, **dlcs}
     drops = update_history(items, hist)

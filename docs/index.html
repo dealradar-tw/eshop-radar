@@ -557,7 +557,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 <section id="pList">
 <div class="bar">
   <div class="row1">
-    <input id="q" type="search" placeholder="搜尋遊戲名稱" aria-label="搜尋遊戲名稱">
+    <input id="q" type="search" placeholder="搜尋全部遊戲（中文／英文名稱）" aria-label="搜尋全部遊戲">
     <select id="sort" aria-label="排序方式"></select>
     <button class="chip favonly" id="favOnly" aria-pressed="false" title="只看收藏"><svg class="ico-star on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.25 6.5L12 17.3l-5.85 3.15 1.25-6.5-4.8-4.55 6.55-.85z"/></svg> 收藏</button>
     <button class="chip ftoggle" id="fToggle" aria-expanded="false">篩選<span id="fBadge" class="fb">0</span><span class="arr">▾</span></button>
@@ -692,7 +692,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v110・版本更新日期 2026-10-26</span>
+  <span class="muted">網站版本 v111・版本更新日期 2026-10-26</span>
 </footer>
 </div>
 
@@ -987,19 +987,21 @@ function gameFilters(g){
 }
 function filtered(){
   const q = $("#q").value.trim().toLowerCase();
+  if (q) {  // 有輸入搜尋字時：不分分頁、不套任何篩選，一律搜尋全部遊戲
+    return ITEMS.filter(g => !!g.name && !g.isDlc &&
+      ((g.name || "").toLowerCase().includes(q) || (g.zhName || "").toLowerCase().includes(q) || (g.enName || "").toLowerCase().includes(q)
+        || tagsOf(g.id).some(t => t.toLowerCase().includes(q)))
+    ).sort(sorters[$("#sort").value] || sorters.pct);
+  }
   return ITEMS.filter(g =>
-    !!g.name &&  // 還查不到名稱的商品先不列出
+    !!g.name &&
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
     (tab === "all" || (tab === "new" ? isRecent(g) : tab === "up" ? inUpRange(g) : g.dealAny)) &&
     (plat === "all" || +g.s2 === +plat) &&
     (regF === "all" || (regF === "tw" ? !g.only : onlyKind(g) === regF)) &&
     (inTier(g) || (tab === "up" && g.price == null && g.minTwd == null)) && gameFilters(g) &&
-    (!lowOnly || g.isLow) &&
-    (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
-    (!demoOnly || g.demo) &&
-    (!favOnly || favs.has(g.id)) &&
-    (!q || (g.name || "").toLowerCase().includes(q) || (g.zhName || "").toLowerCase().includes(q) || tagsOf(g.id).some(t => t.toLowerCase().includes(q))
-        || (g.isDlc && (BY.get(g.parent)?.name || "").toLowerCase().includes(q)))
+    (!lowOnly || g.isLow) && (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
+    (!demoOnly || g.demo) && (!favOnly || favs.has(g.id))
   ).sort(sorters[$("#sort").value] || sorters.pct);
 }
 // 「歷史新低」說明提示：按「知道了」後 7 天內不再出現；沒按的話一天最多出現一次
@@ -1391,7 +1393,7 @@ function showTab(t){
   $("#pList").hidden = t === "hot" || isRank; $("#pHot").hidden = t !== "hot"; $("#pRank").hidden = !isRank;
   $("#recentBox").hidden = t !== "new";
   $("#upBox").hidden = t !== "up";
-  $("#q").placeholder = t === "all" ? "搜尋全部遊戲名稱" : t === "new" ? "搜尋近期發售" : t === "up" ? "搜尋即將發售" : "搜尋特價遊戲名稱";
+  $("#q").placeholder = "搜尋全部遊戲（中文／英文名稱）";
   page = 1;
   if (t === "hot") renderHot(); else if (isRank) renderRank(t); else { setSortOptions(); render(); }
   if (t === "up" && $("#sort").value === "upFav" && !RANKS) loadRanks().then(() => tab === "up" && render());
@@ -1601,6 +1603,7 @@ async function openDetail(id, fromHistory){
           <button class="fav-top" data-fav="${id}" aria-pressed="${favs.has(id)}">${favLabel(favs.has(id))}</button>
           <button class="fav-top buy-top" data-buy="${id}" aria-pressed="${isBought(id)}">${buyLabel(isBought(id))}</button></div>
         ${g.zhName ? `<div class="zhn-d">原名：${esc(g.name)}</div>` : ""}
+        ${g.enName ? `<div class="zhn-d">英文名：${esc(g.enName)}</div>` : ""}
         ${statsHTML(g, true)}
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
         ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
@@ -1850,6 +1853,11 @@ $("#sort").addEventListener("change", async () => {
     const games = (data.v === 2 ? unpackV2(data) : data.rows.map(r => fromRow(data.fields, r, {isDlc: false})));
     games.forEach(g => { g.s2 = !!g.s2; g.hasDetail = !!g.hasDetail; g.zhName = (zhn.n || {})[g.id] || ""; BY.set(g.id, g); });
     ITEMS = games;
+    fetch("ennames.json").then(r => r.ok ? r.json() : null).then(j => {  // 英文名稱另外載入，不擋住清單
+      if (!j || !j.n) return;
+      games.forEach(g => { g.enName = j.n[g.id.slice(-6)] || ""; });
+      if ($("#q").value.trim()) render();
+    }).catch(() => {});
     IMG_READY = imgP.then(j => {
       if (!j || !j.img) return;
       j.img.forEach((h, i) => { if (games[i] && h) games[i].img = h; });
