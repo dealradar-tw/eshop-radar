@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-29 08:46",
+"asof":"2026-10-29 14:54",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -416180,8 +416180,8 @@
 "jpId":"70010000100660",
 "jp":{
 "reg":1000,
-"sale":500,
-"end":"2026-10-29T05:59:59Z"
+"sale":null,
+"end":""
 },
 "mv2":739913
 },
@@ -648603,6 +648603,38 @@
 "zv":2,
 "mv":1,
 "mv2":739918
+},
+"70010000128159":{
+"name":"Lilac ~side Wizard~",
+"plat":"HAC",
+"img":"8752576c266c78f0c9860ef55a9ffe20be0ad68e4a90d8cf7d6ee2042a8f048e",
+"meta":true,
+"only":"jp",
+"first_seen":"2026-10-29",
+"status":"unreleased",
+"reg":null,
+"sale":null,
+"end":"",
+"app":"01001fb028a38000",
+"jp":{
+"reg":3480,
+"sale":null,
+"end":""
+},
+"jpId":"70010000128159",
+"nodata":false,
+"dv":4,
+"rel":"2026-11-05",
+"demo":0,
+"genres":[
+"冒險",
+"模擬"
+],
+"pmax":1,
+"poff":1,
+"zh":2,
+"zv":2,
+"mv":1
 }
 },
 "fx":{
