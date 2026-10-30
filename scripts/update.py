@@ -826,6 +826,45 @@ def refresh_ennames(games, limit=1500):
     save(os.path.join(DOCS, "ennames.json"), {"n": {k: v for k, v in en.items() if v != "-"}})
 
 
+def probe_en_sources():
+    """一次性探測：哪些官方管道查得到英文名稱（結果寫進 data/probe_en.json 供檢視，確認後移除）。"""
+    out = {}
+    path = os.path.join(DATA, "probe_en.json")
+    if os.path.exists(path):
+        return
+    tests = {"草泥馬": ("70010000034599", "010083e013188000"), "打工人": ("70010000045015", "010060e015ff2000"),
+             "大富翁4Fun": ("70010000056886", "010068b0185e8000"), "ROCKMAN EXE合集1": ("70010000045619", "010038e016264000")}
+    def rec(key, fn):
+        try:
+            out[key] = fn()
+        except Exception as e:
+            out[key] = f"ERR {type(e).__name__}: {str(e)[:200]}"
+    for name, (nid, app) in tests.items():
+        for cc, lang in (("TW", "en"), ("HK", "en"), ("US", "en"), ("GB", "en"), ("AU", "en"), ("JP", "en"), ("JP", "ja")):
+            rec(f"gql {cc}/{lang} {name} nsuid", lambda cc=cc, lang=lang, nid=nid: gql(f"a0: applicationItem(nsUid: {nid}) {{ nsUid formalName applications {{ id }} }}", {"shopId": 3, "country": cc, "language": lang}))
+        for nm in ("applicationItem", "application"):
+            rec(f"gql US/en {name} {nm}(applicationId)", lambda nm=nm, app=app: gql(f'a0: {nm}(id: "{app}") {{ formalName }}', {"shopId": 3, "country": "US", "language": "en"}))
+        rec(f"price US {name}", lambda nid=nid: get(PRICE_API.replace("lang=zh", "lang=en").format(cc="US", ids=nid))[:300])
+        rec(f"price HK en {name}", lambda nid=nid: get(PRICE_API.replace("lang=zh", "lang=en").format(cc="HK", ids=nid))[:300])
+    # 日本官方搜尋一筆原始資料（看有沒有英文欄位）
+    rec("jp search item", lambda: json.loads(get(JP_SEARCH.format(page=1, q="opt_hard=05_BEE"), timeout=40))["result"]["items"][:1])
+    # 美國 nintendo.com 搜尋（Algolia 公開索引）：用編號、名稱查
+    def algolia(q, extra=None):
+        body = json.dumps({"query": q, "hitsPerPage": 3, **(extra or {})}).encode()
+        req = urllib.request.Request("https://u3b6gr4ua3-dsn.algolia.net/1/indexes/ncom_game_en_us/query", data=body,
+            headers={"x-algolia-application-id": "U3B6GR4UA3", "x-algolia-api-key": "a29c6927638bfd8cee23993e51e721c9",
+                     "content-type": "application/json", **UA})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            d = json.loads(r.read().decode("utf-8", "replace"))
+        return [{k: h.get(k) for k in ("title", "nsuid", "id", "objectID", "applicationId", "platform")} for h in d.get("hits", [])]
+    rec("algolia Alpaca Ball", lambda: algolia("Alpaca Ball"))
+    rec("algolia nsuid TW", lambda: algolia("70010000034599"))
+    rec("algolia Company Man", lambda: algolia("The Company Man"))
+    os.makedirs(DATA, exist_ok=True)
+    save(path, out, pretty=True)
+    log("  英文名稱探測完成（data/probe_en.json）")
+
+
 def _title_keys(t):
     """同一款遊戲的幾種寫法：原名、去掉括號（常附讀音或英文名）、只取括號裡的名字＋後綴。
     例：「Xenoblade2 (ゼノブレイド2) Nintendo Switch 2 Edition」→ 也能對上「ゼノブレイド2 Nintendo Switch 2 Edition」。"""
@@ -1675,6 +1714,10 @@ def main():
     refresh_hot(games, jp)
     refresh_zhnames(games)
     refresh_ennames(games)
+    try:
+        probe_en_sources()
+    except Exception as e:
+        log(f"  探測失敗：{e}")
 
     items = {**games, **dlcs}
     drops = update_history(items, hist)
