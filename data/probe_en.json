@@ -1,0 +1,272 @@
+{
+"gql TW/en 草泥馬 nsuid":{
+"a0":{
+"nsUid":70010000034599,
+"formalName":"草泥馬足球  全明星",
+"applications":[
+{
+"id":"010083e013188000"
+}
+]
+}
+},
+"gql HK/en 草泥馬 nsuid":{
+"a0":{
+"nsUid":70010000034599,
+"formalName":"草泥馬足球  全明星",
+"applications":[
+{
+"id":"010083e013188000"
+}
+]
+}
+},
+"gql US/en 草泥馬 nsuid":{
+"a0":null
+},
+"gql GB/en 草泥馬 nsuid":{
+"a0":null
+},
+"gql AU/en 草泥馬 nsuid":{
+"a0":null
+},
+"gql JP/en 草泥馬 nsuid":{
+"a0":null
+},
+"gql JP/ja 草泥馬 nsuid":{
+"a0":null
+},
+"gql US/en 草泥馬 applicationItem(applicationId)":null,
+"gql US/en 草泥馬 application(applicationId)":null,
+"price US 草泥馬":"{\"personalized\":false,\"country\":\"US\",\"prices\":[{\"title_id\":70010000034599,\"sales_status\":\"not_found\"}]}",
+"price HK en 草泥馬":"{\"personalized\":false,\"country\":\"HK\",\"prices\":[{\"title_id\":70010000034599,\"sales_status\":\"onsale\",\"regular_price\":{\"amount\":\"HKD 158\",\"currency\":\"HKD\",\"raw_value\":\"158\"},\"gold_point\":{\"basic_gift_gp\":\"0\",\"basic_gift_rate\":\"0\",\"consume_gp\":\"0\",\"extra_gold_points\":[],\"gift_gp\":\"0\",\"gift_rate\":\"0\"}}]}",
+"gql TW/en 打工人 nsuid":{
+"a0":{
+"nsUid":70010000045015,
+"formalName":"打工人",
+"applications":[
+{
+"id":"010060e015ff2000"
+}
+]
+}
+},
+"gql HK/en 打工人 nsuid":{
+"a0":{
+"nsUid":70010000045015,
+"formalName":"打工人",
+"applications":[
+{
+"id":"010060e015ff2000"
+}
+]
+}
+},
+"gql US/en 打工人 nsuid":{
+"a0":null
+},
+"gql GB/en 打工人 nsuid":{
+"a0":null
+},
+"gql AU/en 打工人 nsuid":{
+"a0":null
+},
+"gql JP/en 打工人 nsuid":{
+"a0":null
+},
+"gql JP/ja 打工人 nsuid":{
+"a0":null
+},
+"gql US/en 打工人 applicationItem(applicationId)":null,
+"gql US/en 打工人 application(applicationId)":null,
+"price US 打工人":"{\"personalized\":false,\"country\":\"US\",\"prices\":[{\"title_id\":70010000045015,\"sales_status\":\"not_found\"}]}",
+"price HK en 打工人":"{\"personalized\":false,\"country\":\"HK\",\"prices\":[{\"title_id\":70010000045015,\"sales_status\":\"onsale\",\"regular_price\":{\"amount\":\"HKD 158\",\"currency\":\"HKD\",\"raw_value\":\"158\"},\"gold_point\":{\"basic_gift_gp\":\"0\",\"basic_gift_rate\":\"0\",\"consume_gp\":\"0\",\"extra_gold_points\":[],\"gift_gp\":\"0\",\"gift_rate\":\"0\"}}]}",
+"gql TW/en 大富翁4Fun nsuid":{
+"a0":{
+"nsUid":70010000056886,
+"formalName":"大富翁4Fun",
+"applications":[
+{
+"id":"010068b0185e8000"
+}
+]
+}
+},
+"gql HK/en 大富翁4Fun nsuid":{
+"a0":{
+"nsUid":70010000056886,
+"formalName":"大富翁4Fun",
+"applications":[
+{
+"id":"010068b0185e8000"
+}
+]
+}
+},
+"gql US/en 大富翁4Fun nsuid":{
+"a0":null
+},
+"gql GB/en 大富翁4Fun nsuid":{
+"a0":null
+},
+"gql AU/en 大富翁4Fun nsuid":{
+"a0":null
+},
+"gql JP/en 大富翁4Fun nsuid":{
+"a0":null
+},
+"gql JP/ja 大富翁4Fun nsuid":{
+"a0":null
+},
+"gql US/en 大富翁4Fun applicationItem(applicationId)":null,
+"gql US/en 大富翁4Fun application(applicationId)":null,
+"price US 大富翁4Fun":"{\"personalized\":false,\"country\":\"US\",\"prices\":[{\"title_id\":70010000056886,\"sales_status\":\"not_found\"}]}",
+"price HK en 大富翁4Fun":"{\"personalized\":false,\"country\":\"HK\",\"prices\":[{\"title_id\":70010000056886,\"sales_status\":\"onsale\",\"regular_price\":{\"amount\":\"HKD 95\",\"currency\":\"HKD\",\"raw_value\":\"95\"},\"discount_price\":{\"amount\":\"HKD 66\",\"currency\":\"HKD\",\"raw_value\":\"66\",\"start_datetime\":\"2026-10-14T16:00:00Z\",\"end_datetime\":\"2026-1",
+"gql TW/en ROCKMAN EXE合集1 nsuid":{
+"a0":{
+"nsUid":70010000045619,
+"formalName":"ROCKMAN EXE 合集１",
+"applications":[
+{
+"id":"010038e016264000"
+}
+]
+}
+},
+"gql HK/en ROCKMAN EXE合集1 nsuid":{
+"a0":{
+"nsUid":70010000045619,
+"formalName":"ROCKMAN EXE 合集１",
+"applications":[
+{
+"id":"010038e016264000"
+}
+]
+}
+},
+"gql US/en ROCKMAN EXE合集1 nsuid":{
+"a0":null
+},
+"gql GB/en ROCKMAN EXE合集1 nsuid":{
+"a0":null
+},
+"gql AU/en ROCKMAN EXE合集1 nsuid":{
+"a0":null
+},
+"gql JP/en ROCKMAN EXE合集1 nsuid":{
+"a0":null
+},
+"gql JP/ja ROCKMAN EXE合集1 nsuid":{
+"a0":null
+},
+"gql US/en ROCKMAN EXE合集1 applicationItem(applicationId)":null,
+"gql US/en ROCKMAN EXE合集1 application(applicationId)":null,
+"price US ROCKMAN EXE合集1":"{\"personalized\":false,\"country\":\"US\",\"prices\":[{\"title_id\":70010000045619,\"sales_status\":\"not_found\"}]}",
+"price HK en ROCKMAN EXE合集1":"{\"personalized\":false,\"country\":\"HK\",\"prices\":[{\"title_id\":70010000045619,\"sales_status\":\"onsale\",\"regular_price\":{\"amount\":\"HKD 298\",\"currency\":\"HKD\",\"raw_value\":\"298\"},\"gold_point\":{\"basic_gift_gp\":\"0\",\"basic_gift_rate\":\"0\",\"consume_gp\":\"0\",\"extra_gold_points\":[],\"gift_gp\":\"0\",\"gift_rate\":\"0\"}}]}",
+"jp search item":[
+{
+"id":"70050000079242",
+"title":"追加コンテンツ第3弾「追加ストーリー」など",
+"text":"2027年12月31日までに配信予定\nこの追加コンテンツには、以下の内容が含まれています。\n＜追加のストーリー など＞\n本編に登場するベルトラン、タリムーン、オルヘル、アナトリアの新たな物語が遊べます。\n※追加の仲間、追加の兵種なども予定しています。",
+"url":null,
+"titlek":"ツイカコンテンツダイサンダン「ツイカストーリーナド",
+"nsuid":"70050000079242",
+"pdate":"2026-10-15 10:00:00",
+"icode":"AACSA",
+"hard":"05_BEE",
+"sform":"DLC",
+"pprice":null,
+"dprice":null,
+"sdate":"2027.12.31",
+"sodate":"2027G12C31",
+"ssitu":"unreleased",
+"maker":"任天堂",
+"iurl":"ad86640036ed7df12b3fac04d0f3c36c8d8a8d7958cf0b5532bbe860ba5c9336",
+"genre":null,
+"cero":null,
+"cdp":null,
+"right":"©Nintendo / INTELLIGENT SYSTEMS",
+"vcsdate":null,
+"amiibo":"0",
+"yomi":null,
+"sicon":null,
+"n3ds":[
+"0"
+],
+"sprice":null,
+"ssdate":null,
+"sedate":null,
+"cnsuid":null,
+"cont":null,
+"pmode":null,
+"player":null,
+"lang":null,
+"hcopy":null,
+"price":null,
+"tr":"0",
+"series":null,
+"sale_flg":"0",
+"current_price":null,
+"nplayer":null,
+"lplayer":null,
+"apps":null,
+"nso":null,
+"drate":[
+"0"
+],
+"dsdate":"2027-12-31 00:00:00",
+"memo":null,
+"sform_n":"追加コンテンツ",
+"trisdate":null,
+"tristat":null,
+"sslurl":[
+"e99f7109775607920e575b3f962f97474e53aba07d5903cb88f7f40fde30a328",
+"4f6a6766e7e5b15982f6bb9263f24719e9840d69575585922ee6eaf7d30a90ca",
+"311f2dece810fc889d69606dc01da6dd814a8550e3a99276524ba66de43b4480",
+"37991198ed8abd8534c35dc6723a67a98f7ba68f3a29d6e4b3425e55503250ab",
+"6ba4e88a21220c56e09bb7ab83cd4520924053663ab5c1702a44773b5503d743",
+"0873b06a3bc7f029faef39a0324d379c0e08c700ed08012de755a034c01d51e6"
+],
+"mvtype":null,
+"mvname":null,
+"mvurl":null,
+"mvsdates":null,
+"mvedates":null,
+"siurl":null,
+"dcolors":[
+"23353C",
+"DFC163",
+"FDFAF9"
+],
+"sctg":"aoc",
+"iarc":null,
+"tag_name":null,
+"tags":null,
+"dvcsdate":null,
+"url2":null,
+"upgrade":0.0,
+"score":4687.809
+}
+],
+"algolia Alpaca Ball":[
+{
+"title":"Alpaca Ball: Allstars",
+"nsuid":"70010000045870",
+"id":null,
+"objectID":"918230fd-e632-414c-bb47-3a9762780986",
+"applicationId":null,
+"platform":"Nintendo Switch"
+}
+],
+"algolia nsuid TW":[],
+"algolia Company Man":[
+{
+"title":"The Company Man",
+"nsuid":"70010000045017",
+"id":null,
+"objectID":"0bf8957a-8722-4f4f-9bfb-ba37c4c4b166",
+"applicationId":null,
+"platform":"Nintendo Switch"
+}
+]
+}
