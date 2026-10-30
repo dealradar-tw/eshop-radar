@@ -1,5 +1,5 @@
 {
-"asof":"2026-10-30 13:02",
+"asof":"2026-10-30 13:20",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -154696,12 +154696,17 @@
 "zh":3,
 "dlc":[],
 "app":"",
-"jp":null,
+"jp":{
+"reg":7980,
+"sale":null,
+"end":""
+},
 "rel":"2026-11-05",
 "demo":0,
 "zv":2,
 "mv":739906,
-"mv2":739913
+"mv2":739913,
+"jpId":"70010000130791"
 },
 "70010000130816":{
 "name":"The Square Ones",
@@ -648673,20 +648678,6 @@
 },
 "70010000131656":{
 "name":"ペルソナ４ リバイバル",
-"plat":"BEE",
-"img":"",
-"meta":false,
-"only":"jp",
-"first_seen":"2026-10-30",
-"status":"not_found",
-"reg":null,
-"sale":null,
-"end":"",
-"app":"",
-"jp":null
-},
-"70010000130791":{
-"name":"ゼルダの伝説 時のオカリナ",
 "plat":"BEE",
 "img":"",
 "meta":false,
