@@ -488,7 +488,8 @@ def refresh_jp(games, jp, limit=6000):
     except Exception as e:
         log(f"  日本區清單失敗，沿用上次：{e}")
         listed = {}
-    todo = [n for n in (listed or titles) if n not in apps]
+    # 新編號查不到 applicationId 的（多半是預購中、還沒完整上架）之後每次重查，等日本區補上
+    todo = [n for n in (listed or titles) if n not in apps or (apps[n] == "" and int(n) >= JP_RECENT)]
     todo.sort(key=lambda n: -int(n))
     todo = todo[:limit]
     if todo:
@@ -922,6 +923,9 @@ def jp_genres(gs):
     return out
 
 
+JP_RECENT = 70010000129000
+
+
 def refresh_jponly(games, jp):
     """日本區有、台灣與香港都沒有的遊戲：以日本區編號建立商品，價格用日圓。"""
     titles, apps = jp.get("titles", {}), jp.get("apps", {})
@@ -933,7 +937,8 @@ def refresh_jponly(games, jp):
     added = 0
     for n, a in apps.items():
         t = titles.get(n)
-        if not a or a in owned or n in linked or n in games or not isinstance(t, list):
+        recent_pre = not a and int(n) >= JP_RECENT   # 預購中、還沒有 applicationId 的新作也先建立，才能比對到台港版
+        if (not a and not recent_pre) or (a and a in owned) or n in linked or n in games or not isinstance(t, list):
             continue
         games[n] = {"name": t[0], "plat": t[1] if t[1] in ("HAC", "BEE") else "HAC", "img": "", "meta": False,
                     "only": "jp", "first_seen": "" if first else TODAY, "status": "onsale",
