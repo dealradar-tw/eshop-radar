@@ -827,42 +827,35 @@ def refresh_ennames(games, limit=1500):
 
 
 def probe_en_sources():
-    """一次性探測：哪些官方管道查得到英文名稱（結果寫進 data/probe_en.json 供檢視，確認後移除）。"""
+    """一次性探測（第 2 輪）：美國 nintendo.com 公開搜尋的欄位與可分頁的方式，以及用美國編號查 applicationId。"""
     out = {}
-    path = os.path.join(DATA, "probe_en.json")
+    path = os.path.join(DATA, "probe_en2.json")
     if os.path.exists(path):
         return
-    tests = {"草泥馬": ("70010000034599", "010083e013188000"), "打工人": ("70010000045015", "010060e015ff2000"),
-             "大富翁4Fun": ("70010000056886", "010068b0185e8000"), "ROCKMAN EXE合集1": ("70010000045619", "010038e016264000")}
     def rec(key, fn):
         try:
             out[key] = fn()
         except Exception as e:
             out[key] = f"ERR {type(e).__name__}: {str(e)[:200]}"
-    for name, (nid, app) in tests.items():
-        for cc, lang in (("TW", "en"), ("HK", "en"), ("US", "en"), ("GB", "en"), ("AU", "en"), ("JP", "en"), ("JP", "ja")):
-            rec(f"gql {cc}/{lang} {name} nsuid", lambda cc=cc, lang=lang, nid=nid: gql(f"a0: applicationItem(nsUid: {nid}) {{ nsUid formalName applications {{ id }} }}", {"shopId": 3, "country": cc, "language": lang}))
-        for nm in ("applicationItem", "application"):
-            rec(f"gql US/en {name} {nm}(applicationId)", lambda nm=nm, app=app: gql(f'a0: {nm}(id: "{app}") {{ formalName }}', {"shopId": 3, "country": "US", "language": "en"}))
-        rec(f"price US {name}", lambda nid=nid: get(PRICE_API.replace("lang=zh", "lang=en").format(cc="US", ids=nid))[:300])
-        rec(f"price HK en {name}", lambda nid=nid: get(PRICE_API.replace("lang=zh", "lang=en").format(cc="HK", ids=nid))[:300])
-    # 日本官方搜尋一筆原始資料（看有沒有英文欄位）
-    rec("jp search item", lambda: json.loads(get(JP_SEARCH.format(page=1, q="opt_hard=05_BEE"), timeout=40))["result"]["items"][:1])
-    # 美國 nintendo.com 搜尋（Algolia 公開索引）：用編號、名稱查
-    def algolia(q, extra=None):
-        body = json.dumps({"query": q, "hitsPerPage": 3, **(extra or {})}).encode()
-        req = urllib.request.Request("https://u3b6gr4ua3-dsn.algolia.net/1/indexes/ncom_game_en_us/query", data=body,
+    def algolia(body):
+        req = urllib.request.Request("https://u3b6gr4ua3-dsn.algolia.net/1/indexes/ncom_game_en_us/query", data=json.dumps(body).encode(),
             headers={"x-algolia-application-id": "U3B6GR4UA3", "x-algolia-api-key": "a29c6927638bfd8cee23993e51e721c9",
                      "content-type": "application/json", **UA})
         with urllib.request.urlopen(req, timeout=30) as r:
-            d = json.loads(r.read().decode("utf-8", "replace"))
-        return [{k: h.get(k) for k in ("title", "nsuid", "id", "objectID", "applicationId", "platform")} for h in d.get("hits", [])]
-    rec("algolia Alpaca Ball", lambda: algolia("Alpaca Ball"))
-    rec("algolia nsuid TW", lambda: algolia("70010000034599"))
-    rec("algolia Company Man", lambda: algolia("The Company Man"))
+            return json.loads(r.read().decode("utf-8", "replace"))
+    rec("hit keys", lambda: algolia({"query": "Alpaca Ball", "hitsPerPage": 1}).get("hits"))
+    rec("facets", lambda: {k: len(v) for k, v in algolia({"query": "", "hitsPerPage": 0, "facets": ["*"], "maxValuesPerFacet": 1000}).get("facets", {}).items()})
+    rec("total/pages", lambda: {k: v for k, v in algolia({"query": "", "hitsPerPage": 1000}).items() if k != "hits"})
+    rec("page 2 of 1000", lambda: len(algolia({"query": "", "hitsPerPage": 1000, "page": 1}).get("hits", [])))
+    rec("page 5 of 1000", lambda: len(algolia({"query": "", "hitsPerPage": 1000, "page": 5}).get("hits", [])))
+    rec("filters nsuid", lambda: [h.get("title") for h in algolia({"query": "", "filters": "nsuid:70010000045870"}).get("hits", [])])
+    rec("numeric nsuid range", lambda: [h.get("title") for h in algolia({"query": "", "numericFilters": ["nsuid>=70010000045800", "nsuid<=70010000045900"], "hitsPerPage": 5}).get("hits", [])])
+    for nm in ("applicationItem",):
+        rec("gql US/en by US nsuid", lambda: gql("a0: applicationItem(nsUid: 70010000045870) { nsUid formalName applications { id } }", {"shopId": 3, "country": "US", "language": "en"}))
+        rec("gql US/en by US nsuid company man", lambda: gql("a0: applicationItem(nsUid: 70010000045017) { nsUid formalName applications { id } }", {"shopId": 3, "country": "US", "language": "en"}))
     os.makedirs(DATA, exist_ok=True)
     save(path, out, pretty=True)
-    log("  英文名稱探測完成（data/probe_en.json）")
+    log("  英文名稱探測（第 2 輪）完成")
 
 
 def _title_keys(t):
