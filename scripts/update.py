@@ -477,6 +477,19 @@ def list_jp_games():
     return found
 
 
+def apply_jp_manual(games, jp):
+    """日本價格服務查不到、但商店頁面有價格的遊戲：用 data/jp_manual.json 手動補（自動查得到時以自動為準）。"""
+    link = jp.setdefault("link", {})
+    for jid, m in load("jp_manual.json", {}).items():
+        tw = m.get("tw")
+        g = games.get(tw)
+        if not g or g.get("jp"):
+            continue
+        g["jp"], g["jpId"] = {"reg": m["reg"], "sale": None, "end": ""}, jid
+        link.setdefault(jid, [tw])
+        games.pop(jid, None)   # 日本限定的空條目不再單獨顯示
+
+
 def refresh_jp(games, jp, limit=6000):
     """用 applicationId 把台灣區遊戲對應到日本區，再查日本區價格（日圓）。"""
     apps = jp.setdefault("apps", {})      # 日本 nsuid → applicationId（"" 表示查無）
@@ -1655,6 +1668,7 @@ def main():
     backfill_app_ids(games)
     jp = load("jp.json", {})
     refresh_jp(games, jp)
+    apply_jp_manual(games, jp)
     refresh_jponly(games, jp)
     refresh_meta_jponly(games, 6000)
     link_regions(games, jp)
