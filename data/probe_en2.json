@@ -1,0 +1,125 @@
+{
+"hit keys":[
+{
+"lastModified":1654500720980,
+"title":"Alpaca Ball: Allstars",
+"description":"Peru-ve yourself on the Picchu and win those Machus! Dress your silly alpaca up, swing your long neck to hit the ball, then dash after it on your tiny legs. A heady mix of unpredictable randomness, player skill and silly physics allows for comically gripping matches. Features * Physics-based engine for unpredictable and hilarious results! * Frenetic local multiplayer for up to 8 people * Lead your alpaca to glory in Career Mode (supports 1 to 2 players) * Or build custom matches with bot alpacas! * Vibrant pitches inspired by famous South American places such as Machu Picchu! * Customize your Alpaca!",
+"url":"/games/detail/alpaca-ball-allstars-switch/",
+"nsuid":"70010000045870",
+"slug":"alpaca-ball-allstars-switch",
+"horizontalHeaderImage":"https://assets.nintendo.com/image/upload/ncom/en_US/games/switch/a/alpaca-ball-allstars-switch/hero",
+"platform":"Nintendo Switch",
+"releaseDateDisplay":"2021-10-15T07:00:00.000Z",
+"esrbRating":"Everyone",
+"numOfPlayers":"up to 8 players",
+"featured":false,
+"freeToStart":false,
+"esrbDescriptors":[
+"Mild Fantasy Violence"
+],
+"franchises":[],
+"genres":[
+"Sports",
+"Party",
+"Action",
+"Multiplayer"
+],
+"publishers":[
+"Leoful"
+],
+"developers":[
+"Salt Castle Studio"
+],
+"generalFilters":[
+"Demo available",
+"Nintendo Switch Online compatible",
+"Deals"
+],
+"howToShop":[
+"On Nintendo.com"
+],
+"playerFilters":[
+"1+",
+"2+",
+"3+",
+"4+"
+],
+"priceRange":"$10 - $19.99",
+"msrp":19.99,
+"salePrice":13.99,
+"lowestPrice":13.99,
+"availability":[
+"Available now"
+],
+"objectID":"918230fd-e632-414c-bb47-3a9762780986",
+"_distinctSeqID":0,
+"_highlightResult":{
+"title":{
+"value":"<em>Alpaca</em> <em>Ball</em>: Allstars",
+"matchLevel":"full",
+"fullyHighlighted":false,
+"matchedWords":[
+"alpaca",
+"ball"
+]
+},
+"nsuid":{
+"value":"70010000045870",
+"matchLevel":"none",
+"matchedWords":[]
+},
+"publishers":[
+{
+"value":"Leoful",
+"matchLevel":"none",
+"matchedWords":[]
+}
+],
+"salePrice":{
+"value":"13.99",
+"matchLevel":"none",
+"matchedWords":[]
+}
+}
+}
+],
+"facets":{
+"genres":30,
+"platform":5,
+"howToShop":2,
+"esrbRating":10,
+"franchises":8,
+"priceRange":6,
+"availability":4,
+"playerFilters":4,
+"generalFilters":4,
+"virtualConsole":8
+},
+"total/pages":"ERR HTTPError: HTTP Error 400: Bad Request",
+"page 2 of 1000":"ERR HTTPError: HTTP Error 400: Bad Request",
+"page 5 of 1000":"ERR HTTPError: HTTP Error 400: Bad Request",
+"filters nsuid":[],
+"numeric nsuid range":[],
+"gql US/en by US nsuid":{
+"a0":{
+"nsUid":70010000045870,
+"formalName":"Alpaca Ball: Allstars",
+"applications":[
+{
+"id":"010083e013188000"
+}
+]
+}
+},
+"gql US/en by US nsuid company man":{
+"a0":{
+"nsUid":70010000045017,
+"formalName":"The Company Man",
+"applications":[
+{
+"id":"010060e015ff2000"
+}
+]
+}
+}
+}
