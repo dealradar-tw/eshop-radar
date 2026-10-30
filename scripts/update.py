@@ -699,6 +699,8 @@ def refresh_zhnames(games):
     wd = old.get("wd") or old.get("n") or {}
     asof = old.get("asof") or today
     fresh = old.get("asof") and (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(old["asof"], "%Y-%m-%d")).days < 6
+    if not os.path.exists(os.path.join(DATA, "wd_en.json")):
+        fresh = False   # 英文名稱對照表還沒建立，這次重抓
     table = None
     if not fresh:
         try:
@@ -708,17 +710,23 @@ def refresh_zhnames(games):
             with urllib.request.urlopen(req, timeout=180) as r:
                 rows = json.loads(r.read().decode("utf-8"))["results"]["bindings"]
             table = {}  # 原名（正規化）→ (優先序, 中文名)
+            zh2en = {}  # 中文名（正規化）→ 英文名（維基數據的英文標題，給英文搜尋用）
             for b in rows:
                 zh = re.sub(r"\s*[（(](?:遊戲|游戏|電子遊戲|电子游戏|視頻遊戲|视频游戏|電玩遊戲)[)）]\s*$", "", b["zh"]["value"].strip())
                 if not HAN.search(zh):
                     continue
                 pri = WD_PRI.get(b["zhl"]["value"], 9)
+                if "en" in b and not HAN.search(b["en"]["value"]) and not re.search(r"[\u3040-\u30ff]", b["en"]["value"]):
+                    for zz in {zh, to_tw(zh)}:
+                        zh2en.setdefault(norm_title(zz), b["en"]["value"].strip())
                 for k in ("en", "ja"):
                     if k in b:
                         key = norm_title(b[k]["value"])
                         if len(key) >= 3 and (key not in table or pri < table[key][0]):
                             table[key] = (pri, zh)
             asof = today
+            if zh2en:
+                save(os.path.join(DATA, "wd_en.json"), zh2en)
         except Exception as e:
             log(f"  中文名稱（維基數據）抓取失敗，沿用上次：{e}")
     if table is not None:
@@ -754,17 +762,29 @@ EN_HK_VARS = {"shopId": 3, "country": "HK", "language": "en"}
 
 
 def refresh_ennames(games, limit=1500):
-    """英文名稱（方便用英文搜尋）：只補商店名稱含中日文字的遊戲；查商店英文版，台區沒有就查港區。
-    結果存 data/en_names.json 與 docs/ennames.json；查不到的記 "-"，不再重查。每次最多查 limit 款。"""
+    """英文名稱（方便用英文搜尋）：只補商店名稱含中日文字的遊戲。
+    來源 1：維基數據的英文標題（用中文名對）；來源 2：商店英文版（台區、港區）。
+    結果存 data/en_names.json 與 docs/ennames.json；查過仍沒有的記 "-"（商店沒回應時不記，下次再查）。"""
     path = os.path.join(DATA, "en_names.json")
     en = load("en_names.json", {})
-    todo = [nid for nid, g in games.items()
-            if (g.get("name") or "") and (HAN.search(g["name"]) or re.search(r"[\u3040-\u30ff]", g["name"]))
-            and nid[-6:] not in en]
-    todo = todo[:limit]
-    got = 0
+    zh2en = load("wd_en.json", {})
+    nonlat = lambda t: bool(HAN.search(t) or re.search(r"[\u3040-\u30ff]", t))
+    wd_hit = 0
+    for nid, g in games.items():
+        nm = g.get("name") or ""
+        k = nid[-6:]
+        if nm and nonlat(nm) and en.get(k, "-") == "-":
+            base = re.sub(r"[（(][^)）]*[)）]", "", nm)
+            for cand in (nm, base):
+                hit = zh2en.get(norm_title(cand))
+                if hit:
+                    en[k] = hit; wd_hit += 1
+                    break
+    todo = [nid for nid, g in games.items() if (g.get("name") or "") and nonlat(g["name"]) and nid[-6:] not in en][:limit]
+    got, bad, empty = 0, 0, 0
+    answered = set()
     for vars_ in (EN_VARS, EN_HK_VARS):
-        left = [n for n in todo if en.get(n[-6:]) in (None, "")]
+        left = [n for n in todo if n[-6:] not in en]
         for i in range(0, len(left), 30):
             chunk = left[i:i + 30]
             try:
@@ -774,15 +794,21 @@ def refresh_ennames(games, limit=1500):
                 log(f"  英文名稱查詢失敗：{e}")
                 break
             if not item:
+                bad += 1
                 continue
             for j, n in enumerate(chunk):
                 nm = ((item.get(f"a{j}") or {}).get("formalName") or "").strip()
-                if nm and not HAN.search(nm) and not re.search(r"[\u3040-\u30ff]", nm):
-                    en[n[-6:]] = nm; got += 1
+                if nm:
+                    answered.add(n)
+                    if nonlat(nm):
+                        empty += 1
+                    else:
+                        en[n[-6:]] = nm; got += 1
             time.sleep(0.5)
     for n in todo:
-        en.setdefault(n[-6:], "-")
-    log(f"  英文名稱：本次新增 {got} 款，累計 {sum(1 for v in en.values() if v != '-')} 款")
+        if n in answered:
+            en.setdefault(n[-6:], "-")
+    log(f"  英文名稱：維基數據 {wd_hit} 款、商店 {got} 款（商店回中日文 {empty} 筆、整批失敗 {bad} 批），累計 {sum(1 for v in en.values() if v != '-')} 款")
     save(path, en)
     save(os.path.join(DOCS, "ennames.json"), {"n": {k: v for k, v in en.items() if v != "-"}})
 
