@@ -776,86 +776,84 @@ EN_HK_VARS = {"shopId": 3, "country": "HK", "language": "en"}
 
 def refresh_ennames(games, limit=1500):
     """英文名稱（方便用英文搜尋）：只補商店名稱含中日文字的遊戲。
-    來源 1：維基數據的英文標題（用中文名對）；來源 2：商店英文版（台區、港區）。
-    結果存 data/en_names.json 與 docs/ennames.json；查過仍沒有的記 "-"（商店沒回應時不記，下次再查）。"""
+    來源 1：美國商店（用全球共用的 applicationId 對應）；來源 2：維基數據的英文標題（用中文名對）。
+    結果存 data/en_names.json 與 docs/ennames.json。"""
     path = os.path.join(DATA, "en_names.json")
     en = load("en_names.json", {})
+    en = {k: v for k, v in en.items() if v != "-"}
     zh2en = load("wd_en.json", {})
+    us = load("us_names.json", {"n": {}})["n"]
+    by_app = {}
+    for _, (nm, app) in sorted(us.items(), key=lambda kv: -int(kv[0])):
+        if app and not HAN.search(nm):
+            by_app[app] = nm   # 同一個 applicationId 有多筆（本體、DLC、特典）時，編號小的（本體）留到最後覆蓋
     nonlat = lambda t: bool(HAN.search(t) or re.search(r"[\u3040-\u30ff]", t))
-    wd_hit = 0
+    n_us = n_wd = 0
     for nid, g in games.items():
         nm = g.get("name") or ""
         k = nid[-6:]
-        if nm and nonlat(nm) and en.get(k, "-") == "-":
-            base = re.sub(r"[（(][^)）]*[)）]", "", nm)
-            for cand in (nm, base):
-                hit = zh2en.get(norm_title(cand))
-                if hit:
-                    en[k] = hit; wd_hit += 1
-                    break
-    todo = [nid for nid, g in games.items() if (g.get("name") or "") and nonlat(g["name"]) and nid[-6:] not in en][:limit]
-    got, bad, empty = 0, 0, 0
-    answered = set()
-    for vars_ in (EN_VARS, EN_HK_VARS):
-        left = [n for n in todo if n[-6:] not in en]
-        for i in range(0, len(left), 30):
-            chunk = left[i:i + 30]
-            try:
-                fields = " ".join(f"a{j}: applicationItem(nsUid: {n}) {{ formalName }}" for j, n in enumerate(chunk))
-                item = gql(fields, vars_)
-            except Exception as e:
-                log(f"  英文名稱查詢失敗：{e}")
+        if not nm or not nonlat(nm) or k in en:
+            continue
+        hit = by_app.get((g.get("app") or "").lower()) if g.get("app") else None
+        if hit:
+            en[k] = hit; n_us += 1
+            continue
+        base = re.sub(r"[（(][^)）]*[)）]", "", nm)
+        for cand in (nm, base):
+            hit = zh2en.get(norm_title(cand))
+            if hit:
+                en[k] = hit; n_wd += 1
                 break
-            if not item:
-                bad += 1
-                continue
-            for j, n in enumerate(chunk):
-                nm = ((item.get(f"a{j}") or {}).get("formalName") or "").strip()
-                if nm:
-                    answered.add(n)
-                    if nonlat(nm):
-                        empty += 1
-                    else:
-                        en[n[-6:]] = nm; got += 1
-            time.sleep(0.5)
-    for n in todo:
-        if n in answered:
-            en.setdefault(n[-6:], "-")
-    log(f"  英文名稱：維基數據 {wd_hit} 款、商店 {got} 款（商店回中日文 {empty} 筆、整批失敗 {bad} 批），累計 {sum(1 for v in en.values() if v != '-')} 款")
+    log(f"  英文名稱：美國商店 {n_us} 款、維基數據 {n_wd} 款，累計 {len(en)} 款")
     save(path, en)
-    save(os.path.join(DOCS, "ennames.json"), {"n": {k: v for k, v in en.items() if v != "-"}})
+    save(os.path.join(DOCS, "ennames.json"), {"n": en})
 
 
-def probe_en_sources():
-    """一次性探測（第 2 輪）：美國 nintendo.com 公開搜尋的欄位與可分頁的方式，以及用美國編號查 applicationId。"""
-    out = {}
-    path = os.path.join(DATA, "probe_en2.json")
-    if os.path.exists(path):
-        return
-    def rec(key, fn):
+US_VARS = {"shopId": 3, "country": "US", "language": "en"}
+US_TOP = 70010000142000
+
+
+def refresh_us_names(budget=840):
+    """美國商店的英文名稱表：逐段查美國商店（編號 70010000000000～），記下 nsuid → [英文名, applicationId]。
+    applicationId 全球共用，之後用它對回台灣／港區的遊戲。每次最多跑 budget 秒，進度記在 cursor；
+    掃完一輪後，每次只重掃最新的一段編號。"""
+    path = os.path.join(DATA, "us_names.json")
+    d = load("us_names.json", {"cursor": US_TOP, "n": {}, "done": False})
+    n_all = d["n"]
+    base = 70010000000000
+    floor = (US_TOP - 9000) if d.get("done") else base      # 掃完一輪後，每次只重掃最新的一段
+    t0 = time.time()
+    cur, step, got, fails = d["cursor"], 40, 0, 0
+    if cur <= floor:
+        cur = US_TOP
+    while cur > floor and time.time() - t0 < budget:
+        ids = list(range(cur - step, cur))
+        fields = " ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid formalName applications {{ id }} }}" for i, n in enumerate(ids))
         try:
-            out[key] = fn()
-        except Exception as e:
-            out[key] = f"ERR {type(e).__name__}: {str(e)[:200]}"
-    def algolia(body):
-        req = urllib.request.Request("https://u3b6gr4ua3-dsn.algolia.net/1/indexes/ncom_game_en_us/query", data=json.dumps(body).encode(),
-            headers={"x-algolia-application-id": "U3B6GR4UA3", "x-algolia-api-key": "a29c6927638bfd8cee23993e51e721c9",
-                     "content-type": "application/json", **UA})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return json.loads(r.read().decode("utf-8", "replace"))
-    rec("hit keys", lambda: algolia({"query": "Alpaca Ball", "hitsPerPage": 1}).get("hits"))
-    rec("facets", lambda: {k: len(v) for k, v in algolia({"query": "", "hitsPerPage": 0, "facets": ["*"], "maxValuesPerFacet": 1000}).get("facets", {}).items()})
-    rec("total/pages", lambda: {k: v for k, v in algolia({"query": "", "hitsPerPage": 1000}).items() if k != "hits"})
-    rec("page 2 of 1000", lambda: len(algolia({"query": "", "hitsPerPage": 1000, "page": 1}).get("hits", [])))
-    rec("page 5 of 1000", lambda: len(algolia({"query": "", "hitsPerPage": 1000, "page": 5}).get("hits", [])))
-    rec("filters nsuid", lambda: [h.get("title") for h in algolia({"query": "", "filters": "nsuid:70010000045870"}).get("hits", [])])
-    rec("numeric nsuid range", lambda: [h.get("title") for h in algolia({"query": "", "numericFilters": ["nsuid>=70010000045800", "nsuid<=70010000045900"], "hitsPerPage": 5}).get("hits", [])])
-    for nm in ("applicationItem",):
-        rec("gql US/en by US nsuid", lambda: gql("a0: applicationItem(nsUid: 70010000045870) { nsUid formalName applications { id } }", {"shopId": 3, "country": "US", "language": "en"}))
-        rec("gql US/en by US nsuid company man", lambda: gql("a0: applicationItem(nsUid: 70010000045017) { nsUid formalName applications { id } }", {"shopId": 3, "country": "US", "language": "en"}))
-    os.makedirs(DATA, exist_ok=True)
-    save(path, out, pretty=True)
-    log("  英文名稱探測（第 2 輪）完成")
+            item = gql(fields, US_VARS)
+        except Exception:
+            item = None
+        if item is None:
+            fails += 1
+            if fails > 40:
+                log("  美國商店連續失敗，先停")
+                break
+        else:
+            fails = 0
+            for i, n in enumerate(ids):
+                f = item.get(f"a{i}")
+                if f and f.get("formalName"):
+                    apps_ = f.get("applications") or []
+                    n_all[str(n)[-6:]] = [f["formalName"].strip(), (apps_[0]["id"].lower() if apps_ else "")]
+                    got += 1
+            cur -= step
+        time.sleep(0.3)
+    if cur <= floor:
+        d["done"] = True
+        cur = US_TOP
+    d["cursor"] = cur
+    save(path, d)
+    log(f"  美國商店英文名稱表：本次新增 {got} 筆，累計 {len(n_all)} 筆，進度 {cur}")
 
 
 def _title_keys(t):
@@ -1706,11 +1704,11 @@ def main():
     link_regions(games, jp)
     refresh_hot(games, jp)
     refresh_zhnames(games)
-    refresh_ennames(games)
     try:
-        probe_en_sources()
+        refresh_us_names()
     except Exception as e:
-        log(f"  探測失敗：{e}")
+        log(f"  美國商店英文名稱表失敗：{e}")
+    refresh_ennames(games)
 
     items = {**games, **dlcs}
     drops = update_history(items, hist)
