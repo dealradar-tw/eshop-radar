@@ -8,3 +8,5 @@ select * from admin_reports limit 50;
 -- 4) 誤檢舉，恢復顯示
 -- update comments set hidden = false, n_reports = 0 where id = 123;
 -- delete from comment_reports where comment_id = 123;
+-- 5) 看意見回饋：最新的在前
+select id, created_at at time zone 'Asia/Taipei' as 時間, kind, body, contact, page from feedback order by id desc limit 50;
