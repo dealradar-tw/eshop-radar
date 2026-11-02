@@ -1,5 +1,5 @@
 {
-"asof":"2026-11-02 15:25",
+"asof":"2026-11-02 21:50",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -168442,7 +168442,11 @@
 "end":""
 },
 "nodata":false,
-"jp":null,
+"jp":{
+"reg":650,
+"sale":null,
+"end":""
+},
 "dv":4,
 "app":"0100a76029c9e000",
 "rel":"2026-11-05",
@@ -168459,7 +168463,8 @@
 "dlc":[],
 "demo":0,
 "mv":739906,
-"mv2":739920
+"mv2":739920,
+"jpId":"70010000134960"
 },
 "70010000135887":{
 "name":"Cotton Reboot! High Tension!",
@@ -650268,6 +650273,42 @@
 "nodata":true,
 "hk":{
 "reg":39,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000140740":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-11-02",
+"status":"unreleased",
+"reg":145,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":35,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000141167":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-11-02",
+"status":"unreleased",
+"reg":250,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":65,
 "sale":null,
 "end":""
 },
