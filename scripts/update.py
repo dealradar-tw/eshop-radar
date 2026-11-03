@@ -765,7 +765,9 @@ def refresh_zhnames(games):
         z = series_zh(nm)
         if z and norm_title(z) != norm_title(nm):
             out[k] = z; nser += 1
-    log(f"  中文名稱：維基數據 {len(wd)} 款＋系列規則 {nser} 款")
+    man = {k: v for k, v in load("zh_manual.json", {}).items() if isinstance(v, str) and v}   # 人工指定的中文名（優先於一切規則）
+    out.update(man)
+    log(f"  中文名稱：維基數據 {len(wd)} 款＋系列規則 {nser} 款＋人工指定 {len(man)} 款")
     if out:
         save(path, {"asof": asof, "wd": wd, "n": out})
 
