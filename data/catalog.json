@@ -1,5 +1,5 @@
 {
-"asof":"2026-11-04 15:13",
+"asof":"2026-11-04 18:45",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -386759,10 +386759,9 @@
 "plat":"HAC",
 "img":"dfad21a4f471c745c05354c3dc120523372f2236f6f3f92acc665ff77eb8758c",
 "meta":true,
-"only":"hk",
 "first_seen":"",
-"status":"onsale",
-"reg":null,
+"status":"unreleased",
+"reg":800,
 "sale":null,
 "end":"",
 "hk":{
