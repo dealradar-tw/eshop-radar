@@ -1575,7 +1575,7 @@ NTFY_TOPIC = "eshop-radar-pw0ssnkn6ggo"
 SITE = "https://dealradar-tw.github.io/eshop-radar/"
 
 
-def send_ntfy(topic, title, lines, tags):
+def send_ntfy(topic, title, lines, tags, click=None):
     """ntfy 單則上限約 4KB，超過就拆成多則。"""
     chunks, cur = [], ""
     for line in lines:
@@ -1588,7 +1588,7 @@ def send_ntfy(topic, title, lines, tags):
         chunks.append(cur)
     for i, c in enumerate(chunks):
         body = json.dumps({"topic": topic, "title": title + (f"（{i + 1}/{len(chunks)}）" if len(chunks) > 1 else ""),
-                           "message": c, "tags": tags, "click": os.environ.get("SITE_URL") or SITE}).encode()
+                           "message": c, "tags": tags, "click": click or os.environ.get("SITE_URL") or SITE}).encode()
         req = urllib.request.Request("https://ntfy.sh/", data=body, headers={"Content-Type": "application/json", **UA})
         urllib.request.urlopen(req, timeout=20).read()
 
@@ -1618,7 +1618,8 @@ def check_feedback():
     seen = {"id": seen.get("id") or 0, "status": f"正常，本次新增 {n} 則"}
     if n > 0:
         send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "特價雷達：有新的意見回饋",
-                  [f"收到 {n} 則新回饋，到 Supabase 的 Table Editor → feedback 查看。"], ["speech_balloon"])
+                  [f"收到 {n} 則新回饋，點這則通知會開啟 Supabase 的 Table Editor，選 feedback 這張表查看。"], ["speech_balloon"],
+                  click="https://supabase.com/dashboard/project/uvjioxaubsjxibvhsqgf/editor")
         seen["id"] = mx
     save(path, seen)
 
