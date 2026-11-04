@@ -693,7 +693,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v118・版本更新日期 2026-11-03</span>
+  <span class="muted">網站版本 v119・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -1563,6 +1563,28 @@ function titleChunks(t){
   const out = parts.map(p => p[1].trim()).filter(Boolean);
   return out.map(p => `<span class="tt">${esc(p)}</span>`).join(" ");
 }
+// ── 同名遊戲：不同版本（Switch／Switch 2）與不同地區（日本限定、港區限定）的條目，在詳細頁一併列出 ──
+let NAME_IDX = null;
+const nameKey = t => String(t || "").toLowerCase().replace(/nintendo\s*switch\s*2\s*edition|switch\s*2\s*edition|switch\s*2\s*版|for\s*nintendo\s*switch\s*2?/g, "").replace(/[™®©]/g, "").replace(/[\s\W_]+/g, "");
+function sameNames(g){
+  if (!NAME_IDX) {
+    NAME_IDX = new Map();
+    for (const x of ITEMS) {
+      if (x.isDlc || !x.name) continue;
+      for (const k of new Set([nameKey(x.name), nameKey(x.zhName), nameKey(x.enName)])) {
+        if (k.length < 2) continue;
+        if (!NAME_IDX.has(k)) NAME_IDX.set(k, []);
+        NAME_IDX.get(k).push(x);
+      }
+    }
+  }
+  const out = new Map();
+  for (const k of new Set([nameKey(g.name), nameKey(g.zhName), nameKey(g.enName)])) {
+    for (const x of NAME_IDX.get(k) || []) if (x.id !== g.id) out.set(x.id, x);
+  }
+  return [...out.values()].sort((a, b) => (a.only ? 1 : 0) - (b.only ? 1 : 0) || (+a.s2) - (+b.s2) || a.id.localeCompare(b.id));
+}
+const verTag = x => `${x.s2 ? "Switch 2" : "Switch"}${x.only === "jp" ? "・日本限定" : x.only === "hk" ? "・港區限定" : ""}`;
 async function openDetail(id, fromHistory){
   const g = BY.get(id); if (!g) return;
   // 每打開一頁（遊戲 → DLC → …）記一筆，按返回就回到上一頁。要在點擊當下記錄，Chrome 才不會跳過這筆
@@ -1601,6 +1623,7 @@ async function openDetail(id, fromHistory){
   ].filter(Boolean);
   SHOTS = det.shots || [];
   const vids = det.vids || [];
+  const sib = g.isDlc ? [] : sameNames(g);
   const dlcs = (DLC_BY_PARENT.get(id) || []).slice().sort((a, b) => (b.onSale - a.onSale) || (a.price ?? 0) - (b.price ?? 0));
   $("#sheet").innerHTML = `<div class="sheet-bg" data-close>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
@@ -1627,6 +1650,11 @@ async function openDetail(id, fromHistory){
           <div class="vid-row">${vids.length > 1 ? vids.map((v, i) => `<button class="chip" data-yt="${v}" aria-pressed="${i === 0}">影片 ${i + 1}</button>`).join("") : ""}</div>
         </div>` : ""}
         ${!g.isDlc && rankOn() && COMMENTS_ON ? cmSkeleton(id) : ""}
+        ${sib.length ? `<div class="dlcs sibs"><h3>同名遊戲・其他版本與地區（${sib.length}）</h3><ul>${sib.map(d => `<li data-card="${d.id}">
+            ${thumb(d)}</div>
+            <div class="info"><button class="name" data-open="${d.id}">${esc(d.zhName || d.name)}</button>
+              <div class="meta"><span class="nw">${verTag(d)}</span>${d.isLow ? ' <span class="low-badge">史低</span>' : ""} ${endText(d)}</div></div>
+            <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li data-card="${d.id}">
             ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
