@@ -1594,22 +1594,33 @@ def send_ntfy(topic, title, lines, tags):
 
 
 def check_feedback():
-    """有新的意見回饋就用 ntfy 通知（只說幾則，不含內容，因為通知主題名稱是公開的）。需要 GitHub 密鑰 FEEDBACK_TOKEN。"""
+    """有新的意見回饋就用 ntfy 通知（只說幾則，不含內容，因為通知主題名稱是公開的）。需要 GitHub 密鑰 FEEDBACK_TOKEN。
+    檢查結果（含錯誤原因）寫進 data/feedback_seen.json，方便事後查看。"""
+    path = os.path.join(DATA, "feedback_seen.json")
+    seen = load("feedback_seen.json", {"id": 0})
     token = os.environ.get("FEEDBACK_TOKEN")
     if not token:
+        seen["status"] = "沒有收到 FEEDBACK_TOKEN（GitHub 密鑰沒設定或名稱不符）"
+        save(path, seen)
         return
-    seen = load("feedback_seen.json", {"id": 0})
     body = json.dumps({"p_token": token, "p_since": int(seen.get("id") or 0)}).encode()
     key = "sb_publishable_LLpV_PtbZXbmjRX-Okkn0Q_utokEh-i"
     req = urllib.request.Request("https://uvjioxaubsjxibvhsqgf.supabase.co/rest/v1/rpc/admin_feedback_new", data=body,
                                  headers={"apikey": key, "Content-Type": "application/json", **UA})
-    r = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())
+    try:
+        r = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())
+    except urllib.error.HTTPError as e:
+        seen["status"] = f"查詢失敗 HTTP {e.code}：{e.read().decode('utf-8', 'replace')[:300]}"
+        save(path, seen)
+        raise
     n, mx = int(r.get("n") or 0), int(r.get("max_id") or 0)
     log(f"意見回饋：新增 {n} 則")
+    seen = {"id": seen.get("id") or 0, "status": f"正常，本次新增 {n} 則"}
     if n > 0:
         send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "特價雷達：有新的意見回饋",
                   [f"收到 {n} 則新回饋，到 Supabase 的 Table Editor → feedback 查看。"], ["speech_balloon"])
-    save(os.path.join(DATA, "feedback_seen.json"), {"id": mx})
+        seen["id"] = mx
+    save(path, seen)
 
 
 def notify(items, drops, fx):
