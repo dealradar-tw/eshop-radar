@@ -858,6 +858,112 @@ def refresh_us_names(budget=840):
     log(f"  美國商店英文名稱表：本次新增 {got} 筆，累計 {len(n_all)} 筆，進度 {cur}")
 
 
+IMG_CDN = "https://img-eshop.cdn.nintendo.net/i/%s.%s"
+
+
+def _dhash(data):
+    """封面縮成 9×8 灰階，逐列比較左右相鄰像素，得到 64 位元指紋（整數）。"""
+    from PIL import Image
+    import io
+    im = Image.open(io.BytesIO(data)).convert("L").resize((9, 8), Image.LANCZOS)
+    px = list(im.getdata())
+    bits = 0
+    for r in range(8):
+        for c in range(8):
+            bits = (bits << 1) | (1 if px[r * 9 + c] > px[r * 9 + c + 1] else 0)
+    return bits
+
+
+def refresh_imghash(games, budget=900):
+    """封面圖指紋（給「圖片相似的同款遊戲」比對用）：只下載還沒算過的封面，每次最多跑 budget 秒，結果累積在 data/imghash.json。
+    圖片只在記憶體裡計算，不另外保存。"""
+    try:
+        import PIL  # noqa: F401
+    except Exception:
+        log("  沒有 Pillow，略過封面指紋")
+        return
+    hs = load("imghash.json", {})
+    todo = [g["img"] for g in games.values() if g.get("img") and g["img"] not in hs]
+    todo = list(dict.fromkeys(todo))
+    t0, got, fail = time.time(), 0, 0
+    for h in todo:
+        if time.time() - t0 > budget:
+            break
+        data = None
+        for ext in ("jpg", "png"):
+            try:
+                req = urllib.request.Request(IMG_CDN % (h, ext), headers=UA)
+                with urllib.request.urlopen(req, timeout=20) as r:
+                    data = r.read()
+                break
+            except Exception:
+                continue
+        try:
+            hs[h] = format(_dhash(data), "016x") if data else "-"
+            got += 1 if data else 0
+            fail += 0 if data else 1
+        except Exception:
+            hs[h] = "-"; fail += 1
+        time.sleep(0.05)
+    log(f"  封面指紋：本次新增 {got} 張（失敗 {fail}），累計 {sum(1 for v in hs.values() if v != '-')} 張，尚待 {max(0, len(todo) - got - fail)} 張")
+    save(os.path.join(DATA, "imghash.json"), hs)
+
+
+def build_same_img(games, min_sim=0.8):
+    """封面相似度 ≥ min_sim（指紋 64 位元，差異位元不超過 (1-min_sim)×64），而且名稱至少有 3 個連續字相同的遊戲，視為同款；
+    用於名稱完全對不上的跨區版本。結果存 docs/same_img.json（每組最多 6 款，超過視為不可靠而略過）。"""
+    hs = load("imghash.json", {})
+    maxd = int((1 - min_sim) * 64)
+    items = {}
+    for nid, g in games.items():
+        h = hs.get(g.get("img") or "")
+        if h and h != "-" and g.get("name"):
+            items[nid] = int(h, 16)
+    def grams(g):
+        out = set()
+        for t in (g.get("name"), zh_names_cache.get(nid_of[id(g)], "")):
+            k = norm_title(t)
+            out |= {k[i:i + 3] for i in range(len(k) - 2)}
+        return out
+    zh_names_cache, nid_of = {}, {id(g): n for n, g in games.items()}
+    try:
+        zh_names_cache.update({"70010000" + k: v for k, v in (load_json_docs("zhnames.json").get("n") or {}).items()})
+    except Exception:
+        pass
+    buckets = {}
+    for nid in items:
+        for gr in grams(games[nid]):
+            buckets.setdefault(gr, []).append(nid)
+    parent = {}
+    def find(x):
+        while parent.setdefault(x, x) != x:
+            parent[x] = parent[parent[x]]; x = parent[x]
+        return x
+    pairs = set()
+    for gr, ids in buckets.items():
+        if len(ids) < 2 or len(ids) > 60:
+            continue
+        for i in range(len(ids)):
+            for j in range(i + 1, len(ids)):
+                a, b = ids[i], ids[j]
+                if a[-6:] == b[-6:] or (a, b) in pairs:
+                    continue
+                pairs.add((a, b))
+                if bin(items[a] ^ items[b]).count("1") <= maxd and norm_title(games[a].get("name")) != norm_title(games[b].get("name")):
+                    parent[find(a)] = find(b)
+    comps = {}
+    for x in list(parent):
+        comps.setdefault(find(x), []).append(x)
+    groups = [sorted(v) for v in comps.values() if 2 <= len(v) <= 6]
+    save(os.path.join(DOCS, "same_img.json"), [[i[-6:] for i in g] for g in groups])
+    log(f"  封面相似的同款：{len(groups)} 組（比對 {len(pairs)} 對）")
+
+
+def load_json_docs(name):
+    with open(os.path.join(DOCS, name), encoding="utf-8") as f:
+        return json.load(f)
+
+
 def _title_keys(t):
     """同一款遊戲的幾種寫法：原名、去掉括號（常附讀音或英文名）、只取括號裡的名字＋後綴。
     例：「Xenoblade2 (ゼノブレイド2) Nintendo Switch 2 Edition」→ 也能對上「ゼノブレイド2 Nintendo Switch 2 Edition」。"""
@@ -1742,6 +1848,11 @@ def main():
     except Exception as e:
         log(f"  美國商店英文名稱表失敗：{e}")
     refresh_ennames(games)
+    try:
+        refresh_imghash(games)
+        build_same_img(games)
+    except Exception as e:
+        log(f"  封面指紋比對失敗：{e}")
 
     items = {**games, **dlcs}
     drops = update_history(items, hist)

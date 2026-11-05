@@ -37,7 +37,7 @@ jobs:
           python-version: "3.12"
 
       - name: 安裝簡轉繁套件（失敗也不影響更新）
-        run: pip install opencc-python-reimplemented || true
+        run: pip install opencc-python-reimplemented pillow || true
 
       - name: 更新價格與遊戲資料
         env:
