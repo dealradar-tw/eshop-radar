@@ -696,7 +696,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v125・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v126・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -951,10 +951,10 @@ const sorters = {
   upFar:  (a,b) => (!upKey(a) - !upKey(b)) || upKey(b).localeCompare(upKey(a)) || full(b.id).localeCompare(full(a.id)),
   upFav:  (a,b) => favCount(b.id) - favCount(a.id) || sorters.upNear(a, b),
 };
-// 即將發售：預購中、尚未發售，或發售日在今天之後（當日算近期發售）
+// 即將發售：預購中、尚未發售，或有完整日期時以日期為準（今天之後才算，當日算近期發售）；沒有日期才看預購狀態
 let upM = store.get("upM", 0);
 const upTo = () => { if (!upM) return "9999"; const d = new Date(today); d.setMonth(d.getMonth() + upM); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
-const isUpcoming = g => g.rel !== TODAY_STR && (g.status === 1 || g.status === 2 || (!!g.rel && g.rel > TODAY_STR));
+const isUpcoming = g => /^\d{4}-\d{2}-\d{2}$/.test(g.rel || "") ? g.rel > TODAY_STR : (g.status === 1 || g.status === 2 || (!!g.rel && g.rel > TODAY_STR));
 // 發售日排序用：只有年份的（例如「2027」）排在該年最後，「TBD」之類視為未定
 const upKey = g => /^\d{4}-\d{2}-\d{2}$/.test(g.rel || "") ? (g.rel > TODAY_STR ? g.rel : "") : /^\d{4}$/.test(g.rel || "") ? g.rel + "-99" : /^\d{4}-\d{2}$/.test(g.rel || "") ? g.rel + "-99" : "";
 const inUpRange = g => isUpcoming(g) && (!upM || (/^\d{4}-\d{2}-\d{2}$/.test(g.rel || "") && g.rel > TODAY_STR && g.rel <= upTo()));
