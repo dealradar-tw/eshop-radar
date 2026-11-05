@@ -547,8 +547,8 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <button class="st" data-view="hot" aria-pressed="false"><b id="sHot">–</b><span>Fami通銷售排行</span></button>
     <button class="st" data-view="new" aria-pressed="false"><b id="sNew">–</b><span>近期發售</span></button>
     <button class="st" data-view="up" aria-pressed="false"><b id="sUp">–</b><span>即將發售</span></button>
-    <button class="st" data-view="rankfav" aria-pressed="false"><b id="sRankFav">–</b><span>關注特價排行</span></button>
-    <button class="st" data-view="rankbuy" aria-pressed="false"><b id="sRankBuy">–</b><span>購買排行</span></button>
+    <button class="st" data-view="rankfav" aria-pressed="false"><b id="sRankFav">–</b><span id="lRankFav">關注排行 TOP100</span></button>
+    <button class="st" data-view="rankbuy" aria-pressed="false"><b id="sRankBuy">–</b><span id="lRankBuy">購買排行 TOP100</span></button>
   </div>
 </header>
 
@@ -693,7 +693,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v122・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v123・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -1316,11 +1316,12 @@ function updTiles(){
 function updRankTiles(){
   if (!RANKS) return;
   const L = rankLists();
-  $("#sRankFav").textContent = nf(L.fav.length); $("#sRankBuy").textContent = nf(L.buy.length);
+  const cap=(n,id,lid,nm)=>{ $(id).textContent = nf(Math.min(n,100)); $(lid).textContent = n>=100 ? nm+" TOP100" : nm; };
+  cap(L.fav.length,"#sRankFav","#lRankFav","關注排行"); cap(L.buy.length,"#sRankBuy","#lRankBuy","購買排行");
 }
 async function renderRank(t){
   const isFav = t === "rankfav";
-  $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序。" : "使用者標記為「已購買」的遊戲，依購買人數排序。";
+  $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序，最多顯示前 100 名。" : "使用者標記為「已購買」的遊戲，依購買人數排序，最多顯示前 100 名。";
   const ul = $("#rankList");
   if (!rankOn()) { ul.innerHTML = '<li class="hot-miss"><div class="info">排行功能尚未啟用。</div></li>'; return; }
   ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
