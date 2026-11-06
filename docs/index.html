@@ -245,6 +245,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .prange .pin{color:var(--muted);font-size:13px;white-space:nowrap}
 .prange input{font:inherit;font-size:14px;width:6.5em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
+.fav-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
+.fav-ctl select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 .mine-break{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .mine-sum .mine-break .chips{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;background:none;border:0;border-radius:0;padding:0}
 .mine-break .lbl{font-size:12px;color:var(--muted);margin-right:2px}
@@ -675,7 +677,9 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
       <button class="tab" role="tab" data-mt="bought" aria-selected="false">已購買</button>
     </nav>
     <div class="mine-sum" id="mineSum"></div>
+    <div class="fav-ctl" id="favCtl" hidden></div>
     <ul id="mineList"></ul>
+    <nav class="pager" id="favPager" aria-label="收藏換頁" hidden></nav>
     <div class="cnote" id="rankPriv" style="margin:16px 0 0" hidden>
       <b>人氣排行</b>：<span id="rankPrivState"></span>
       <div style="margin-top:8px"><button class="chip" id="rankOptBtn"></button></div>
@@ -696,7 +700,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v131・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v132・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -1760,6 +1764,12 @@ function toggleFav(id){
   if (!$("#minePage").hidden) renderMine();
 }
 
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "favSortSel") { favSort = t.value; favPg = 1; renderMine(); }
+  else if (t.id === "favSizeSel") { favSize = +t.value === 100 ? 100 : 50; store.set("favSize", favSize); favPg = 1; renderMine(); }
+  else if (t.id === "favPgSel") { favPg = +t.value; renderMine(); $("#minePage").scrollTop = 0; }
+});
 // ── 事件 ──
 document.addEventListener("click", e => {
   const t = e.target;
@@ -2013,6 +2023,7 @@ for (const k in MINE) {
     if (extra.length) m.n = ((m.n ? m.n + "\n" : "") + "（舊紀錄）" + extra.join("；")).trim();
   }
 }
+let favSort = "recent", favPg = 1, favSize = store.get("favSize", 50) === 100 ? 100 : 50;
 let mineTab = "fav", mineF = "";  // mineF：已購買頁的分類篩選（dl/pk/key/sw/s2）
 const BAG_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bag" d="M5 8h14l-1.2 12.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path class="bag" d="M9 8V6.5a3 3 0 0 1 6 0V8" style="fill:none"/><path class="chk" d="M9 14.2l2.2 2.2 4-4.4"/></svg>';
 const isBought = id => !!MINE[id]?.b;
@@ -2165,7 +2176,29 @@ function renderMine(){
       <div class="chips"><span class="lbl">主機</span>${chip("sw", "Switch", sw, "款")}${chip("s2", "Switch 2", s2, "款")}</div>
       ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
   }
-  const listItems = listIds.map(id => BY.get(id));
+  let listItems = listIds.map(id => BY.get(id));
+  const fc = $("#favCtl"), fp = $("#favPager");
+  if (mineTab === "fav") {
+    if (favSort !== "recent") {
+      const pr = g => { const c = cheapest(g); return c ? c.twd : (g.sale ?? g.reg); };
+      const dir = favSort === "asc" ? 1 : -1;
+      listItems = listItems.map((g, i) => ({g, i, p: pr(g)})).sort((a, b) => {
+        if (a.p == null || b.p == null) return (a.p == null) - (b.p == null) || a.i - b.i;   // 沒價格的排最後
+        return (a.p - b.p) * dir || a.i - b.i; }).map(x => x.g);
+    }
+    const pages = Math.max(1, Math.ceil(listItems.length / favSize));
+    favPg = Math.min(Math.max(1, favPg), pages);
+    fc.hidden = !listItems.length;
+    fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>最近收藏</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>
+      <select id="favSizeSel" aria-label="每頁顯示數量"><option value="50"${favSize === 50 ? " selected" : ""}>每頁 50 款</option><option value="100"${favSize === 100 ? " selected" : ""}>每頁 100 款</option></select>`;
+    const from = (favPg - 1) * favSize;
+    const total = listItems.length;
+    listItems = listItems.slice(from, from + favSize);
+    fp.hidden = pages <= 1;
+    fp.innerHTML = pages <= 1 ? "" : `<button class="chip" data-fp="${favPg - 1}" ${favPg <= 1 ? "disabled" : ""}>‹ 上一頁</button>
+      <select id="favPgSel" aria-label="跳到第幾頁">${Array.from({length: pages}, (_, i) => `<option value="${i + 1}"${i + 1 === favPg ? " selected" : ""}>第 ${i + 1} / ${pages} 頁</option>`).join("")}</select>
+      <button class="chip" data-fp="${favPg + 1}" ${favPg >= pages ? "disabled" : ""}>下一頁 ›</button>`;
+  } else { fc.hidden = true; fp.hidden = true; }
   $("#mineList").innerHTML = listItems.length ? listItems.map(g => {
     const m = MINE[g.id] || {};
     let info;
@@ -2191,6 +2224,7 @@ document.addEventListener("click", e => {
   const t = e.target;
   if (t.id === "openMine") { openMine(); return; }
   if (t.id === "closeMine") { history.state?.ov === "mine" ? history.back() : closeMineNow(); return; }
+  const fpb = t.closest("[data-fp]"); if (fpb && !fpb.disabled) { favPg = +fpb.dataset.fp; renderMine(); $("#minePage").scrollTop = 0; return; }
   const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; mineF = ""; renderMine(); $("#minePage").scrollTop = 0; return; }
   const mf = t.closest("[data-mf]"); if (mf) { mineF = mineF === mf.dataset.mf ? "" : mf.dataset.mf; renderMine(); return; }
   if (t.closest("[data-dlgclose]") || t.id === "dlg") { closeDlg(); return; }
