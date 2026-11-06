@@ -1047,7 +1047,7 @@ def rematch_hot(games, jp):
         save_if_changed(path, old)
 
 
-def refresh_jp_zh(games, limit=600):
+def refresh_jp_zh(games, limit=2500):
     """日本區版本的語言支援：台灣版有中文、但日本商品頁的語言清單裡沒有任何中文 → 標 jpNoZh（日區無中文）。
     結果存 data/jp_zh.json（日本 nsuid → 1 有中文／0 沒有；語言清單是空的不判斷、下次再查）。"""
     cache = load("jp_zh.json", {})
