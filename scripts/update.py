@@ -1047,6 +1047,38 @@ def rematch_hot(games, jp):
         save_if_changed(path, old)
 
 
+def refresh_jp_zh(games, limit=600):
+    """日本區版本的語言支援：台灣版有中文、但日本商品頁的語言清單裡沒有任何中文 → 標 jpNoZh（日區無中文）。
+    結果存 data/jp_zh.json（日本 nsuid → 1 有中文／0 沒有；語言清單是空的不判斷、下次再查）。"""
+    cache = load("jp_zh.json", {})
+    need = sorted({g["jpId"] for g in games.values()
+                   if g.get("jp") and g.get("jpId") and g.get("only") != "jp" and (g.get("zh") or 0) & 7
+                   and g["jpId"] not in cache}, reverse=True)[:limit]
+    if need:
+        log(f"  查日本區語言：{len(need)} 款")
+        try:
+            for b in batches(need, 20):
+                fields = " ".join(f"a{i}: applicationItem(nsUid: {n}) {{ nsUid languages {{ name }} }}" for i, n in enumerate(b))
+                item = gql(fields, JP_VARS)
+                if item is None:
+                    continue
+                for i, n in enumerate(b):
+                    a = item.get(f"a{i}") or {}
+                    names = [(l or {}).get("name") or "" for l in (a.get("languages") or [])]
+                    if names:
+                        cache[n] = 1 if any(re.search(r"中|繁|簡|简|Chinese", x) for x in names) else 0
+                time.sleep(1.0)
+        except Blocked as e:
+            log(f"  日本區語言查詢暫時無法使用（{e}），下次再繼續")
+        save(os.path.join(DATA, "jp_zh.json"), cache)
+    n = 0
+    for g in games.values():
+        if g.get("jp") and cache.get(g.get("jpId")) == 0 and (g.get("zh") or 0) & 7:
+            g["jpNoZh"] = True
+            n += 1
+    log(f"  日區無中文標記：{n} 款")
+
+
 def refresh_hot(games, jp):
     """熱門排行：抓 Fami通 每週銷量排行（日本實體＋下載卡等推估銷量），Switch／Switch 2 的全部列出，
     對得上商店的遊戲附上編號（可點進介紹頁）。"""
@@ -1841,6 +1873,7 @@ def main():
     refresh_jponly(games, jp)
     refresh_meta_jponly(games, 6000)
     link_regions(games, jp)
+    refresh_jp_zh(games)
     refresh_hot(games, jp)
     refresh_zhnames(games)
     try:
