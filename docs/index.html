@@ -247,6 +247,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
 .fav-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
 .fav-ctl select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.mine-spent{align-self:center;margin-left:6px;font-size:14px;color:var(--muted);white-space:nowrap}
+.mine-spent b{font-family:var(--display);font-size:17px;color:var(--ink)}
 .mine-break{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .mine-sum .mine-break .chips{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;background:none;border:0;border-radius:0;padding:0}
 .mine-break .lbl{font-size:12px;color:var(--muted);margin-right:2px}
@@ -675,6 +677,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <nav class="tabs mine-tabs" role="tablist">
       <button class="tab" role="tab" data-mt="fav" aria-selected="true">收藏</button>
       <button class="tab" role="tab" data-mt="bought" aria-selected="false">已購買</button>
+      <span class="mine-spent" id="mineSpent"></span>
     </nav>
     <div class="mine-sum" id="mineSum"></div>
     <div class="fav-ctl" id="favCtl" hidden></div>
@@ -700,7 +703,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v134・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v135・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -2149,6 +2152,9 @@ function renderMine(){
     .sort((a, b) => ((MINE[b].p?.at(-1)?.d) || "").localeCompare((MINE[a].p?.at(-1)?.d) || ""));
   $$("[data-mt]").forEach(b => { b.setAttribute("aria-selected", b.dataset.mt === mineTab);
     b.textContent = (b.dataset.mt === "fav" ? "收藏" : "已購買") + `（${b.dataset.mt === "fav" ? favIds.length : boughtIds.length}）`; });
+  { let spent = 0, unk = false;
+    boughtIds.forEach(id => { const x = mineSpent(id); spent += x.twd; unk ||= x.unknown; });
+    $("#mineSpent").innerHTML = boughtIds.length ? `總花費約 <b>NT$${nf(spent)}</b>${unk ? "＊" : ""}` : ""; }
   let ids = mineTab === "fav" ? favIds : boughtIds;
   const listIds = mineTab === "bought" && mineF ? ids.filter(id => mineF === "sw" ? !BY.get(id).s2 : mineF === "s2" ? BY.get(id).s2
     : (MINE[id].p || []).some(x => x.t === mineF)) : ids;
@@ -2159,13 +2165,7 @@ function renderMine(){
       <div><b>${items.filter(g => g.isLow).length}</b><span>史低價</span></div>
       <div><b>${items.filter(g => g.onSale && g.days != null && g.days <= 3).length}</b><span>3 天內結束</span></div>`;
   } else {
-    let spent = 0, unk = false;
-    ids.forEach(id => { const x = mineSpent(id); spent += x.twd; unk ||= x.unknown; });
-    const filled = ids.filter(id => MINE[id].p?.[0]?.a != null).length;
-    $("#mineSum").innerHTML = `<div><b>${items.length}</b><span>已購買遊戲</span></div>
-      <div><b>NT$${nf(spent)}</b><span>總花費（約）${unk ? "＊" : ""}</span></div>
-      <div><b>NT$${filled ? nf(Math.round(spent / filled)) : 0}</b><span>平均每款</span></div>
-      <div><b>${ids.length - filled}</b><span>未填金額</span></div>`;
+    $("#mineSum").innerHTML = "";
     // 分類統計：版本以份數計，主機以遊戲數計；點一下可篩選
     const byType = {dl: 0, pk: 0, key: 0};
     ids.forEach(id => { const x = MINE[id].p?.[0]; if (x && x.t in byType) byType[x.t]++; });
