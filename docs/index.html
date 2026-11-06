@@ -278,6 +278,10 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .mine-sum div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px 7px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .mine-sum b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.2}
 .mine-sum span{font-size:14px;color:var(--muted);line-height:1.25}
+.mine-sum div[data-ff]{cursor:pointer}
+.mine-sum div[data-ff][aria-pressed="true"]{background:var(--ink);border-color:var(--ink)}
+.mine-sum div[data-ff][aria-pressed="true"] b{color:var(--bg)}
+.mine-sum div[data-ff][aria-pressed="true"] span{color:var(--bg);opacity:.85}
 @media (max-width:600px){.mine-sum b{font-size:20px}.mine-sum span{font-size:12.5px}.mine-sum div{padding:5px 3px}}
 .mine-info{grid-column:1/-1;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px;margin-top:2px}
 .mine-info b{color:var(--ink)}
@@ -703,7 +707,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v135・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v136・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -826,9 +830,9 @@ function endText(g){
   if (!g.onSale || g.days === null) return "";
   if (g.days < 0) return '<span class="soon">已結束</span>';
   if (g.days === 0) return '<span class="soon">今天結束</span>';
-  if (g.days <= 3) return `<span class="soon">剩 ${g.days} 天</span>`;
-  const [, m, d] = g.end.split("-");
-  return `<span class="nw">${+m}/${+d} 結束</span>`;
+  const [ey, em, ed] = g.end.split("-"), full = `${ey}/${+em}/${+ed}`;
+  if (g.days <= 3) return `<span class="soon">剩 ${g.days} 天（${full} 結束）</span>`;
+  return `<span class="nw">${full} 結束</span>`;
 }
 // 中文支援標籤：繁體中文／簡體中文／部分中文／無中文（沒有介紹資料的不標）
 function zhInfo(g){
@@ -2027,6 +2031,7 @@ for (const k in MINE) {
   }
 }
 let favSort = "recent", favPg = 1, favSize = store.get("favSize", 50) === 100 ? 100 : 50;
+let favF = "";  // 收藏頁統計方塊篩選：sale 特價中／low 史低／soon 3 天內結束
 let mineTab = "fav", mineF = "";  // mineF：已購買頁的分類篩選（dl/pk/key/sw/s2）
 const BAG_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bag" d="M5 8h14l-1.2 12.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path class="bag" d="M9 8V6.5a3 3 0 0 1 6 0V8" style="fill:none"/><path class="chk" d="M9 14.2l2.2 2.2 4-4.4"/></svg>';
 const isBought = id => !!MINE[id]?.b;
@@ -2145,6 +2150,7 @@ function openMine(){
   renderMine(); $("#minePage").scrollTop = 0;
 }
 function closeMineNow(){ $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
+const FF = {sale: g => g.onSale, low: g => g.isLow, soon: g => g.onSale && g.days != null && g.days <= 3};
 function renderMine(){
   updRankPriv();
   const favIds = [...favs].reverse().filter(id => BY.has(id));
@@ -2157,13 +2163,12 @@ function renderMine(){
     $("#mineSpent").innerHTML = boughtIds.length ? `總花費約 <b>NT$${nf(spent)}</b>${unk ? "＊" : ""}` : ""; }
   let ids = mineTab === "fav" ? favIds : boughtIds;
   const listIds = mineTab === "bought" && mineF ? ids.filter(id => mineF === "sw" ? !BY.get(id).s2 : mineF === "s2" ? BY.get(id).s2
-    : (MINE[id].p || []).some(x => x.t === mineF)) : ids;
+    : (MINE[id].p || []).some(x => x.t === mineF)) : mineTab === "fav" && favF ? ids.filter(id => FF[favF](BY.get(id))) : ids;
   const items = ids.map(id => BY.get(id));
   if (mineTab === "fav") {
-    $("#mineSum").innerHTML = `<div><b>${items.length}</b><span>收藏</span></div>
-      <div><b>${items.filter(g => g.onSale).length}</b><span>正在特價</span></div>
-      <div><b>${items.filter(g => g.isLow).length}</b><span>史低價</span></div>
-      <div><b>${items.filter(g => g.onSale && g.days != null && g.days <= 3).length}</b><span>3 天內結束</span></div>`;
+    const fT = (k, n, label) => `<div role="button" tabindex="0" data-ff="${k}" aria-pressed="${favF === k}"><b>${n}</b><span>${label}</span></div>`;
+    $("#mineSum").innerHTML = fT("", items.length, "收藏") + fT("sale", items.filter(FF.sale).length, "正在特價")
+      + fT("low", items.filter(FF.low).length, "史低價") + fT("soon", items.filter(FF.soon).length, "3 天內結束");
   } else {
     $("#mineSum").innerHTML = "";
     // 分類統計：版本以份數計，主機以遊戲數計；點一下可篩選
@@ -2225,6 +2230,7 @@ document.addEventListener("click", e => {
   if (t.id === "openMine") { openMine(); return; }
   if (t.id === "closeMine") { history.state?.ov === "mine" ? history.back() : closeMineNow(); return; }
   const fpb = t.closest("[data-fp]"); if (fpb && !fpb.disabled) { favPg = +fpb.dataset.fp; renderMine(); $("#minePage").scrollTop = 0; return; }
+  const ff = t.closest("[data-ff]"); if (ff) { favF = favF === ff.dataset.ff ? "" : ff.dataset.ff; favPg = 1; renderMine(); return; }
   const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; mineF = ""; favPg = 1; renderMine(); $("#minePage").scrollTop = 0; return; }
   const mf = t.closest("[data-mf]"); if (mf) { mineF = mineF === mf.dataset.mf ? "" : mf.dataset.mf; favPg = 1; renderMine(); return; }
   if (t.closest("[data-dlgclose]") || t.id === "dlg") { closeDlg(); return; }
