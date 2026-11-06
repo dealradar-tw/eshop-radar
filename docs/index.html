@@ -549,7 +549,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <button class="st" data-view="all" aria-pressed="false"><b id="sAll">–</b><span>件全部遊戲</span></button>
     <button class="st" data-view="new" aria-pressed="false"><b id="sNew">–</b><span>近期發售</span></button>
     <button class="st" data-view="up" aria-pressed="false"><b id="sUp">–</b><span>即將發售</span></button>
-    <button class="st" data-view="hot" aria-pressed="false"><span class="ttl">Fami通銷售排行</span></button>
+    <button class="st" data-view="hot" aria-pressed="false"><span class="ttl">Fami通<br>銷售排行</span></button>
     <button class="st" data-view="rankfav" aria-pressed="false"><span class="ttl">關注排行 TOP100</span></button>
     <button class="st" data-view="rankbuy" aria-pressed="false"><span class="ttl">購買排行 TOP100</span></button>
   </div>
@@ -696,7 +696,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v129・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v130・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -1636,7 +1636,7 @@ async function openDetail(id, fromHistory){
         ${g.enName && g.enName.toLowerCase() !== (g.zhName || g.name || "").toLowerCase() ? `<div class="zhn-d">英文名：${esc(g.enName)}</div>` : ""}
         ${statsHTML(g, true)}
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
-        ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "遊戲支援繁體中文", zs: "遊戲支援簡體中文（不支援繁體）", zp: "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}</span></div>` : ""}
+        ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "台灣版遊戲支援繁體中文", zs: "台灣版遊戲支援簡體中文（不支援繁體）", zp: "台灣版只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}${g.jpNz ? '<span class="nz" style="margin-left:6px">日本版無中文</span>' : ""}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
         ${regionBox(g, id)}
         <details class="fold" id="chartFold"><summary>價格走勢</summary><div class="chart" id="chart"></div></details>
