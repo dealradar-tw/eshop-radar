@@ -696,7 +696,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v130・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v131・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -905,7 +905,7 @@ function priceText(g){
 function metaLine(g){
   const tg = tagsOf(g.id);
   const parts = [badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
-  if (tab === "new" && g.rel) { const [, m, d] = g.rel.split("-"); parts.push(`${+m}/${+d} 發售`); }
+  if (tab === "new" && g.rel) { const [y, m, d] = g.rel.split("-"); parts.push(m && d ? `${y}/${+m}/${+d} 發售` : g.rel.slice(0, 4) + " 年發售"); }
   if (tab === "up") parts.push(upDate(g));
   if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
   else if (g.dlcN) parts.push(`${g.dlcN} 個 DLC`);
@@ -962,7 +962,7 @@ function upDate(g){
   if (/^\d{4}(-\d{2})?$/.test(g.rel || "")) { const [y, m] = g.rel.split("-"); return m ? `${y}/${+m} 發售` : `${y} 年發售`; }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(g.rel || "")) return "發售日未定";
   const [y, m, d] = g.rel.split("-"), n = Math.round((new Date(g.rel + "T00:00:00+08:00") - today) / 864e5);
-  const when = `${+y !== today.getFullYear() ? y + "/" : ""}${+m}/${+d} 發售`;
+  const when = `${y}/${+m}/${+d} 發售`;
   if (n < 0) return "發售日未定";  // 商店上的日期已過但還沒開賣，多半是資料沒更新
   return n === 0 ? `${when}（今天）` : n <= 30 ? `${when}（${n} 天後）` : when;
 }
