@@ -1,5 +1,5 @@
 {
-"asof":"2026-11-06 15:14",
+"asof":"2026-11-06 15:48",
 "games":{
 "70010000022666":{
 "name":"Sense - 不祥的預感: A Cyberpunk Ghost Story",
@@ -131905,7 +131905,8 @@
 "zv":2,
 "mv":739906,
 "mv2":739920,
-"jpId":"70010000122664"
+"jpId":"70010000122664",
+"jpNoZh":true
 },
 "70010000122674":{
 "name":"異度神劍 終極版 Nintendo Switch 2 Edition",
@@ -136869,7 +136870,8 @@
 "demo":0,
 "zv":2,
 "mv":739906,
-"mv2":739920
+"mv2":739920,
+"jpNoZh":true
 },
 "70010000124262":{
 "name":"地理訓練！美國50州 輪廓測驗",
@@ -138201,7 +138203,8 @@
 "zv":2,
 "mv":739906,
 "mv2":739920,
-"jpId":"70010000121079"
+"jpId":"70010000121079",
+"jpNoZh":true
 },
 "70010000124637":{
 "name":"Outbreak Compound",
@@ -149655,7 +149658,8 @@
 "zv":2,
 "mv":739906,
 "mv2":739920,
-"jpId":"70010000128697"
+"jpId":"70010000128697",
+"jpNoZh":true
 },
 "70010000128707":{
 "name":"Quiet Evidence: A Detective Mystery Case",
@@ -165608,7 +165612,8 @@
 "zv":2,
 "mv":739906,
 "mv2":739920,
-"jpId":"70010000131889"
+"jpId":"70010000131889",
+"jpNoZh":true
 },
 "70010000136493":{
 "name":"Neatly Organized",
@@ -652160,6 +652165,42 @@
 "nodata":true,
 "hk":{
 "reg":30,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000141650":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-11-06",
+"status":"unreleased",
+"reg":465,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":115,
+"sale":null,
+"end":""
+},
+"jp":null
+},
+"70010000141905":{
+"name":"",
+"plat":"",
+"img":"",
+"meta":false,
+"first_seen":"2026-11-06",
+"status":"unreleased",
+"reg":320,
+"sale":null,
+"end":"",
+"nodata":true,
+"hk":{
+"reg":78,
 "sale":null,
 "end":""
 },
