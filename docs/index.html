@@ -710,7 +710,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v139・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v140・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -2046,6 +2046,30 @@ function syncJoinDlg(code){
     if (ok) syncDlg(); else { $("#syncJoinMsg").textContent = store.get("syncErr", "") || "同步失敗"; $("#syncJoinGo").disabled = false; }
   });
 }
+function syncDelFlow(code){
+  // 兩道確認：先看清楚後果，再手動輸入「刪除」才能按下最後的按鈕
+  openDlg(`<div class="dlg-head"><h3>刪除雲端資料？（1／2）</h3><button class="chip" data-dlgclose>取消</button></div>
+    <p class="cnote">這會<b>永久刪除雲端上的同步資料</b>，而且所有連著這組同步碼的裝置都會停止同步。</p>
+    <ul class="cnote" style="margin:6px 0 10px 18px"><li>各裝置本機的收藏與已購買<b>不會</b>被刪。</li><li>刪除後無法復原；若你只有一台裝置有完整資料，之後換機就沒有雲端備份可用。</li><li>想保險的話，請先按「匯出備份」留一份檔案。</li></ul>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="chip" id="syncDelBack">先不要，回去</button><button class="chip" id="syncDelNext">我了解，繼續</button></div>`);
+  $("#syncDelBack").addEventListener("click", syncDlg);
+  $("#syncDelNext").addEventListener("click", () => {
+    openDlg(`<div class="dlg-head"><h3>刪除雲端資料？（2／2）</h3><button class="chip" data-dlgclose>取消</button></div>
+      <p class="cnote">最後確認：請在下面輸入「<b>刪除</b>」兩個字，才能按下刪除。</p>
+      <div class="buyform"><label>輸入「刪除」<input type="text" id="syncDelIn" autocomplete="off"></label></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="chip" id="syncDelBack2">先不要，回去</button><button class="chip" id="syncDelGo" disabled>確定刪除雲端資料並停止</button></div>
+      <p class="cnote" id="syncMsg"></p>`);
+    $("#syncDelIn").addEventListener("input", () => { $("#syncDelGo").disabled = $("#syncDelIn").value.trim() !== "刪除"; });
+    $("#syncDelBack2").addEventListener("click", syncDlg);
+    $("#syncDelGo").addEventListener("click", async () => {
+      if ($("#syncDelIn").value.trim() !== "刪除") return;
+      $("#syncDelGo").disabled = true; $("#syncMsg").textContent = "刪除中…";
+      try { await rpc("box_delete", {p_code: code}); } catch (e) { $("#syncMsg").textContent = "刪除失敗，請稍後再試。"; $("#syncDelGo").disabled = false; return; }
+      store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg();
+    });
+    setTimeout(() => $("#syncDelIn")?.focus(), 50);
+  });
+}
 function syncDlg(){
   if (!rankOn()) { openDlg(`<div class="dlg-head"><h3>跨裝置同步</h3><button class="chip" data-dlgclose>關閉</button></div><p class="cnote">同步功能尚未啟用。</p>`); return; }
   const code = syncCode();
@@ -2087,11 +2111,7 @@ function syncDlg(){
   $("#syncCopyLink").addEventListener("click", () => copy(syncLink(code), "已複製連結，在另一台打開就會連結同步"));
   $("#syncNow").addEventListener("click", async () => { $("#syncNow").disabled = true; $("#syncMsg").textContent = "同步中…"; const ok = await doSync(); $("#syncMsg").textContent = ok ? "已同步" : ""; $("#syncNow").disabled = false; });
   $("#syncStop").addEventListener("click", () => { if (!confirm("停止這台的同步？這台的資料會保留，雲端資料也不會刪除，其他裝置仍可繼續同步。")) return; store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg(); });
-  $("#syncDel").addEventListener("click", async () => {
-    if (!confirm("刪除雲端的同步資料並停止同步？所有連著這組同步碼的裝置都會停止同步（各裝置本機的資料不會被刪）。")) return;
-    try { await rpc("box_delete", {p_code: code}); } catch (e) { $("#syncMsg").textContent = "刪除失敗，請稍後再試。"; return; }
-    store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg();
-  });
+  $("#syncDel").addEventListener("click", () => syncDelFlow(code));
 }
 
 // ── 安裝成 App（PWA） ──
