@@ -676,7 +676,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   <div class="mine-head">
     <button class="chip" id="closeMine" aria-label="返回">‹ 返回</button>
     <h2>我的收藏</h2>
-    <span class="mine-tools"><button class="chip" id="mineExport">匯出備份</button><button class="chip" id="mineImport">匯入備份</button></span>
+    <span class="mine-tools"><button class="chip" id="mineSync">同步</button><button class="chip" id="mineExport">匯出備份</button><button class="chip" id="mineImport">匯入備份</button></span>
     <input type="file" id="mineFile" accept="application/json,.json" hidden>
   </div>
   <div class="wrap">
@@ -707,10 +707,10 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
-  收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
+  收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v138・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v139・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -728,8 +728,9 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 const full = id => id.length === 14 ? id : "70010000" + id;   // 遊戲用後 6 碼、DLC 用完整 14 碼
 const store = {
   get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} if (k === "favs" || k === "mine" || k === "targets") syncSoon(); },
 };
+var syncApplying = false, syncTimerId = 0, syncBusy = false;   // var：store.set 在啟動時就可能呼叫 syncSoon
 
 let ITEMS = [], BY = new Map(), DLC_BY_PARENT = new Map(), HOT = {items: []}, HOT_IDS = new Set(), ASOF = "", FX = {};
 let favs = new Set(store.get("favs", []).map(String));
@@ -1925,12 +1926,173 @@ $("#sort").addEventListener("change", async () => {
     setChips();
     showTab(["deals", "hot", "new", "up", "all", "rankfav", "rankbuy"].includes(tab) ? tab : "deals");
     loadRanks().then(updRankTiles);
+    syncBoot();
   } catch (e) {
     console.error(e);
     $("#list").innerHTML = '<li class="loading" style="display:block">資料載入失敗，請重新整理頁面。</li>';
   }
 })();
 
+// ── 跨裝置同步（同步碼）──
+// 同步碼只存在各裝置上，資料庫只存它的雜湊。資料 = 收藏 f、已購買與備忘 m、目標價 t。
+// 合併方式是三方合併：以「上次同步後的樣子」為基準，比對這台改了什麼、雲端改了什麼，分別套用；兩邊改到同一款時盡量保留兩邊。
+const SYNC_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const syncCode = () => store.get("syncCode", "");
+const fmtCode = c => c.replace(/(.{4})(?=.)/g, "$1-");
+const normCode = c => String(c || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+const syncLink = c => location.origin + location.pathname + "?sync=" + c;
+function newSyncCode(){ const a = new Uint8Array(24); crypto.getRandomValues(a); return [...a].map(x => SYNC_ALPHA[x % 32]).join(""); }
+function syncSnapshot(){
+  const f = {}; favs.forEach(id => { f[id] = 1; });
+  return {f, m: JSON.parse(JSON.stringify(MINE)), t: {...targets}};
+}
+function mergeMineEntry(a, b){
+  const seen = new Set(), p = [];
+  for (const x of [...(a.p || []), ...(b.p || [])]) { const k = JSON.stringify(x); if (!seen.has(k)) { seen.add(k); p.push(x); } }
+  return {...b, ...a, b: !!(a.b || b.b), p, tags: [...new Set([...(a.tags || []), ...(b.tags || [])])], n: a.n || b.n || "", fn: a.fn || b.fn || ""};
+}
+function syncMerge(base, local, server){
+  const eq = (x, y) => JSON.stringify(x) === JSON.stringify(y), out = {f: {}, m: {}, t: {}};
+  for (const key of ["f", "m", "t"]) {
+    const B = base[key] || {}, L = local[key] || {}, S = server[key] || {};
+    for (const k of new Set([...Object.keys(B), ...Object.keys(L), ...Object.keys(S)])) {
+      const b = B[k], l = L[k], sv = S[k], lc = !eq(l, b), sc = !eq(sv, b);
+      let r;
+      if (!lc) r = sv; else if (!sc) r = l;
+      else if (l === undefined || sv === undefined) r = l === undefined ? sv : l;   // 一邊刪除、另一邊修改：保留修改的，避免資料遺失
+      else r = key === "m" ? mergeMineEntry(l, sv) : l;
+      if (r !== undefined) out[key][k] = r;
+    }
+  }
+  return out;
+}
+function syncApply(m){
+  syncApplying = true;
+  try {
+    favs = new Set(Object.keys(m.f)); store.set("favs", [...favs]);
+    MINE = m.m; store.set("mine", MINE);
+    targets = m.t; store.set("targets", targets);
+  } finally { syncApplying = false; }
+}
+function syncRefreshUi(){
+  try { render(); if (!$("#minePage").hidden) renderMine(); updTiles(); } catch (e) { console.error(e); }
+  try { queueSync(); } catch (e) {}
+}
+function syncSoon(){
+  if (syncApplying || !syncCode()) return;
+  clearTimeout(syncTimerId); syncTimerId = setTimeout(() => doSync(), 4000);
+}
+async function doSync(){
+  const code = syncCode(); if (!code || syncBusy) return false;
+  syncBusy = true;
+  try {
+    for (let i = 0; i < 4; i++) {
+      const res = await rpc("box_pull", {p_code: code});
+      const server = res?.data || {f: {}, m: {}, t: {}}, ver = res?.ver || 0;
+      const local = syncSnapshot(), base = store.get("syncBase", {f: {}, m: {}, t: {}});
+      const merged = syncMerge(base, local, server);
+      if (!res || JSON.stringify(merged) !== JSON.stringify(server)) {
+        const w = await rpc("box_push", {p_code: code, p_data: {...merged, v: 1}, p_ver: ver});
+        if (!w?.ok) continue;                       // 同時有別台寫入：重讀再合併
+        store.set("syncVer", w.ver);
+      } else store.set("syncVer", ver);
+      const changed = JSON.stringify(merged) !== JSON.stringify(local);
+      if (changed) syncApply(merged);
+      store.set("syncBase", merged); store.set("syncAt", Date.now()); store.set("syncErr", "");
+      if (changed) syncRefreshUi();
+      return true;
+    }
+    throw new Error("busy");
+  } catch (e) {
+    store.set("syncErr", /rate/.test(e.message) ? "同步太頻繁，稍後會再試" : /bad code/.test(e.message) ? "同步碼格式不對" : /Failed to fetch|NetworkError/.test(e.message) ? "目前連不上網路" : "同步失敗，稍後會再試");
+    return false;
+  } finally { syncBusy = false; if ($("#syncStat")) syncStatText(); }
+}
+function syncStatText(){
+  const el = $("#syncStat"); if (!el) return;
+  const at = store.get("syncAt", 0), err = store.get("syncErr", "");
+  el.textContent = err ? "⚠ " + err : at ? "上次同步：" + new Date(at).toLocaleString("zh-TW", {hour12: false}) : "尚未同步";
+}
+function syncBoot(){
+  if (!rankOn()) return;
+  const u = new URL(location.href), q = normCode(u.searchParams.get("sync"));
+  if (u.searchParams.has("sync")) { u.searchParams.delete("sync"); history.replaceState(history.state, "", u.pathname + u.search + u.hash); }
+  if (q.length >= 20 && q !== syncCode()) { syncJoinDlg(q); return; }
+  syncBindVis();
+  if (syncCode()) {
+    setTimeout(doSync, 1200);
+  }
+}
+let syncVisBound = false;
+function syncBindVis(){
+  if (syncVisBound) return; syncVisBound = true;
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && syncCode() && Date.now() - store.get("syncAt", 0) > 60000) doSync(); });
+}
+async function syncLinkTo(code){
+  store.set("syncCode", code); store.set("syncBase", {f: {}, m: {}, t: {}}); store.set("syncAt", 0); store.set("syncErr", "");
+  const ok = await doSync();
+  return ok;
+}
+function syncJoinDlg(code){
+  const has = syncCode();
+  openDlg(`<div class="dlg-head"><h3>連結同步</h3><button class="chip" data-dlgclose>關閉</button></div>
+    <p class="cnote">掃到了一組同步碼。連結後，這台的收藏、已購買、備忘會和另一台合併，兩邊都會變成合併後的樣子（不會刪掉任何一邊的東西）。</p>
+    ${has ? '<p class="cnote">這台目前已經連著另一組同步碼，連結後會改用新的這組。</p>' : ""}
+    <p class="cnote"><b>${fmtCode(code)}</b></p>
+    <button class="chip" id="syncJoinGo">連結並同步</button> <p class="cnote" id="syncJoinMsg"></p>`);
+  $("#syncJoinGo").addEventListener("click", async () => {
+    $("#syncJoinGo").disabled = true; $("#syncJoinMsg").textContent = "同步中…";
+    const ok = await syncLinkTo(code);
+    if (ok) syncDlg(); else { $("#syncJoinMsg").textContent = store.get("syncErr", "") || "同步失敗"; $("#syncJoinGo").disabled = false; }
+  });
+}
+function syncDlg(){
+  if (!rankOn()) { openDlg(`<div class="dlg-head"><h3>跨裝置同步</h3><button class="chip" data-dlgclose>關閉</button></div><p class="cnote">同步功能尚未啟用。</p>`); return; }
+  const code = syncCode();
+  if (!code) {
+    openDlg(`<div class="dlg-head"><h3>跨裝置同步</h3><button class="chip" data-dlgclose>關閉</button></div>
+      <p class="cnote">把這台的收藏、已購買、備忘和目標價，同步到你的其他裝置（手機、電腦）。不用登入、不用留信箱，用一組同步碼連起來。</p>
+      <button class="chip" id="syncNew">開啟同步（產生新的同步碼）</button>
+      <div class="buyform" style="margin-top:14px"><label>已經有同步碼了？輸入後連結<input type="text" id="syncIn" autocomplete="off" autocapitalize="characters" placeholder="例如 ABCD-EFGH-…（共 24 碼）"></label>
+      <button class="chip" id="syncJoin">連結</button></div>
+      <p class="cnote" id="syncMsg"></p>`);
+    $("#syncNew").addEventListener("click", async () => {
+      $("#syncNew").disabled = true; $("#syncMsg").textContent = "建立中…";
+      const ok = await syncLinkTo(newSyncCode());
+      if (ok) syncDlg(); else { store.set("syncCode", ""); $("#syncMsg").textContent = store.get("syncErr", "") || "建立失敗"; $("#syncNew").disabled = false; }
+    });
+    $("#syncJoin").addEventListener("click", async () => {
+      const c = normCode($("#syncIn").value);
+      if (c.length < 20) { $("#syncMsg").textContent = "同步碼不完整，請確認有 24 碼。"; return; }
+      $("#syncJoin").disabled = true; $("#syncMsg").textContent = "同步中…";
+      const ok = await syncLinkTo(c);
+      if (ok) syncDlg(); else { store.set("syncCode", ""); $("#syncMsg").textContent = store.get("syncErr", "") || "連結失敗"; $("#syncJoin").disabled = false; }
+    });
+    return;
+  }
+  openDlg(`<div class="dlg-head"><h3>跨裝置同步</h3><button class="chip" data-dlgclose>關閉</button></div>
+    <p class="cnote">同步已開啟。在另一台裝置打開「我的收藏 → 跨裝置同步」，輸入下面的同步碼；手機也可以直接用相機掃 QR Code。</p>
+    <p style="font:700 16px/1.4 var(--display);letter-spacing:.02em;margin:10px 0" id="syncCodeTxt">${fmtCode(code)}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="chip" id="syncCopy">複製同步碼</button><button class="chip" id="syncCopyLink">複製連結</button></div>
+    <div style="margin:14px 0;text-align:center"><canvas id="syncQr" style="width:min(240px,70vw);height:auto;image-rendering:pixelated;border-radius:8px"></canvas></div>
+    <p class="cnote" id="syncStat"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="chip" id="syncNow">立即同步</button><button class="chip" id="syncStop">停止同步（只停這台）</button><button class="chip" id="syncDel">刪除雲端資料並停止</button></div>
+    <p class="cnote" style="margin-top:12px">知道同步碼的人就能讀寫你的同步資料，請不要公開貼出。同步碼遺失時無法找回；雲端只存同步碼的雜湊，管理者也看不到。若懷疑外流，按「刪除雲端資料並停止」，再重新開啟同步就會換新的同步碼。</p>
+    <p class="cnote" id="syncMsg"></p>`);
+  syncStatText();
+  const load = () => { try { qrDraw($("#syncQr"), syncLink(code), 6); } catch (e) { $("#syncQr").remove(); } };
+  if (typeof qrDraw === "function") load(); else { const sc = document.createElement("script"); sc.src = "qr.js"; sc.onload = load; sc.onerror = () => $("#syncQr")?.remove(); document.head.appendChild(sc); }
+  const copy = async (txt, ok) => { try { await navigator.clipboard.writeText(txt); $("#syncMsg").textContent = ok; } catch (e) { $("#syncMsg").textContent = "無法自動複製，請長按選取文字。"; } };
+  $("#syncCopy").addEventListener("click", () => copy(fmtCode(code), "已複製同步碼"));
+  $("#syncCopyLink").addEventListener("click", () => copy(syncLink(code), "已複製連結，在另一台打開就會連結同步"));
+  $("#syncNow").addEventListener("click", async () => { $("#syncNow").disabled = true; $("#syncMsg").textContent = "同步中…"; const ok = await doSync(); $("#syncMsg").textContent = ok ? "已同步" : ""; $("#syncNow").disabled = false; });
+  $("#syncStop").addEventListener("click", () => { if (!confirm("停止這台的同步？這台的資料會保留，雲端資料也不會刪除，其他裝置仍可繼續同步。")) return; store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg(); });
+  $("#syncDel").addEventListener("click", async () => {
+    if (!confirm("刪除雲端的同步資料並停止同步？所有連著這組同步碼的裝置都會停止同步（各裝置本機的資料不會被刪）。")) return;
+    try { await rpc("box_delete", {p_code: code}); } catch (e) { $("#syncMsg").textContent = "刪除失敗，請稍後再試。"; return; }
+    store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg();
+  });
+}
 
 // ── 安裝成 App（PWA） ──
 if ("serviceWorker" in navigator) {
@@ -2277,6 +2439,7 @@ document.addEventListener("click", e => {
     return;
   }
   if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
+  if (t.id === "mineSync") { syncDlg(); return; }
   if (t.id === "mineExport") {
     const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 2, at: new Date().toISOString(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
