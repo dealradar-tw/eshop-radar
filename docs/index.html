@@ -295,6 +295,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .set-card>.set-act:first-child{border-top:0;padding-top:2px}.set-card>.set-act:last-child{padding-bottom:2px}
 .set-act .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.set-act .tx b{font-size:15px}.set-act .tx small{font-size:12.5px;line-height:1.5;color:var(--muted)}
 .set-act .go{font-size:20px;color:var(--muted)}
+.dlg:has(.aboutframe){width:min(860px,100%)}.aboutframe{display:block;width:100%;height:72dvh;border:0;border-radius:10px;margin-top:10px;background:var(--bg)}
 .set-ver{margin:12px 0 0;text-align:center;font-size:12px;color:var(--muted)}
 .dlg-head h3{margin:0;font-size:17px;flex:1}
 .dlg-head .chip{font-weight:700;background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -768,7 +769,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v158・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v159・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2339,6 +2340,10 @@ function refreshBuyIcons(id){
 // ── 設定：區域顯示、顯示模式、備份與同步、排行資料、意見回饋、關於與版本 ──
 let subOpen = false;   // 從設定視窗打開的小視窗（同步、意見回饋）：關閉時回到設定視窗
 function backToSettings(){ subOpen = false; closeDlgNow(); settingsDlg(); }
+function aboutDlg(){
+  openDlg(`<div class="dlg-head"><h3>關於・聲明・隱私權政策</h3><button class="chip" data-dlgclose>返回</button></div>
+    <iframe class="aboutframe" src="about.html?embed=1" title="關於・聲明・隱私權政策" onload="try{const r=this.contentDocument.documentElement;theme==='auto'?delete r.dataset.theme:r.dataset.theme=theme}catch(e){}"></iframe>`);
+}
 function settingsDlg(){
   subOpen = false;
   const ver = document.querySelector("#verText")?.textContent || "";
@@ -2360,7 +2365,7 @@ function settingsDlg(){
       <button class="chip" id="rankOptBtn"></button></div>
     <div class="set-card">
       ${act("fbBtn", "💬", "意見回饋", "回報錯誤、提出建議或想要的功能，只有網站管理者看得到，不會公開。")}
-      <a class="set-act" href="about.html"><span class="ico">ℹ️</span><span class="tx"><b>關於・非官方聲明・隱私權政策</b><small>本站是非官方個人工具；這裡說明資料來源、免責聲明與隱私權政策。</small></span><span class="go">›</span></a></div>
+      <button class="set-act" id="aboutBtn"><span class="ico">ℹ️</span><span class="tx"><b>關於・非官方聲明・隱私權政策</b><small>本站是非官方個人工具；這裡說明資料來源、免責聲明與隱私權政策。</small></span><span class="go">›</span></button></div>
     <p class="set-ver">${ver}</p>`);
   updRankPriv();
 }
@@ -2568,6 +2573,7 @@ document.addEventListener("click", e => {
     return;
   }
   if (t.closest("#setBtn")) { settingsDlg(); return; }
+  if (t.closest("#aboutBtn")) { subOpen = true; aboutDlg(); return; }
   if (t.closest("#fbBtn")) { subOpen = true; feedbackDlg(); return; }
   const gr = t.closest("[data-gr]");
   if (gr) { regF = gr.dataset.gr; store.set("regF", regF); rerender(); $$("[data-gr]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gr === regF)); return; }
