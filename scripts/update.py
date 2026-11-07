@@ -1620,17 +1620,23 @@ def build_site(games, dlcs, hist, hist_hk, asof, fx=None, hist_jp=None, moved=No
             hk = hg.get("hk") or {}
             if not g.get("jp") and hg.get("jp"):
                 g = {**g, "jp": hg["jp"], "jpId": hg.get("jpId"), "jpNoZh": hg.get("jpNoZh")}
+        hk_low = low_info((hist_hk or {}).get(tw2hk.get(nsuid, nsuid), []))
+        jp_low = low_info((hist_jp or {}).get(g.get("jpId", ""), [])) if g.get("jp") else (None, "", 0)
         rows.append([nsuid[-6:], g.get("name", ""), 1 if g.get("plat") == "BEE" else 0, g.get("img", ""),
                      g.get("reg"), g.get("sale"), (g.get("end") or "")[:10], low, low_date,
                      n, STATUS_CODE[g["status"]], g.get("first_seen", ""), 1 if g.get("meta") else 0,
                      g.get("genres", []), g.get("zh", 0), g.get("pmax", 0), dlc_count.get(nsuid, 0) + dlc_count.get(tw2hk.get(nsuid), 0),
                      hk.get("reg"), hk.get("sale"), (g.get("jp") or {}).get("reg"), (g.get("jp") or {}).get("sale"),
                      g.get("jpId", "") if g.get("jp") else "", (g.get("rel") or "")[:10], g.get("demo", 0), g.get("only", ""),
-                     1 if g.get("jpNoZh") and g.get("jp") else 0])
+                     1 if g.get("jpNoZh") and g.get("jp") else 0,
+                     # 港區／日區的特價結束日與歷史最低價（原幣別）：網頁「歷史新低」「3 天內結束」要看三區
+                     (hk.get("end") or "")[:10], hk_low[0], hk_low[2],
+                     ((g.get("jp") or {}).get("end") or "")[:10], jp_low[0], jp_low[2]])
     rows.sort(key=lambda r: r[0])
     packed, img = pack_rows(rows, ["id", "name", "s2", "img", "reg", "sale", "end", "low", "lowDate", "nPrices", "status",
                                    "firstSeen", "hasDetail", "genres", "zh", "pmax", "dlcN", "hkReg", "hkSale",
-                                   "jpReg", "jpSale", "jpId", "rel", "demo", "only", "jpNz"])
+                                   "jpReg", "jpSale", "jpId", "rel", "demo", "only", "jpNz",
+                                   "hkEnd", "hkLow", "hkN", "jpEnd", "jpLow", "jpN"])
     save(os.path.join(DOCS, "data.json"), {
         "v": 2,
         "asof": asof,
