@@ -245,6 +245,8 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .prange .pin{color:var(--muted);font-size:13px;white-space:nowrap}
 .prange input{font:inherit;font-size:14px;width:6.5em;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
 .prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
+.fav-new{margin:0 0 10px;padding:9px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:14.5px;line-height:1.5}
+.fav-new b{font-family:var(--display)}
 .fav-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
 .fav-ctl select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 .mine-spent{align-self:center;margin-left:6px;font-size:14px;color:var(--muted);white-space:nowrap}
@@ -684,6 +686,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
       <span class="mine-spent" id="mineSpent"></span>
     </nav>
     <div class="mine-sum" id="mineSum"></div>
+    <p class="fav-new" id="favNew" hidden></p>
     <div class="fav-ctl" id="favCtl" hidden></div>
     <ul id="mineList"></ul>
     <nav class="pager" id="favPager" aria-label="收藏換頁" hidden></nav>
@@ -707,7 +710,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v136・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v137・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
@@ -2144,7 +2147,26 @@ function feedbackDlg(){
 $("#fbBtn").addEventListener("click", feedbackDlg);
 
 // ── 我的收藏頁 ──
+let favNewTxt = "";
+// 「自上次你來之後」：只存在這支手機的瀏覽器裡，不上傳。距離上次基準超過 6 小時才把基準往前推，所以短時間內重開看到的還是同一份。
+function calcFavNew(){
+  const cur = {t: Date.now(), known: [...favs].filter(id => BY.has(id)),
+    sale: [...favs].filter(id => BY.get(id)?.onSale), low: [...favs].filter(id => BY.get(id)?.isLow)};
+  const prev = store.get("favSeen", null);
+  favNewTxt = "";
+  if (prev && Array.isArray(prev.known)) {
+    const known = new Set(prev.known), ps = new Set(prev.sale), pl = new Set(prev.low);
+    const ns = cur.sale.filter(id => known.has(id) && !ps.has(id)).length;
+    const nl = cur.low.filter(id => known.has(id) && !pl.has(id)).length;
+    const parts = [];
+    if (ns) parts.push(`<b>${ns}</b> 款開始特價`);
+    if (nl) parts.push(`<b>${nl}</b> 款創史低價`);
+    favNewTxt = parts.length ? `自上次你來之後，收藏裡有 ${parts.join("、")}。` : "自上次你來之後，收藏裡沒有新的特價。";
+  }
+  if (!prev || cur.t - prev.t > 6 * 3600e3) store.set("favSeen", cur);
+}
 function openMine(){
+  calcFavNew();
   if ($("#minePage").hidden) history.pushState({ov: "mine"}, "");
   $("#minePage").hidden = false; document.body.style.overflow = "hidden";
   renderMine(); $("#minePage").scrollTop = 0;
@@ -2182,6 +2204,7 @@ function renderMine(){
       ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
   }
   let listItems = listIds.map(id => BY.get(id));
+  const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewTxt;
   const fc = $("#favCtl"), fp = $("#favPager");
   {
     if (favSort !== "recent") {
