@@ -134,6 +134,7 @@ li{display:grid;grid-template-columns:168px minmax(0,1fr) auto 40px;align-items:
 .sheet-bg{position:fixed;inset:0;background:rgb(0 0 0 / .45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--surface);color:var(--ink);width:100%;max-width:520px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:0 0 calc(20px + env(safe-area-inset-bottom,0px))}
 @media (min-width:700px){.sheet-bg{align-items:center}.sheet{border-radius:16px;max-height:84vh}}
+@media (min-width:900px){.sheet{max-width:760px}}
 .sheet .hero{position:relative;aspect-ratio:16/9;background:var(--line)}
 .sheet .hero img{width:100%;height:100%;object-fit:cover;display:block}
 .sheet .x{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgb(0 0 0 / .55);color:#fff;font-size:20px;line-height:1;cursor:pointer}
@@ -730,7 +731,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v146・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v147・版本更新日期 2026-11-07</span>
 </footer>
 </div>
 
@@ -1706,7 +1707,7 @@ async function openDetail(id, fromHistory){
 }
 // 手機「返回」：打開詳細頁／截圖時記一筆瀏覽紀錄，按返回就只關掉它，不會離開網站
 function closeDetail(){
-  if (history.state?.ov === "sheet") { history.go(-history.state.d); return; }  // ×：整個關掉，回到清單
+  if (history.state?.ov === "sheet") { history.back(); return; }  // ×：回到上一頁（從追加內容點進來就回到剛才的遊戲；最上層則關閉）
   closeDetailNow();
 }
 function closeDetailNow(){
