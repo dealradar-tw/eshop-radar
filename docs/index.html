@@ -40,8 +40,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 /* 寬螢幕：放寬版面，遊戲卡改左右兩欄 */
 @media (min-width:1100px){
   .wrap{max-width:1240px}
-  #list,#mineList,#hotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  #list > li:not([data-card]):not(.hot-miss),#mineList > li:not([data-card]),#hotList > li.loading,#hotList > li.empty{grid-column:1/-1}
+  #list,#mineList,#hotList,#rankList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #list > li:not([data-card]):not(.hot-miss),#mineList > li:not([data-card]),#hotList > li.loading,#hotList > li.empty,#rankList > li.loading,#rankList > li.hot-miss{grid-column:1/-1}
   #hotList{align-items:start}  /* Fami通：合輯與查不到的項目也併入兩欄，各自高度不同、靠上對齊 */
 }
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
@@ -862,7 +862,7 @@ header h1 .logo{display:inline-block;vertical-align:-.2em;width:1.15em;height:1.
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v175・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v176・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
