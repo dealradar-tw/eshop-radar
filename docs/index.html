@@ -97,7 +97,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{ou
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
 .bar{margin-top:0!important}
 .plat{display:inline-block;font-size:11px;font-weight:700;background:var(--s2);color:var(--s2-ink);border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px;letter-spacing:.02em}
-li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var(--surface) 55%);box-shadow:inset 0 0 0 2px var(--s2),inset 7px 0 0 var(--s2)}
+li.s2{border-color:var(--s2);background:linear-gradient(90deg,var(--s2-soft),var(--surface) 55%);box-shadow:inset 0 0 0 2px var(--s2),inset 7px 0 0 var(--s2),var(--sh)}
 .thumb .s2mark{position:absolute;right:0;top:0;background:var(--s2);color:var(--s2-ink);font-family:var(--display);font-weight:800;font-size:11px;line-height:1.5;padding:1px 6px;border-radius:0 0 0 6px;letter-spacing:.02em}
 .hot-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--urgent);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-right:6px;vertical-align:1px}
 .hotinfo{font-size:13px;color:var(--muted);margin-top:4px}
@@ -579,6 +579,44 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 .hc-th.s2o{outline:2px solid var(--s2,#8f5bd6);outline-offset:-2px}
 .hc-game{grid-column:2/4;text-align:left;font:inherit;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;line-height:1.35}
 .hc-game small{font-size:12px}
+
+/* ── 介面美化（首頁、我的收藏）：圓角、陰影、對齊 ── */
+:root{--sh:0 1px 2px rgb(15 23 42 / .06),0 2px 8px rgb(15 23 42 / .05);--sh-up:0 2px 4px rgb(15 23 42 / .08),0 8px 20px rgb(15 23 42 / .10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sh:0 1px 2px rgb(0 0 0 / .4),0 2px 10px rgb(0 0 0 / .25);--sh-up:0 2px 4px rgb(0 0 0 / .5),0 8px 22px rgb(0 0 0 / .4)}}
+:root[data-theme="dark"]{--sh:0 1px 2px rgb(0 0 0 / .4),0 2px 10px rgb(0 0 0 / .25);--sh-up:0 2px 4px rgb(0 0 0 / .5),0 8px 22px rgb(0 0 0 / .4)}
+.stats .st,.mine-sum div,.fav-new,li,.note{border-radius:14px;box-shadow:var(--sh)}
+.stats .st{transition:transform .15s ease,box-shadow .15s ease}
+.stats .st[aria-pressed="true"]{box-shadow:var(--sh-up)}
+input[type=search],select{border-radius:12px;padding:10px 14px;box-shadow:var(--sh);transition:border-color .15s,box-shadow .15s}
+input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.chip{padding:5px 13px;transition:background .15s,color .15s,border-color .15s,transform .1s}
+.chip:active{transform:scale(.97)}
+.mine-head{background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.mine-head h2{font-size:21px;font-weight:800}
+.fav-new{background:color-mix(in srgb,var(--accent) 9%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--line));border-left:4px solid var(--accent)}
+.mine-sum div{padding-block:8px}
+.mine-tabs .tab{font-size:16px}
+.mine-spent:empty{display:none}
+.mine-spent{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px;box-shadow:var(--sh)}
+@media (hover:hover){
+  .stats .st:hover{transform:translateY(-1px);box-shadow:var(--sh-up)}
+  li[data-card]{transition:box-shadow .15s ease,transform .15s ease}
+  li[data-card]:hover{box-shadow:var(--sh-up);transform:translateY(-1px)}
+  li.s2[data-card]:hover{box-shadow:inset 0 0 0 2px var(--s2),inset 7px 0 0 var(--s2),var(--sh-up)}
+  .chip:not([aria-pressed="true"]):hover{border-color:var(--ink)}
+}
+@media (min-width:701px){
+  .stats .st::before{align-self:center;font-size:22px;line-height:1;flex:none;width:28px;text-align:center}
+  .stats .st[data-view="deals"]::before{content:"🏷️"}.stats .st[data-view="low"]::before{content:"📉"}.stats .st[data-view="soon"]::before{content:"⏰"}
+  .stats .st[data-view="all"]::before{content:"🎮"}.stats .st[data-view="new"]::before{content:"🆕"}.stats .st[data-view="up"]::before{content:"📅"}
+  .stats .st[data-view="hot"]::before{content:"📰"}.stats .st[data-view="rankfav"]::before{content:"⭐"}.stats .st[data-view="rankbuy"]::before{content:"🛒"}
+}
+@media (min-width:601px){
+  .fpanel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px;box-shadow:var(--sh)}
+  .fpanel .chips .lbl{display:inline-block;min-width:5.6em}
+  .fpanel .chip{background:var(--bg)}
+  .fpanel .chip[aria-pressed="true"]{background:var(--ink)}
+}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -730,7 +768,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v156・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v157・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
