@@ -610,6 +610,13 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 .mine-break .chip{padding:6px 14px;font-size:14px;background:var(--bg)}
 .mine-break .chip[aria-pressed="true"]{background:var(--ink)}
 .mine-break .brk-t{display:block;font-size:13px;color:var(--muted);text-align:left}
+@media (min-width:701px){
+  .mine-sum>div[data-ff]{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:12px;padding:12px 16px;text-align:left}
+  .mine-sum>div[data-ff] b{font-size:28px}.mine-sum>div[data-ff] span{font-size:16px}
+  .mine-sum>div[data-ff]::before{align-self:center;font-size:22px;line-height:1;flex:none;width:28px;text-align:center}
+  .mine-sum>div[data-ff=""]::before{content:"⭐"}.mine-sum>div[data-ff="sale"]::before{content:"🏷️"}
+  .mine-sum>div[data-ff="low"]::before{content:"📉"}.mine-sum>div[data-ff="soon"]::before{content:"⏰"}
+}
 @media (min-width:701px){.mine-sum .mine-break{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 32px}.mine-break .brk-t,.mine-break .cnote{flex:0 0 100%}}
 @media (max-width:600px){.mine-sum .mine-break{padding:10px 12px}.mine-break .chips{gap:4px;flex-wrap:nowrap}.mine-break .chips .lbl{min-width:2.4em}.mine-break .chip{padding:4px 8px;font-size:13px;white-space:nowrap}.mine-break .chip b{font-size:15px}}
 @media (max-width:400px){.mine-tabs{gap:0}.mine-tabs .tab{font-size:13.5px;padding-inline:5px}.mine-spent{font-size:11px!important;margin-left:0!important;padding:2px 5px!important;white-space:nowrap}.mine-spent b{font-size:13px!important}.mine-break .chip{padding:4px 6px;font-size:12.5px}}
@@ -787,7 +794,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v166・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v167・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
