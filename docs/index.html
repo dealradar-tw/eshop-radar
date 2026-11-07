@@ -261,6 +261,9 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .prange .cnote{flex-basis:100%;font-size:11px;color:var(--muted);margin:0}
 .fav-new{margin:0 0 10px;padding:9px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:14.5px;line-height:1.5}
 .fav-new b{font-family:var(--display)}
+.fn-b{font:inherit;font-size:14px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:1px 10px;margin:0 2px;cursor:pointer}.fn-b b{color:inherit}
+.fn-b[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.new-badge{display:inline-block;font-size:11px;font-weight:700;background:var(--accent);color:var(--bg);border-radius:4px;padding:1px 6px;margin-right:6px}
 .fav-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
 .fav-ctl select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 .mine-spent{align-self:center;margin-left:6px;font-size:14px;color:var(--muted);white-space:nowrap}
@@ -775,7 +778,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v160・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v161・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2461,13 +2464,20 @@ function calcFavNew(){
   favNewTxt = "";
   if (prev && Array.isArray(prev.known)) {
     const known = new Set(prev.known), ps = new Set(prev.sale), pl = new Set(prev.low);
-    const ns = cur.sale.filter(id => known.has(id) && !ps.has(id)).length;
-    const nl = cur.low.filter(id => known.has(id) && !pl.has(id)).length;
-    const parts = [];
-    if (ns) parts.push(`<b>${ns}</b> 款開始特價`);
-    if (nl) parts.push(`<b>${nl}</b> 款創史低價`);
-    favNewTxt = parts.length ? `自上次你來之後，收藏裡有 ${parts.join("、")}。` : "自上次你來之後，收藏裡沒有新的特價。";
+    favNewIds = {s: new Set(cur.sale.filter(id => known.has(id) && !ps.has(id))), l: new Set(cur.low.filter(id => known.has(id) && !pl.has(id)))};
+    favNewTxt = "1";
   }
+}
+// 「自上次你來之後」提示：數字可以點，點了只列出這些遊戲；列表裡的卡片也會標「新特價／新史低」
+let favNewIds = {s: new Set(), l: new Set()};
+function favNewHtml(){
+  if (!favNewTxt) return "";
+  const b = (k, n, t) => `<button class="fn-b" data-ff="${k}" aria-pressed="${favF === k}"><b>${n}</b> ${t}</button>`;
+  const parts = [];
+  if (favNewIds.s.size) parts.push(b("nsale", favNewIds.s.size, "款開始特價"));
+  if (favNewIds.l.size) parts.push(b("nlow", favNewIds.l.size, "款創史低價"));
+  if (!parts.length) return "自上次你來之後，收藏裡沒有新的特價。";
+  return `自上次你來之後，收藏裡有 ${parts.join(" ")}。${favF === "nsale" || favF === "nlow" ? '<small class="muted">（只顯示這些，再點一次取消）</small>' : '<small class="muted">（點數字可只看這些）</small>'}`;
 }
 function openMine(){
   calcFavNew();
@@ -2476,7 +2486,7 @@ function openMine(){
   renderMine(); $("#minePage").scrollTop = 0;
 }
 function closeMineNow(){ $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
-const FF = {sale: g => dealOf(g), low: g => lowOf(g), soon: g => soonOf(g)};
+const FF = {sale: g => dealOf(g), low: g => lowOf(g), soon: g => soonOf(g), nsale: g => favNewIds.s.has(g.id), nlow: g => favNewIds.l.has(g.id)};
 function renderMine(){
   updRankPriv();
   const favIds = [...favs].reverse().filter(id => BY.has(id));
@@ -2509,7 +2519,7 @@ function renderMine(){
       ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
   }
   let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF));
-  const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewTxt;
+  const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewHtml();
   const fc = $("#favCtl"), fp = $("#favPager");
   {
     if (favSort !== "recent") {
@@ -2538,6 +2548,7 @@ function renderMine(){
     if (mineTab === "fav") {
       info = [g.low != null ? `史低 NT$${nf(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "",
               g.cheapPct && !twMode(g) ? `${g.cheapRegion}現在便宜 ${g.cheapPct}%` : ""].filter(Boolean).join(" · ");
+      info = (favNewIds.s.has(g.id) ? '<span class="new-badge">新特價</span>' : "") + (favNewIds.l.has(g.id) ? '<span class="new-badge">新史低</span>' : "") + info;
       info += `<div class="memo">${m.fn ? `📝 ${esc(m.fn)}` : '<span class="muted">還沒有備忘錄</span>'}<button class="chip" data-memo="${g.id}">✎ 備忘錄</button></div>`;
     } else {
       const x = m.p?.[0];
