@@ -284,7 +284,18 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .dlg{background:var(--surface);color:var(--ink);width:min(560px,100%);max-height:92dvh;overflow-y:auto;border-radius:16px 16px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 @media (min-width:700px){.dlg-bg{align-items:center}.dlg{border-radius:16px}}
 .dlg-head{display:flex;align-items:center;gap:8px}
-.set-sec{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}.set-sec>b{display:block;margin-bottom:8px;font-size:14px}.set-sec .chips{display:flex;flex-wrap:wrap;gap:6px}.set-sec .cnote{margin:8px 0 0}
+.set-card{margin-top:12px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.set-t{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:10px}
+.set-card .ico{font-size:18px;width:26px;text-align:center;flex:none}
+.set-d{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
+.setseg{display:flex;flex-wrap:wrap;gap:6px}
+.setseg button{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.setseg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.set-act{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;text-decoration:none;background:none;border:0;border-top:1px solid var(--line);padding:11px 0;cursor:pointer}
+.set-card>.set-act:first-child{border-top:0;padding-top:2px}.set-card>.set-act:last-child{padding-bottom:2px}
+.set-act .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.set-act .tx b{font-size:15px}.set-act .tx small{font-size:12.5px;line-height:1.5;color:var(--muted)}
+.set-act .go{font-size:20px;color:var(--muted)}
+.set-ver{margin:12px 0 0;text-align:center;font-size:12px;color:var(--muted)}
 .dlg-head h3{margin:0;font-size:17px;flex:1}
 .dlg-head .chip{font-weight:700;background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .dlg-name{margin:0;font-weight:700;font-size:14px;color:var(--muted)}
@@ -429,8 +440,8 @@ html{zoom:1}
 .fold[open]>summary::before{transform:rotate(90deg)}
 .fold>.chart{margin-top:8px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg button{font:inherit;font-size:12px;border:0;background:var(--surface);color:var(--muted);padding:4px 10px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.setseg button{font:inherit;font-size:12px;border:0;background:var(--surface);color:var(--muted);padding:4px 10px;cursor:pointer}
+.setseg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .chart svg{width:100%;height:auto;display:block;background:var(--bg);border-radius:8px}
 .chart .axis{font-size:11px;fill:var(--muted);font-family:var(--body)}
 .chart .grid{stroke:var(--line);stroke-width:1}
@@ -719,7 +730,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v155・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v156・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1583,7 +1594,7 @@ async function loadChart(id){
   const draw = () => {
     const days = RANGES.find(r => r[0] === chartRange)[2];
     const since = mainS?.data.length ? (mainS.data[0][0] < "2026-10-14" ? "2026-10-14" : mainS.data[0][0]) : "";
-    box.innerHTML = `<div class="chart-head"><div class="seg">${RANGES.map(([k, t]) =>
+    box.innerHTML = `<div class="chart-head"><div class="setseg">${RANGES.map(([k, t]) =>
         `<button data-range="${k}" aria-pressed="${k === chartRange}">${t}</button>`).join("")}</div></div>
       ${mainS?.data.length ? chartSVG(series(), g, days) + chartStats(mainS.data, g) + (noTw ? `<p class="cnote">台灣沒有販售，圖中是${mainS.label}區價格（以今天匯率換算成台幣）。</p>` : "") : '<p class="cnote">還沒有價格紀錄。</p>'}
       ${hasOthers2 ? `<label class="others"><input type="checkbox" id="chartOthers" ${chartOthers ? "checked" : ""}> 一起顯示港區／日區（以今天匯率換算台幣）</label>` : ""}
@@ -1778,14 +1789,14 @@ function showExitToast(){
 try { history.replaceState({ov: "root"}, ""); history.pushState({ov: "guard"}, ""); } catch (_) {}
 window.addEventListener("popstate", e => {
   if (e.state?.ov === "root") {
-    $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; $("#dlg").hidden = true; $("#dlg").innerHTML = "";
+    $("#lightbox").hidden = true; $("#lightbox").innerHTML = ""; subOpen = false; $("#dlg").hidden = true; $("#dlg").innerHTML = "";
     if (!$("#minePage").hidden) closeMineNow();
     if (!$("#sheet").hidden) closeDetailNow();
     if (exitArmed) { exitArmed = false; history.back(); return; }  // 第二次：離開
     exitArmed = true; history.pushState({ov: "guard"}, ""); showExitToast();
     return;
   }
-  if (!$("#dlg").hidden) { closeDlgNow(); return; }
+  if (!$("#dlg").hidden) { if (subOpen) backToSettings(); else closeDlgNow(); return; }
   if (!$("#lightbox").hidden) { closeLightboxNow(); if (e.state?.ov !== "lb") return; }
   const st = e.state;
   const wantMine = st?.ov === "mine" || !!st?.mine;
@@ -2288,18 +2299,31 @@ function refreshBuyIcons(id){
 
 // ── 對話框（購買明細／收藏備忘錄），手機按返回會先關閉對話框 ──
 // ── 設定：區域顯示、顯示模式、備份與同步、排行資料、意見回饋、關於與版本 ──
+let subOpen = false;   // 從設定視窗打開的小視窗（同步、意見回饋）：關閉時回到設定視窗
+function backToSettings(){ subOpen = false; closeDlgNow(); settingsDlg(); }
 function settingsDlg(){
-  const ver = (document.querySelector("#verText")?.textContent) || "";
-  const chips = (list, cur, attr) => list.map(([v, t]) => `<button class="chip" data-${attr}="${v}" aria-pressed="${v === cur}">${t}</button>`).join("");
-  openDlg(`<div class="dlg-head"><h3>設定</h3><button class="chip" data-dlgclose>關閉</button></div>
-    <div class="set-sec"><b>區域顯示</b><div class="chips">${chips(regList, regF, "gr")}</div>
-      <p class="cnote">全站套用（首頁、排行榜、我的收藏）。選「台灣區」只顯示台灣有賣的遊戲與台灣價格。</p></div>
-    <div class="set-sec"><b>顯示模式</b><div class="chips">${chips(THEMES.map(t => [t[0], t[1]]), theme, "th")}</div></div>
-    <div class="set-sec"><b>同步功能</b><div class="chips"><button class="chip" id="mineSync">跨裝置同步</button></div></div>
-    <div class="set-sec"><b>備份</b><div class="chips"><button class="chip" id="mineExport">匯出備份</button><button class="chip" id="mineImport">匯入備份</button></div></div>
-    <div class="set-sec" id="rankPriv" hidden><b>人氣排行</b><div class="cnote" style="margin:0"><span id="rankPrivState"></span></div><div style="margin-top:8px"><button class="chip" id="rankOptBtn"></button></div></div>
-    <div class="set-sec"><b>意見回饋</b><div class="chips"><button class="chip" id="fbBtn">意見回饋</button></div></div>
-    <div class="set-sec"><b>關於</b><div><a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a></div><div class="muted" style="margin-top:6px">${ver}</div></div>`);
+  subOpen = false;
+  const ver = document.querySelector("#verText")?.textContent || "";
+  const seg = (list, cur, attr) => `<div class="setseg">${list.map(([v, t]) => `<button data-${attr}="${v}" aria-pressed="${v === cur}">${t}</button>`).join("")}</div>`;
+  const act = (id, ico, title, desc) => `<button class="set-act" id="${id}"><span class="ico">${ico}</span><span class="tx"><b>${title}</b><small>${desc}</small></span><span class="go">›</span></button>`;
+  openDlg(`<div class="dlg-head"><h3>設定</h3><button class="chip" data-dlgclose>完成</button></div>
+    <div class="set-card"><div class="set-t"><span class="ico">🌏</span>區域顯示</div>
+      ${seg(regList, regF, "gr")}
+      <p class="set-d">決定首頁、排行榜、我的收藏要顯示哪些地區的遊戲，全站套用。選「台灣區」只顯示台灣有賣的遊戲，價格也只看台灣；「日本限定」「港區限定」「日港限定」則是只有該地區才買得到的遊戲。</p></div>
+    <div class="set-card"><div class="set-t"><span class="ico">🌓</span>顯示模式</div>
+      ${seg(THEMES.map(t => [t[0], t[1]]), theme, "th")}
+      <p class="set-d">跟隨系統：依手機或電腦的深色設定自動切換；淺色、深色：固定使用該模式。</p></div>
+    <div class="set-card">
+      ${act("mineSync", "🔄", "跨裝置同步", "用同步碼或 QR Code，讓手機和電腦共用收藏、已購買、備忘錄和目標價。")}
+      ${act("mineExport", "⬇️", "匯出備份", "把收藏與已購買存成檔案。換手機或清除瀏覽資料前，請先匯出。")}
+      ${act("mineImport", "⬆️", "匯入備份", "選擇之前匯出的備份檔，合併到目前的資料（同一款遊戲以備份為準）。")}</div>
+    <div class="set-card" id="rankPriv" hidden><div class="set-t"><span class="ico">📊</span>人氣排行</div>
+      <p class="set-d" style="margin-top:0"><span id="rankPrivState"></span></p>
+      <button class="chip" id="rankOptBtn"></button></div>
+    <div class="set-card">
+      ${act("fbBtn", "💬", "意見回饋", "回報錯誤、提出建議或想要的功能，只有網站管理者看得到，不會公開。")}
+      <a class="set-act" href="about.html"><span class="ico">ℹ️</span><span class="tx"><b>關於・非官方聲明・隱私權政策</b><small>本站是非官方個人工具；這裡說明資料來源、免責聲明與隱私權政策。</small></span><span class="go">›</span></a></div>
+    <p class="set-ver">${ver}</p>`);
   updRankPriv();
 }
 function openDlg(html){
@@ -2308,8 +2332,8 @@ function openDlg(html){
   d.innerHTML = `<div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
   d.hidden = false;
 }
-function closeDlg(){ if (history.state?.dlg) history.back(); else closeDlgNow(); }
-function closeDlgNow(){ $("#dlg").hidden = true; $("#dlg").innerHTML = ""; }
+function closeDlg(){ if (history.state?.dlg) history.back(); else if (subOpen) backToSettings(); else closeDlgNow(); }
+function closeDlgNow(){ subOpen = false; $("#dlg").hidden = true; $("#dlg").innerHTML = ""; }
 function buyDlg(id){
   // 每款遊戲一筆購買明細，直接填寫、自動儲存（多買其他區的請寫在記事備忘錄）
   const g = BY.get(id), m = MINE[id] || {}, x = m.p?.[0] || {};
@@ -2505,20 +2529,20 @@ document.addEventListener("click", e => {
     }
     return;
   }
-  if (t.id === "setBtn") { settingsDlg(); return; }
-  if (t.id === "fbBtn") { feedbackDlg(); return; }
+  if (t.closest("#setBtn")) { settingsDlg(); return; }
+  if (t.closest("#fbBtn")) { subOpen = true; feedbackDlg(); return; }
   const gr = t.closest("[data-gr]");
   if (gr) { regF = gr.dataset.gr; store.set("regF", regF); rerender(); $$("[data-gr]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gr === regF)); return; }
   const th = t.closest("[data-th]");
   if (th) { theme = th.dataset.th; store.set("theme", theme); applyTheme(); $("#chart")?._redraw?.(); $$("[data-th]").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === theme)); return; }
   if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
-  if (t.id === "mineSync") { syncDlg(); return; }
-  if (t.id === "mineExport") {
+  if (t.closest("#mineSync")) { subOpen = true; syncDlg(); return; }
+  if (t.closest("#mineExport")) {
     const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 2, at: new Date().toISOString(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
     a.download = `特價雷達收藏備份-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); return;
   }
-  if (t.id === "mineImport") { $("#mineFile").click(); return; }
+  if (t.closest("#mineImport")) { $("#mineFile").click(); return; }
 }, true);
 document.addEventListener("input", e => {
   const t = e.target;
