@@ -809,7 +809,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v168・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v169・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2128,9 +2128,13 @@ async function doSync(){
       const merged = syncMerge(base, local, server);
       // 同一個同步碼的裝置共用一個「排行用裝置編號」，排行榜才不會把同一個人的收藏算兩次
       if (server.d && server.d !== deviceId()) await adoptSharedDevice(server.d);
-      const out = {...merged, d: server.d || deviceId()};
+      // 「自上次你來之後」的基準也跟著同步：兩邊取最近一次瀏覽的那份
+      const ls = {b: store.get("favBase", null), s: store.get("favSeen", null)};
+      let seenSt = ls;
+      if (server.s && server.s.s && (!ls.s || server.s.s.t > ls.s.t)) { seenSt = server.s; store.set("favBase", server.s.b || null); store.set("favSeen", server.s.s); }
+      const out = {...merged, d: server.d || deviceId(), ...(seenSt.s ? {s: seenSt} : {})};
       const ss = o => JSON.stringify(o, (k, v) => v && typeof v === "object" && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) : v);
-      if (!res || ss(out) !== ss({f: server.f, m: server.m, t: server.t, d: server.d})) {
+      if (!res || ss(out) !== ss({f: server.f, m: server.m, t: server.t, d: server.d, ...(server.s ? {s: server.s} : {})})) {
         const w = await rpc("box_push", {p_code: code, p_data: {...out, v: 1}, p_ver: ver});
         if (!w?.ok) continue;                       // 同時有別台寫入：重讀再合併
         store.set("syncVer", w.ver);
@@ -2496,7 +2500,7 @@ function feedbackDlg(){
 
 // ── 我的收藏頁 ──
 let favNewTxt = "";
-// 「自上次你來之後」：只存在這支手機的瀏覽器裡，不上傳。距離上次基準超過 6 小時才把基準往前推，所以短時間內重開看到的還是同一份。
+// 「自上次你來之後」：基準存在各裝置，有開同步碼時會一起同步（只含遊戲編號與時間）。距離上次基準超過 6 小時才把基準往前推，所以短時間內重開看到的還是同一份。
 function calcFavNew(){
   const cur = {t: Date.now(), known: [...favs].filter(id => BY.has(id)),
     sale: [...favs].filter(id => BY.get(id)?.dealAny), low: [...favs].filter(id => BY.get(id)?.isLowAny)};
@@ -2504,6 +2508,7 @@ function calcFavNew(){
   let prev = store.get("favBase", null);
   if (!prev || !last || cur.t - last.t > 6 * 3600e3) { prev = last; store.set("favBase", prev); }   // 隔了 6 小時以上才算新的一次造訪
   store.set("favSeen", cur);
+  try { syncSoon(); } catch (e) {}
   favNewTxt = "";
   if (prev && Array.isArray(prev.known)) {
     const known = new Set(prev.known), ps = new Set(prev.sale), pl = new Set(prev.low);
