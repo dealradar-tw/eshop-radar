@@ -720,6 +720,11 @@ header h1 .logo{display:inline-block;vertical-align:-.2em;width:1.15em;height:1.
   .sheet .hero img{position:relative;object-fit:contain}
 }
 @media (min-width:900px){.shots img{flex:0 0 416px;max-width:416px;scroll-snap-align:start}}
+
+/* 按下回饋：按鍵、方塊、卡片按下時會微微縮小並變亮 */
+button:not(:disabled):active,.chip:active,.tab:active,.stats .st:active,.btile:active,.fn-b:active,.setseg button:active{transform:scale(.95)!important;filter:brightness(.92);transition:transform .06s ease,filter .06s ease!important}
+li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{transform:scale(.985)!important;transition:transform .06s ease!important}
+@media (prefers-reduced-motion:reduce){button:active,.chip:active,.tab:active,.st:active,.btile:active,li[data-card]:active{transform:none!important}}
 </style>
 </head>
 <body>
@@ -870,7 +875,7 @@ header h1 .logo{display:inline-block;vertical-align:-.2em;width:1.15em;height:1.
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v178・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v179・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2794,6 +2799,17 @@ document.addEventListener("click", e => {
 document.addEventListener("keydown", e => {
   if (e.target.id === "tagIn" && e.key === "Enter") { e.preventDefault(); addTag($("#tagBox").dataset.id, e.target.value); $("#tagIn")?.focus(); }
 });
+
+// 按下回饋：手機有支援震動的話，點按鍵時輕震一下（8 毫秒）；使用者設定「減少動態效果」時不震動
+(function(){
+  const rm = matchMedia("(prefers-reduced-motion: reduce)");
+  document.addEventListener("pointerdown", e => {
+    try {
+      if (rm.matches || !navigator.vibrate || e.pointerType === "mouse") return;
+      if (e.target.closest("button,.chip,.tab,.st,.btile,[data-view],[data-open],[data-ff],li[data-card]")) navigator.vibrate(8);
+    } catch (_) {}
+  }, {passive: true});
+})();
 </script>
 </body>
 </html>
