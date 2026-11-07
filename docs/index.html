@@ -37,6 +37,12 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
+/* 寬螢幕：放寬版面，遊戲卡改左右兩欄 */
+@media (min-width:1100px){
+  .wrap{max-width:1240px}
+  #list,#mineList,#hotList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #list > li:not([data-card]):not(.hot-miss),#mineList > li:not([data-card]),#hotList > li.hot-miss,#hotList > li:not([data-card]){grid-column:1/-1}
+}
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
@@ -724,7 +730,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v144・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v145・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
