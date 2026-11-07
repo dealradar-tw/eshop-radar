@@ -659,7 +659,31 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
   .btile i{font-size:22px}.btile b{font-size:28px}.btile span{font-size:16px}
 }
 </style>
-<style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* 手機版：首頁方塊與我的收藏方塊也加圖示（圖示在數字左側，文字在下方） */
+@media (max-width:700px){
+  .stats .st::before,.mine-sum>div[data-ff]::before{font-size:17px;line-height:1;flex:none}
+  .stats .st[data-view="deals"]::before{content:"🏷️"}.stats .st[data-view="low"]::before{content:"📉"}.stats .st[data-view="soon"]::before{content:"⏰"}
+  .stats .st[data-view="all"]::before{content:"🎮"}.stats .st[data-view="new"]::before{content:"🆕"}.stats .st[data-view="up"]::before{content:"📅"}
+  .stats .st[data-view="hot"]::before{content:"📰"}.stats .st[data-view="rankfav"]::before{content:"⭐"}.stats .st[data-view="rankbuy"]::before{content:"🛒"}
+  .mine-sum>div[data-ff=""]::before{content:"⭐"}.mine-sum>div[data-ff="sale"]::before{content:"🏷️"}
+  .mine-sum>div[data-ff="low"]::before{content:"📉"}.mine-sum>div[data-ff="soon"]::before{content:"⏰"}
+  .stats .st:has(b){display:grid;grid-template-columns:auto 1fr;column-gap:6px;align-items:center}
+  .stats .st:has(b)::before{grid-row:1}
+  .stats .st:has(b) span{grid-column:1/-1}
+  .stats .st:not(:has(b)){display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  .stats .st .ttl{font-size:16px;line-height:1.25}
+  .mine-sum>div[data-ff]{display:grid;grid-template-columns:auto auto;justify-content:center;align-items:center;column-gap:5px}
+  .mine-sum>div[data-ff] span{grid-column:1/-1;text-align:center}
+}
+@media (max-width:360px){
+  .stats .st::before,.mine-sum>div[data-ff]::before{font-size:14px}
+  .stats .st:has(b){column-gap:3px}
+  .stats b{font-size:clamp(15px,5.2vw,18px)}
+  .stats .st{padding:6px 6px}
+  .stats span{font-size:12.5px}
+}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -809,7 +833,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v169・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v170・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
