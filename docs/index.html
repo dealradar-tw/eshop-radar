@@ -623,7 +623,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   <div class="chips" id="regs" role="group" aria-label="販售地區">
     <span class="lbl">地區</span>
     <button class="chip" data-r="all" aria-pressed="true">全部</button>
-    <button class="chip" data-r="tw" aria-pressed="false">台灣有賣</button>
+    <button class="chip" data-r="tw" aria-pressed="false">台灣區</button>
     <button class="chip" data-r="jp" aria-pressed="false">日本限定</button>
     <button class="chip" data-r="hk" aria-pressed="false">港區限定</button>
     <button class="chip" data-r="jh" aria-pressed="false">日港限定</button>
@@ -736,7 +736,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v152・版本更新日期 2026-11-07</span>
+  <span class="muted">網站版本 v153・版本更新日期 2026-11-07</span>
 </footer>
 </div>
 
@@ -911,10 +911,18 @@ const FLAG = {
   jp: '<svg class="fl" viewBox="0 0 24 16" aria-label="日本"><rect width="24" height="16" fill="#fff"/><circle cx="12" cy="8" r="4.8" fill="#bc002d"/></svg>',
 };
 // 換算台幣後最便宜的地區（平手時優先台灣）
-function cheapest(g){
+// 「台灣區」篩選開啟時（我的收藏頁不受影響）：卡片、排序、篩選都只看台灣價格
+const twOn = () => regF === "tw" && $("#minePage").hidden;
+const twMode = g => twOn() && g.reg != null;
+const dealOf = g => twMode(g) ? g.onSale : g.dealAny;
+const dPct = g => twMode(g) ? g.pct : g.dealPct;
+const dSave = g => twMode(g) ? g.save : g.dealSave;
+const dMin = g => twOn() ? (g.reg != null ? (g.sale ?? g.reg) : null) : g.minTwd;
+function cheapest(g, all){
   if (g.reg === 0) return null;
   const list = [];
   if (g.reg != null) list.push({flag: FLAG.tw, cur: "NT$", reg: g.reg, sale: g.sale, now: g.sale ?? g.reg, twd: g.sale ?? g.reg, tw: true});
+  if (!all && twMode(g)) { const b = list[0]; b.regTwd = b.reg; b.onSale = b.sale != null && b.sale < b.reg; b.pct = b.onSale ? Math.round((1 - b.sale / b.reg) * 100) : 0; return b; }
   for (const [flag, cur, reg, sale, now, twd] of [[FLAG.hk, "HK$", g.hkReg, g.hkSale, g.hkNow, g.hkTwd], [FLAG.jp, "¥", g.jpReg, g.jpSale, g.jpNow, g.jpTwd]])
     if (now != null && twd != null && reg != null) list.push({flag, cur, reg, sale, now, twd, tw: false});
   if (!list.length) return null;
@@ -926,7 +934,7 @@ function cheapest(g){
   return b;
 }
 // 卡片左下角的折扣：最便宜的地區有特價就用它，否則用三區裡折扣最大的
-function tagPct(g){ const c = cheapest(g); return c?.onSale ? c.pct : g.dealPct; }
+function tagPct(g){ const c = cheapest(g); return c?.onSale ? c.pct : dPct(g); }
 function priceHTML(g){
   if (g.reg === 0) return '<b class="full">免費</b>';
   const c = cheapest(g);
@@ -959,7 +967,7 @@ function row(g, rank, extra = ""){
   const hx = extra.includes("本週約");   // Fami通：銷量資訊獨立一排，放在名稱與金額之間
   const cls = [g.s2 ? "s2" : "", hx ? "has-x" : ""].filter(Boolean).join(" ");
   return `<li data-card="${g.id}"${cls ? ` class="${cls}"` : ""}>
-    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : g.dealAny ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
+    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : dealOf(g) ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.zhName || g.name)}${subName(g) ? `<small class="zhn">${esc(subName(g))}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
       ${hx ? `<div class="xtra">${extra}</div>` : ""}<div class="mx"><div class="meta">${metaLine(g) || "&nbsp;"}</div>${hx ? "" : extra}</div>
@@ -978,11 +986,11 @@ const SORTS = {
   up:    [["upNear","發售日近到遠"],["upFar","發售日遠到近"],["upFav","關注人數"],["new","最新上架"],["low","價格低到高"]],
 };
 const sorters = {
-  pct:  (a,b) => b.dealPct - a.dealPct || b.dealSave - a.dealSave,
-  low:  (a,b) => (a.minTwd ?? 1e9) - (b.minTwd ?? 1e9) || b.dealPct - a.dealPct,
-  high: (a,b) => (b.minTwd ?? -1) - (a.minTwd ?? -1) || b.dealPct - a.dealPct,
-  save: (a,b) => b.dealSave - a.dealSave,
-  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || b.dealPct - a.dealPct,
+  pct:  (a,b) => dPct(b) - dPct(a) || dSave(b) - dSave(a),
+  low:  (a,b) => (dMin(a) ?? 1e9) - (dMin(b) ?? 1e9) || dPct(b) - dPct(a),
+  high: (a,b) => (dMin(b) ?? -1) - (dMin(a) ?? -1) || dPct(b) - dPct(a),
+  save: (a,b) => dSave(b) - dSave(a),
+  end:  (a,b) => (a.days ?? 999) - (b.days ?? 999) || dPct(b) - dPct(a),
   new:  (a,b) => (b.firstSeen || "").localeCompare(a.firstSeen || "") || full(b.id).localeCompare(full(a.id)),
   rel:  (a,b) => (!a.rel - !b.rel) || (b.rel || "").localeCompare(a.rel || "") || full(b.id).localeCompare(full(a.id)),
   relOld: (a,b) => (!a.rel - !b.rel) || (a.rel || "").localeCompare(b.rel || "") || full(a.id).localeCompare(full(b.id)),
@@ -1016,7 +1024,7 @@ const isRecent = g => !!g.rel && g.rel >= recentFrom() && g.rel <= TODAY_STR;
 let pMin = store.get("pMin", null), pMax = store.get("pMax", null);
 function inTier(g){
   if (tier === "all") return true;
-  const p = g.minTwd ?? g.price;  // 與卡片顯示的最便宜地區價格一致
+  const p = twOn() ? dMin(g) : (g.minTwd ?? g.price);  // 與卡片顯示的價格一致
   if (p == null) return false;
   if (tier === "custom") return (pMin == null || p >= pMin) && (pMax == null || p <= pMax);
   if (tier === "lt100") return p < 100;
@@ -1047,9 +1055,9 @@ function filtered(){
   return ITEMS.filter(g =>
     !!g.name &&
     (kind === "both" || (kind === "dlc") === !!g.isDlc) &&
-    (tab === "all" || (tab === "new" ? isRecent(g) : tab === "up" ? inUpRange(g) : g.dealAny)) &&
+    (tab === "all" || (tab === "new" ? isRecent(g) : tab === "up" ? inUpRange(g) : dealOf(g))) &&
     (plat === "all" || +g.s2 === +plat) &&
-    (regF === "all" || (regF === "tw" ? !g.only : onlyKind(g) === regF)) &&
+    (regF === "all" || (regF === "tw" ? !g.only && (tab === "up" || g.reg != null || g.isDlc) : onlyKind(g) === regF)) &&
     (inTier(g) || (tab === "up" && g.price == null && g.minTwd == null)) && gameFilters(g) &&
     (!lowOnly || g.isLow) && (!soonOnly || (g.days != null && g.days >= 0 && g.days <= 3)) &&
     (!demoOnly || g.demo) && (!favOnly || favs.has(g.id))
@@ -1340,9 +1348,9 @@ document.addEventListener("click", async e => {
 
 function rankLists(){
   const R = RANKS || {fav: [], buy: []};
-  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && x.g.dealAny)
-    .sort((a, b) => b.n - a.n || b.g.dealPct - a.g.dealPct);
-  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc);
+  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && dealOf(x.g) && (!twOn() || !x.g.only))
+    .sort((a, b) => b.n - a.n || dPct(b.g) - dPct(a.g));
+  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && (!twOn() || !x.g.only));
   return {fav, buy};
 }
 function updTiles(){
@@ -1361,6 +1369,7 @@ async function renderRank(t){
   const isFav = t === "rankfav";
   $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序，最多顯示前 100 名。" : "使用者標記為「已購買」的遊戲，依購買人數排序，最多顯示前 100 名。";
   const ul = $("#rankList");
+  if (twOn()) $("#rankNote").textContent += "（已套用「台灣區」篩選，不顯示日港限定的遊戲）";
   if (!rankOn()) { ul.innerHTML = '<li class="hot-miss"><div class="info">排行功能尚未啟用。</div></li>'; return; }
   ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
   await loadRanks(); updRankTiles();
@@ -1478,7 +1487,7 @@ document.addEventListener("change", e => {
   if (e.target.id === "pgSel") goPage(+e.target.value);
   if (e.target.id === "pgSize") { pageSize = +e.target.value; store.set("pageSize", pageSize); goPage(1); }
 });
-function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : render(); if (!$("#minePage").hidden) renderMine(); }
+function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : (tab === "rankfav" || tab === "rankbuy") ? renderRank(tab) : render(); if (!$("#minePage").hidden) renderMine(); }
 
 // ── 價格走勢圖 ──
 const RANGES = [["6m", "半年", 182], ["1y", "一年", 365], ["2y", "兩年", 730]];
@@ -1637,7 +1646,7 @@ async function openDetail(id, fromHistory){
   if (!g.isDlc && g.dlcN) await ensureDlc();
   await IMG_READY;
   const hot = (HOT.items || []).filter(h => h.id && h.id.slice(-6) === id).map(h => [h, h.plat === "s2" ? "Switch 2" : "Switch"])[0];
-  const ch = cheapest(g);
+  const ch = cheapest(g, true);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
     : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b>${ch.flag}<small>NT$</small>${nf(ch.twd)}</b></div>
        <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}${ch.cur === "¥" && g.jpNz ? "（日區無中文）" : ""}　·　${g.reg != null ? `台灣 NT$${nf(g.sale ?? g.reg)}` : "台灣沒有販售"}</div>`
