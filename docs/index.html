@@ -203,6 +203,11 @@ footer{margin-top:32px;font-size:12px;color:var(--muted);line-height:1.7}
   .fpanel .chips .chip{flex:0 0 auto;white-space:nowrap}
   .fpanel .chips .lbl{flex:0 0 auto;white-space:nowrap}
 }
+@media (min-width:601px){
+  #list > li:not(.hot-miss), #mineList > li{grid-template-columns:336px minmax(0,1fr) auto 40px;grid-template-rows:auto 1fr}
+  #list > li:not(.hot-miss) .thumb, #mineList > li .thumb{grid-column:1;grid-row:1 / span 2;align-self:start}
+  #list > li.has-x .thumb, #mineList > li.has-x .thumb{grid-row:1 / span 3}
+}
 @media (max-width:480px){
   li{grid-template-columns:136px minmax(0,1fr) auto;gap:10px}
   /* 手機：封面撐滿卡片左側整個高度（多出的左右部分裁掉） */
@@ -709,7 +714,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v141・版本更新日期 2026-11-05</span>
+  <span class="muted">網站版本 v142・版本更新日期 2026-11-05</span>
 </footer>
 </div>
 
