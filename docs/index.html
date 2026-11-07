@@ -787,7 +787,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v164・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v165・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2087,6 +2087,14 @@ function syncSoon(){
   if (syncApplying || !syncCode()) return;
   clearTimeout(syncTimerId); syncTimerId = setTimeout(() => doSync(), 4000);
 }
+async function adoptSharedDevice(shared){
+  const old = deviceId();
+  store.set("dev", shared); store.set("syncSig", "");
+  if (rankOn() && !rankOut()) {   // 清掉這台原本用自己的編號上傳的排行資料，之後改用共用編號上傳
+    try { for (const kind of ["fav", "buy"]) await fetch(RANK_CFG.url + "/rest/v1/rpc/sync_marks", {method: "POST", headers: sbHeaders(), body: JSON.stringify({p_device: old, p_kind: kind, p_ids: []})}); } catch (_) {}
+  }
+  RANKS = null; queueSync();
+}
 async function doSync(){
   const code = syncCode(); if (!code || syncBusy) return false;
   syncBusy = true;
@@ -2096,8 +2104,12 @@ async function doSync(){
       const server = res?.data || {f: {}, m: {}, t: {}}, ver = res?.ver || 0;
       const local = syncSnapshot(), base = store.get("syncBase", {f: {}, m: {}, t: {}});
       const merged = syncMerge(base, local, server);
-      if (!res || JSON.stringify(merged) !== JSON.stringify(server)) {
-        const w = await rpc("box_push", {p_code: code, p_data: {...merged, v: 1}, p_ver: ver});
+      // 同一個同步碼的裝置共用一個「排行用裝置編號」，排行榜才不會把同一個人的收藏算兩次
+      if (server.d && server.d !== deviceId()) await adoptSharedDevice(server.d);
+      const out = {...merged, d: server.d || deviceId()};
+      const ss = o => JSON.stringify(o, (k, v) => v && typeof v === "object" && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) : v);
+      if (!res || ss(out) !== ss({f: server.f, m: server.m, t: server.t, d: server.d})) {
+        const w = await rpc("box_push", {p_code: code, p_data: {...out, v: 1}, p_ver: ver});
         if (!w?.ok) continue;                       // 同時有別台寫入：重讀再合併
         store.set("syncVer", w.ver);
       } else store.set("syncVer", ver);
@@ -2170,7 +2182,7 @@ function syncDelFlow(code){
       if ($("#syncDelIn").value.trim() !== "刪除") return;
       $("#syncDelGo").disabled = true; $("#syncMsg").textContent = "刪除中…";
       try { await rpc("box_delete", {p_code: code}); } catch (e) { $("#syncMsg").textContent = "刪除失敗，請稍後再試。"; $("#syncDelGo").disabled = false; return; }
-      store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg();
+      store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); store.set("dev", crypto.randomUUID()); store.set("syncSig", ""); queueSync(); syncDlg();
     });
     setTimeout(() => $("#syncDelIn")?.focus(), 50);
   });
@@ -2215,7 +2227,7 @@ function syncDlg(){
   $("#syncCopy").addEventListener("click", () => copy(fmtCode(code), "已複製同步碼"));
   $("#syncCopyLink").addEventListener("click", () => copy(syncLink(code), "已複製連結，在另一台打開就會連結同步"));
   $("#syncNow").addEventListener("click", async () => { $("#syncNow").disabled = true; $("#syncMsg").textContent = "同步中…"; const ok = await doSync(); $("#syncMsg").textContent = ok ? "已同步" : ""; $("#syncNow").disabled = false; });
-  $("#syncStop").addEventListener("click", () => { if (!confirm("停止這台的同步？這台的資料會保留，雲端資料也不會刪除，其他裝置仍可繼續同步。")) return; store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); syncDlg(); });
+  $("#syncStop").addEventListener("click", () => { if (!confirm("停止這台的同步？這台的資料會保留，雲端資料也不會刪除，其他裝置仍可繼續同步。")) return; store.set("syncCode", ""); store.set("syncBase", {f: {}, m: {}, t: {}}); store.set("dev", crypto.randomUUID()); store.set("syncSig", ""); queueSync(); syncDlg(); });
   $("#syncDel").addEventListener("click", () => syncDelFlow(code));
 }
 
