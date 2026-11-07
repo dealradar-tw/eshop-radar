@@ -585,7 +585,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 :root{--sh:0 1px 2px rgb(15 23 42 / .06),0 2px 8px rgb(15 23 42 / .05);--sh-up:0 2px 4px rgb(15 23 42 / .08),0 8px 20px rgb(15 23 42 / .10)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sh:0 1px 2px rgb(0 0 0 / .4),0 2px 10px rgb(0 0 0 / .25);--sh-up:0 2px 4px rgb(0 0 0 / .5),0 8px 22px rgb(0 0 0 / .4)}}
 :root[data-theme="dark"]{--sh:0 1px 2px rgb(0 0 0 / .4),0 2px 10px rgb(0 0 0 / .25);--sh-up:0 2px 4px rgb(0 0 0 / .5),0 8px 22px rgb(0 0 0 / .4)}
-.stats .st,.mine-sum div,.fav-new,li,.note{border-radius:14px;box-shadow:var(--sh)}
+.stats .st,.mine-sum>div,.fav-new,li,.note{border-radius:14px;box-shadow:var(--sh)}
 .stats .st{transition:transform .15s ease,box-shadow .15s ease}
 .stats .st[aria-pressed="true"]{box-shadow:var(--sh-up)}
 input[type=search],select{border-radius:12px;padding:10px 14px;box-shadow:var(--sh);transition:border-color .15s,box-shadow .15s}
@@ -595,7 +595,13 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 .mine-head{background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .mine-head h2{font-size:21px;font-weight:800}
 .fav-new{background:color-mix(in srgb,var(--accent) 9%,var(--surface));border-color:color-mix(in srgb,var(--accent) 30%,var(--line));border-left:4px solid var(--accent)}
-.mine-sum div{padding-block:8px}
+.mine-sum>div[data-ff],.mine-sum>div:not(.mine-break){padding-block:8px}
+.mine-sum .mine-break{align-items:stretch;text-align:left;padding:12px 16px;gap:10px}
+.mine-break .chips .lbl{min-width:3em;font-size:13px;font-weight:600}
+.mine-break .chip{padding:6px 14px;font-size:14px;background:var(--bg)}
+.mine-break .chip[aria-pressed="true"]{background:var(--ink)}
+.mine-break .brk-t{display:block;font-size:13px;color:var(--muted);text-align:left}
+@media (max-width:600px){.mine-spent{padding:2px 8px;font-size:12px;margin-left:2px}.mine-spent b{font-size:14px}.mine-tabs .tab{padding-inline:9px}}
 .mine-tabs .tab{font-size:16px}
 .mine-spent:empty{display:none}
 .mine-spent{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px;box-shadow:var(--sh)}
@@ -769,7 +775,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v159・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v160・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2497,6 +2503,7 @@ function renderMine(){
     const sw = ids.filter(id => !BY.get(id).s2).length, s2 = ids.length - sw;
     const chip = (k, label, n, unit) => `<button class="chip" data-mf="${k}" aria-pressed="${mineF === k}">${label} <b>${n}</b> ${unit}</button>`;
     $("#mineSum").innerHTML += `<div class="mine-break">
+      <span class="brk-t">分類統計（點一下可篩選）</span>
       <div class="chips"><span class="lbl">版本</span>${chip("dl", "數位版", byType.dl, "款")}${chip("pk", "實體版", byType.pk, "款")}${chip("key", "鑰匙卡", byType.key, "款")}</div>
       <div class="chips"><span class="lbl">主機</span>${chip("sw", "Switch", sw, "款")}${chip("s2", "Switch 2", s2, "款")}</div>
       ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
