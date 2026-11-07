@@ -648,11 +648,10 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <span class="cnote">只填一邊也可以，例如只填最高 300</span>
   </div>
   <div class="chips">
-    <button class="chip more-f" id="moreF" aria-expanded="false">更多篩選 ▾</button>
     <span id="fSummary" class="fsum"></span>
     <button class="chip clear-f" id="clearF" style="margin-left:auto" hidden>✕ 清除篩選</button>
   </div>
-  <div id="filters" class="filters" hidden>
+  <div id="filters" class="filters">
     <div class="chips" id="fZh"><span class="lbl">中文</span>
       <button class="chip" data-zh="0" aria-pressed="true">不限</button>
       <button class="chip" data-zh="1" aria-pressed="false">繁體中文</button>
@@ -731,7 +730,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v147・版本更新日期 2026-11-07</span>
+  <span class="muted">網站版本 v148・版本更新日期 2026-11-07</span>
 </footer>
 </div>
 
@@ -1870,7 +1869,6 @@ document.addEventListener("click", e => {
   if (ft) { const open = $(".fpanel").classList.toggle("open"); ft.setAttribute("aria-expanded", open); ft.lastChild.textContent = open ? "▴" : "▾"; return; }
   if (t.id === "demoOnly") { demoOnly = !demoOnly; store.set("demoOnly", demoOnly); rerender(); return; }
   if (t.id === "clearF") { clearFilters(); return; }
-  if (t.id === "moreF") { const f2 = $("#filters"); f2.hidden = !f2.hidden; t.setAttribute("aria-expanded", !f2.hidden); t.textContent = f2.hidden ? "更多篩選 ▾" : "收起篩選 ▴"; return; }
   if (t.id === "favOnly") { favOnly = !favOnly; rerender(); return; }
   const pg = t.closest("[data-pg]");
   if (pg && !pg.disabled) { goPage(+pg.dataset.pg); return; }
