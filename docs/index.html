@@ -787,7 +787,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v165・版本更新日期 2026-11-07</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v166・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2621,7 +2621,7 @@ document.addEventListener("click", e => {
   if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
   if (t.closest("#mineSync")) { subOpen = true; syncDlg(); return; }
   if (t.closest("#mineExport")) {
-    const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 2, at: new Date().toISOString(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
+    const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 2, at: new Date().toISOString(), dev: deviceId(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
     a.download = `特價雷達收藏備份-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); return;
   }
@@ -2643,6 +2643,9 @@ $("#mineFile").addEventListener("change", async e => {
     (d.favs || []).forEach(x => favs.add(String(x))); store.set("favs", [...favs]);
     for (const [k, v] of Object.entries(d.mine || {})) { MINE[k] = v; if (v.p?.length && v.b == null) v.b = true; }
     saveMine(); renderMine(); alert("匯入完成");
+    // 備份來自另一台裝置：問是不是「換新手機」。是的話改用備份裡的排行編號，排行榜才不會把同一個人算兩次
+    if (!syncCode() && /^[0-9a-f-]{36}$/i.test(d.dev || "") && d.dev !== deviceId() &&
+        confirm("這台是要取代備份來源的舊裝置嗎？\n\n按「確定」：這台接手舊裝置的排行身分，排行榜不會重複計算（適合換新手機）。\n按「取消」：兩台都繼續使用，各自獨立計算。\n\n（如果兩台都要用，建議改用「跨裝置同步」。）")) await adoptSharedDevice(d.dev);
   } catch (err) { alert("這個檔案不是特價雷達的備份檔。"); }
 });
 
