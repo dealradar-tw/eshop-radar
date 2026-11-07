@@ -643,6 +643,21 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
   .fpanel .chip{background:var(--bg)}
   .fpanel .chip[aria-pressed="true"]{background:var(--ink)}
 }
+
+/* 已購買：分類統計方塊 */
+.mine-sum.bought{grid-template-columns:repeat(5,minmax(0,1fr))}
+.btile{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;min-width:0;transition:transform .15s,box-shadow .15s}
+.btile i{font-style:normal;font-size:18px;line-height:1.2}
+.btile b{font-family:var(--display);font-size:22px;font-weight:800;line-height:1.2}
+.btile span{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.btile[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg);box-shadow:var(--sh-up)}
+.btile[aria-pressed="true"] span{color:var(--bg);opacity:.85}
+.bnote{grid-column:1/-1;margin:0;font-size:12.5px;color:var(--muted)}
+@media (hover:hover){.btile:hover{transform:translateY(-1px);box-shadow:var(--sh-up)}}
+@media (min-width:701px){
+  .btile{flex-direction:row;justify-content:center;gap:10px;padding:12px 10px}
+  .btile i{font-size:22px}.btile b{font-size:28px}.btile span{font-size:16px}
+}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
@@ -794,7 +809,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v167・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v168・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2529,6 +2544,7 @@ function renderMine(){
   const listIds = mineTab === "bought" && mineF ? ids.filter(id => mineF === "sw" ? !BY.get(id).s2 : mineF === "s2" ? BY.get(id).s2
     : (MINE[id].p || []).some(x => x.t === mineF)) : mineTab === "fav" && favF ? ids.filter(id => FF[favF](BY.get(id))) : ids;
   const items = ids.map(id => BY.get(id));
+  $("#mineSum").classList.toggle("bought", mineTab !== "fav");
   if (mineTab === "fav") {
     const fT = (k, n, label) => `<div role="button" tabindex="0" data-ff="${k}" aria-pressed="${favF === k}"><b>${n}</b><span>${label}</span></div>`;
     $("#mineSum").innerHTML = fT("", items.length, "收藏") + fT("sale", items.filter(FF.sale).length, "正在特價")
@@ -2539,12 +2555,10 @@ function renderMine(){
     const byType = {dl: 0, pk: 0, key: 0};
     ids.forEach(id => { const x = MINE[id].p?.[0]; if (x && x.t in byType) byType[x.t]++; });
     const sw = ids.filter(id => !BY.get(id).s2).length, s2 = ids.length - sw;
-    const chip = (k, label, n, unit) => `<button class="chip" data-mf="${k}" aria-pressed="${mineF === k}">${label} <b>${n}</b> ${unit}</button>`;
-    $("#mineSum").innerHTML += `<div class="mine-break">
-      <span class="brk-t">分類統計（點一下可篩選）</span>
-      <div class="chips"><span class="lbl">版本</span>${chip("dl", "數位版", byType.dl, "款")}${chip("pk", "實體版", byType.pk, "款")}${chip("key", "鑰匙卡", byType.key, "款")}</div>
-      <div class="chips"><span class="lbl">主機</span>${chip("sw", "Switch", sw, "款")}${chip("s2", "Switch 2", s2, "款")}</div>
-      ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
+    const tile = (k, ico, label, n) => `<button class="btile" data-mf="${k}" aria-pressed="${mineF === k}"><i aria-hidden="true">${ico}</i><b>${n}</b><span>${label}</span></button>`;
+    $("#mineSum").innerHTML = tile("dl", "☁️", "數位版", byType.dl) + tile("pk", "💿", "實體版", byType.pk) + tile("key", "🔑", "鑰匙卡", byType.key)
+      + tile("sw", "🎮", "Switch", sw) + tile("s2", "✨", "Switch 2", s2)
+      + `<p class="bnote">${mineF ? "只顯示符合的遊戲，再點一次同一個分類可取消篩選。" : "點一下可篩選。版本以份數計，主機以遊戲數計。"}</p>`;
   }
   let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF));
   const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewHtml();
