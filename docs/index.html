@@ -408,6 +408,8 @@ html{zoom:1}
 .more-f{font-weight:500}
 .fsum{font-size:12px;color:var(--accent)}
 .filters{display:flex;flex-direction:column;gap:10px}
+.fnrow{display:flex;align-items:center;gap:10px}.fnrow .fnote{flex:1;margin:0}
+.clear-f{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
 @media (min-width:601px){.fpanel{position:relative}.fclr{position:absolute;right:0;top:10px}.fclr .fsum{display:none}.filters .chip{font-size:inherit;padding:inherit}}
 .filters .chip{font-size:12px;padding:3px 10px}
 .fnote{font-size:11px;color:var(--muted);margin:0}
@@ -648,10 +650,6 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <span class="pin">NT$ <input id="pMax" type="number" inputmode="numeric" min="0" step="1" placeholder="最高" aria-label="最高價格"></span>
     <span class="cnote">只填一邊也可以，例如只填最高 300</span>
   </div>
-  <div class="chips fclr" id="fclr" hidden>
-    <span id="fSummary" class="fsum"></span>
-    <button class="chip clear-f" id="clearF" style="margin-left:auto">✕ 清除篩選</button>
-  </div>
   <div id="filters" class="filters">
     <div class="chips" id="fZh"><span class="lbl">中文</span>
       <button class="chip" data-zh="0" aria-pressed="true">不限</button>
@@ -666,7 +664,13 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
       <button class="chip" data-pl="8" aria-pressed="false">8 人以上</button>
     </div>
     <div class="chips" id="fGenre"><span class="lbl">類型</span></div>
+    <div class="fnrow">
     <p class="fnote">類型、中文、人數篩選只適用於已取得介紹資料的遊戲；DLC 不套用這些篩選。</p>
+      <div class="chips fclr" id="fclr" hidden>
+        <span id="fSummary" class="fsum"></span>
+        <button class="chip clear-f" id="clearF" style="margin-left:auto">✕ 清除篩選</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="low-tip" id="lowTip" hidden role="status">
@@ -731,7 +735,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
   <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
   <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v149・版本更新日期 2026-11-07</span>
+  <span class="muted">網站版本 v150・版本更新日期 2026-11-07</span>
 </footer>
 </div>
 
