@@ -284,6 +284,7 @@ footer code{font-size:12px;background:var(--surface);border:1px solid var(--line
 .dlg{background:var(--surface);color:var(--ink);width:min(560px,100%);max-height:92dvh;overflow-y:auto;border-radius:16px 16px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 @media (min-width:700px){.dlg-bg{align-items:center}.dlg{border-radius:16px}}
 .dlg-head{display:flex;align-items:center;gap:8px}
+.set-sec{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}.set-sec>b{display:block;margin-bottom:8px;font-size:14px}.set-sec .chips{display:flex;flex-wrap:wrap;gap:6px}.set-sec .cnote{margin:8px 0 0}
 .dlg-head h3{margin:0;font-size:17px;flex:1}
 .dlg-head .chip{font-weight:700;background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .dlg-name{margin:0;font-weight:700;font-size:14px;color:var(--muted)}
@@ -575,7 +576,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 <header>
   <div class="hdr-btns">
     <button class="chip mine-btn" id="openMine">我的收藏</button>
-    <button class="chip theme-btn" id="themeBtn" aria-label="切換顯示模式"></button>
+    <button class="chip theme-btn" id="setBtn" aria-label="設定">⚙ 設定</button>
   </div>
   <h1>特價雷達 <span class="beta">測試版</span></h1>
   <p>非官方 Nintendo eShop 特價與價格追蹤。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
@@ -621,14 +622,6 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <button class="chip" data-p="all" aria-pressed="true">全部</button>
     <button class="chip" data-p="0" aria-pressed="false">Switch</button>
     <button class="chip" data-p="1" aria-pressed="false">Switch 2</button>
-  </div>
-  <div class="chips" id="regs" role="group" aria-label="販售地區">
-    <span class="lbl">地區</span>
-    <button class="chip" data-r="all" aria-pressed="true">全部</button>
-    <button class="chip" data-r="tw" aria-pressed="false">台灣區</button>
-    <button class="chip" data-r="jp" aria-pressed="false">日本限定</button>
-    <button class="chip" data-r="hk" aria-pressed="false">港區限定</button>
-    <button class="chip" data-r="jh" aria-pressed="false">日港限定</button>
   </div>
   <div class="chips" role="group" aria-label="類別">
     <span class="lbl">類別</span>
@@ -686,7 +679,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 </section>
 
 <section id="pRank" hidden>
-  <div class="rankbar"><p class="note" id="rankNote"></p><select id="rankRegSel" class="regsel" aria-label="地區篩選"></select></div>
+  <p class="note" id="rankNote"></p>
   <ul id="rankList" style="margin-top:12px"></ul>
 </section>
 <section id="pHot" hidden>
@@ -704,7 +697,6 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
   <div class="mine-head">
     <button class="chip" id="closeMine" aria-label="返回">‹ 返回</button>
     <h2>我的收藏</h2>
-    <span class="mine-tools"><button class="chip" id="mineSync">同步</button><button class="chip" id="mineExport">匯出備份</button><button class="chip" id="mineImport">匯入備份</button></span>
     <input type="file" id="mineFile" accept="application/json,.json" hidden>
   </div>
   <div class="wrap">
@@ -718,11 +710,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
     <div class="fav-ctl" id="favCtl" hidden></div>
     <ul id="mineList"></ul>
     <nav class="pager" id="favPager" aria-label="收藏換頁" hidden></nav>
-    <div class="cnote" id="rankPriv" style="margin:16px 0 0" hidden>
-      <b>人氣排行</b>：<span id="rankPrivState"></span>
-      <div style="margin-top:8px"><button class="chip" id="rankOptBtn"></button></div>
-    </div>
-    <p class="cnote" style="margin:16px 0 40px">收藏和購買紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先按右上角「匯出備份」，之後用「匯入備份」就能還原。</p>
+    <p class="cnote" style="margin:16px 0 40px">收藏和購買紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先到首頁右上角「設定」匯出備份，之後用「匯入備份」就能還原，也可以開啟跨裝置同步。</p>
   </div>
 </div>
 <div id="dlg" class="dlg-bg" hidden></div>
@@ -731,14 +719,11 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v155・版本更新日期 2026-11-07</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
-  收藏與購買紀錄預設存在這台裝置的瀏覽器裡，可在「我的收藏」匯出備份或開啟跨裝置同步。<br>
-  <button class="chip" id="fbBtn" style="margin:2px 0 6px">意見回饋</button><br>
-  <a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a><br>
-  <span class="muted">網站版本 v154・版本更新日期 2026-11-07</span>
+  收藏與購買紀錄預設存在這台裝置的瀏覽器裡，備份、同步、意見回饋與版本資訊請見右上角「設定」。
 </footer>
 </div>
 
@@ -927,10 +912,10 @@ const FLAG = {
 };
 // 換算台幣後最便宜的地區（平手時優先台灣）
 // 「台灣區」篩選開啟時（我的收藏頁不受影響）：卡片、排序、篩選都只看台灣價格
-let mineReg = store.get("mineReg", "all"), rankReg = store.get("rankReg", "all");
-const curReg = () => !$("#minePage").hidden ? mineReg : (tab === "rankfav" || tab === "rankbuy") ? rankReg : regF;
+const curReg = () => regF;  // 「區域顯示」是全站設定，首頁、排行榜、我的收藏都套用
 const regOk = (g, r) => r === "all" || (r === "tw" ? !g.only : onlyKind(g) === r);
 const twOn = () => curReg() === "tw";
+const regList = [["all", "全部顯示"], ["tw", "台灣區"], ["jp", "日本限定"], ["hk", "港區限定"], ["jh", "日港限定"]];
 const regOpts = cur => [["all", "全部地區"], ["tw", "台灣區"], ["jp", "日本限定"], ["hk", "港區限定"], ["jh", "日港限定"]].map(([v, t]) => `<option value="${v}"${v === cur ? " selected" : ""}>${t}</option>`).join("");
 const lowOf = g => twMode(g) ? g.isLow : g.isLowAny;
 const soonOf = g => twMode(g) ? (g.days != null && g.days >= 0 && g.days <= 3) : g.soonAny;
@@ -1114,7 +1099,7 @@ function render(){
   $("#pager").hidden = !rows.length;
   const n = (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
   $("#fSummary").textContent = n ? `已套用 ${n} 個條件` : "";
-  const m = n + (plat !== "all" ? 1 : 0) + (regF !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (soonOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
+  const m = n + (plat !== "all" ? 1 : 0) + (kind !== "game" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (lowOnly ? 1 : 0) + (soonOnly ? 1 : 0) + (favOnly ? 1 : 0) + (demoOnly ? 1 : 0);
   $("#fBadge").textContent = m; $("#fBadge").classList.toggle("on", m > 0);
   $("#clearF").hidden = !(m || $("#q").value); $("#fclr").hidden = $("#clearF").hidden;
 }
@@ -1370,9 +1355,9 @@ document.addEventListener("click", async e => {
 
 function rankLists(){
   const R = RANKS || {fav: [], buy: []};
-  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && dealOf(x.g) && regOk(x.g, rankReg))
+  const fav = R.fav.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && dealOf(x.g) && regOk(x.g, regF))
     .sort((a, b) => b.n - a.n || dPct(b.g) - dPct(a.g));
-  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && regOk(x.g, rankReg));
+  const buy = R.buy.map(x => ({g: BY.get(x.id), n: x.n})).filter(x => x.g && x.g.name && !x.g.isDlc && regOk(x.g, regF));
   return {fav, buy};
 }
 function updTiles(){
@@ -1391,7 +1376,6 @@ async function renderRank(t){
   const isFav = t === "rankfav";
   $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序，最多顯示前 100 名。" : "使用者標記為「已購買」的遊戲，依購買人數排序，最多顯示前 100 名。";
   const ul = $("#rankList");
-  $("#rankRegSel").innerHTML = regOpts(rankReg);
   if (!rankOn()) { ul.innerHTML = '<li class="hot-miss"><div class="info">排行功能尚未啟用。</div></li>'; return; }
   ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
   await loadRanks(); updRankTiles();
@@ -1481,7 +1465,6 @@ function setChips(){
   $$("[data-k]").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === kind));
   $$("#recentBox [data-m]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.m === recentM));
   $$("#upBox [data-um]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.um === upM));
-  $$("#regs [data-r]").forEach(b => b.setAttribute("aria-pressed", b.dataset.r === regF));
   $$("#tiers [data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === tier));
   $("#prange").hidden = tier !== "custom";
   if (document.activeElement !== $("#pMin")) $("#pMin").value = pMin ?? "";
@@ -1494,7 +1477,7 @@ function setChips(){
   $("#demoOnly").setAttribute("aria-pressed", demoOnly);
 }
 function clearFilters(){
-  plat = "all"; regF = "all"; store.set("regF", "all"); kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; soonOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
+  plat = "all"; kind = "game"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear(); lowOnly = false; soonOnly = false; favOnly = false; demoOnly = false; store.set("demoOnly", false);
   $("#q").value = "";
   Object.entries({plat, kind, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
   rerender();
@@ -1835,8 +1818,6 @@ function toggleFav(id){
 document.addEventListener("change", e => {
   const t = e.target;
   if (t.id === "favSortSel") { favSort = t.value; favPg = 1; renderMine(); }
-  else if (t.id === "mineRegSel") { mineReg = t.value; store.set("mineReg", mineReg); favPg = 1; renderMine(); }
-  else if (t.id === "rankRegSel") { rankReg = t.value; store.set("rankReg", rankReg); renderRank(tab); }
   else if (t.id === "favSizeSel") { favSize = +t.value === 100 ? 100 : 50; store.set("favSize", favSize); favPg = 1; renderMine(); }
   else if (t.id === "favPgSel") { favPg = +t.value; renderMine(); $("#minePage").scrollTop = 0; }
 });
@@ -1892,8 +1873,6 @@ document.addEventListener("click", e => {
   }
   const um = t.closest("#upBox [data-um]");
   if (um) { upM = +um.dataset.um; store.set("upM", upM); updTiles(); rerender(); return; }
-  const rg2 = t.closest("#regs [data-r]");
-  if (rg2) { regF = rg2.dataset.r; store.set("regF", regF); rerender(); return; }
   const k = t.closest("[data-k]");
   if (k) { kind = k.dataset.k; store.set("kind", kind); (kind === "game" ? Promise.resolve() : ensureDlc()).then(rerender); return; }
   const ti = t.closest("#tiers [data-t]");
@@ -2187,14 +2166,9 @@ const THEMES = [["auto", "◐ 跟隨系統"], ["light", "☀ 淺色"], ["dark", 
 let theme = store.get("theme", "auto");
 function applyTheme(){
   if (theme === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
-  $("#themeBtn").textContent = THEMES.find(t => t[0] === theme)[1];
   const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
   document.querySelector('meta[name="theme-color"]').content = dark ? "#0a0d12" : "#dce2e9";
 }
-$("#themeBtn").addEventListener("click", () => {
-  theme = THEMES[(THEMES.findIndex(t => t[0] === theme) + 1) % THEMES.length][0];
-  store.set("theme", theme); applyTheme(); $("#chart")?._redraw?.();
-});
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
 applyTheme();
 
@@ -2313,6 +2287,21 @@ function refreshBuyIcons(id){
 }
 
 // ── 對話框（購買明細／收藏備忘錄），手機按返回會先關閉對話框 ──
+// ── 設定：區域顯示、顯示模式、備份與同步、排行資料、意見回饋、關於與版本 ──
+function settingsDlg(){
+  const ver = (document.querySelector("#verText")?.textContent) || "";
+  const chips = (list, cur, attr) => list.map(([v, t]) => `<button class="chip" data-${attr}="${v}" aria-pressed="${v === cur}">${t}</button>`).join("");
+  openDlg(`<div class="dlg-head"><h3>設定</h3><button class="chip" data-dlgclose>關閉</button></div>
+    <div class="set-sec"><b>區域顯示</b><div class="chips">${chips(regList, regF, "gr")}</div>
+      <p class="cnote">全站套用（首頁、排行榜、我的收藏）。選「台灣區」只顯示台灣有賣的遊戲與台灣價格。</p></div>
+    <div class="set-sec"><b>顯示模式</b><div class="chips">${chips(THEMES.map(t => [t[0], t[1]]), theme, "th")}</div></div>
+    <div class="set-sec"><b>同步功能</b><div class="chips"><button class="chip" id="mineSync">跨裝置同步</button></div></div>
+    <div class="set-sec"><b>備份</b><div class="chips"><button class="chip" id="mineExport">匯出備份</button><button class="chip" id="mineImport">匯入備份</button></div></div>
+    <div class="set-sec" id="rankPriv" hidden><b>人氣排行</b><div class="cnote" style="margin:0"><span id="rankPrivState"></span></div><div style="margin-top:8px"><button class="chip" id="rankOptBtn"></button></div></div>
+    <div class="set-sec"><b>意見回饋</b><div class="chips"><button class="chip" id="fbBtn">意見回饋</button></div></div>
+    <div class="set-sec"><b>關於</b><div><a href="about.html">關於・非官方聲明・免責聲明・隱私權政策</a></div><div class="muted" style="margin-top:6px">${ver}</div></div>`);
+  updRankPriv();
+}
 function openDlg(html){
   const d = $("#dlg");
   if (d.hidden) history.pushState({...(history.state || {}), dlg: 1}, "");
@@ -2385,7 +2374,6 @@ function feedbackDlg(){
   });
   setTimeout(() => $("#fbBody")?.focus(), 50);
 }
-$("#fbBtn").addEventListener("click", feedbackDlg);
 
 // ── 我的收藏頁 ──
 let favNewTxt = "";
@@ -2446,7 +2434,7 @@ function renderMine(){
       <div class="chips"><span class="lbl">主機</span>${chip("sw", "Switch", sw, "款")}${chip("s2", "Switch 2", s2, "款")}</div>
       ${mineF ? '<p class="cnote">只顯示符合的遊戲，再點一次同一個分類可取消篩選。</p>' : ""}</div>`;
   }
-  let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, mineReg));
+  let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF));
   const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewTxt;
   const fc = $("#favCtl"), fp = $("#favPager");
   {
@@ -2460,7 +2448,7 @@ function renderMine(){
     const pages = Math.max(1, Math.ceil(listItems.length / favSize));
     favPg = Math.min(Math.max(1, favPg), pages);
     fc.hidden = !ids.length;
-    fc.innerHTML = `<select id="mineRegSel" aria-label="地區篩選">${regOpts(mineReg)}</select><select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>`;
+    fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>`;
     const from = (favPg - 1) * favSize;
     const total = listItems.length;
     listItems = listItems.slice(from, from + favSize);
@@ -2517,6 +2505,12 @@ document.addEventListener("click", e => {
     }
     return;
   }
+  if (t.id === "setBtn") { settingsDlg(); return; }
+  if (t.id === "fbBtn") { feedbackDlg(); return; }
+  const gr = t.closest("[data-gr]");
+  if (gr) { regF = gr.dataset.gr; store.set("regF", regF); rerender(); $$("[data-gr]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gr === regF)); return; }
+  const th = t.closest("[data-th]");
+  if (th) { theme = th.dataset.th; store.set("theme", theme); applyTheme(); $("#chart")?._redraw?.(); $$("[data-th]").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === theme)); return; }
   if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
   if (t.id === "mineSync") { syncDlg(); return; }
   if (t.id === "mineExport") {
