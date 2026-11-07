@@ -693,6 +693,10 @@ header h1 .logo{display:inline-block;vertical-align:-.2em;width:1.15em;height:1.
 .hdr-btns .chip:active{transform:scale(.97)}
 @media (hover:hover){.hdr-btns .chip:hover{transform:translateY(-1px);box-shadow:var(--sh-up)}}
 @media (max-width:600px){.hdr-btns .chip{font-size:12.5px;padding:5px 11px}}
+
+/* 我的收藏頁頂列：內容和下方版面同寬對齊 */
+@media (min-width:901px){.mine-head{padding-inline:max(16px,calc((100% - 860px)/2 + 16px))}}
+@media (min-width:1100px){.mine-head{padding-inline:max(16px,calc((100% - 1240px)/2 + 16px))}}
 </style>
 </head>
 <body>
@@ -843,7 +847,7 @@ header h1 .logo{display:inline-block;vertical-align:-.2em;width:1.15em;height:1.
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v172・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v173・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2103,8 +2107,17 @@ const fmtCode = c => c.replace(/(.{4})(?=.)/g, "$1-");
 const normCode = c => String(c || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
 const syncLink = c => location.origin + location.pathname + "?sync=" + c;
 function newSyncCode(){ const a = new Uint8Array(24); crypto.getRandomValues(a); return [...a].map(x => SYNC_ALPHA[x % 32]).join(""); }
+// 收藏順序：每款記一個加入時間（沒有的依目前順序補上），同步時一起帶過去，「最近收藏」才會兩邊一致
+function favStamp(){
+  let T = store.get("favT", {}), ch = false, n = 0;
+  const base = Date.now();
+  const out = {};
+  for (const id of favs) { const v = T[id]; if (typeof v === "number" && v > 1) out[id] = v; else { out[id] = base + n++; ch = true; } }
+  if (ch || Object.keys(T).length !== favs.size) store.set("favT", out);
+  return out;
+}
 function syncSnapshot(){
-  const f = {}; favs.forEach(id => { f[id] = 1; });
+  const f = favStamp();
   return {f, m: JSON.parse(JSON.stringify(MINE)), t: {...targets}};
 }
 function mergeMineEntry(a, b){
@@ -2121,6 +2134,7 @@ function syncMerge(base, local, server){
       let r;
       if (!lc) r = sv; else if (!sc) r = l;
       else if (l === undefined || sv === undefined) r = l === undefined ? sv : l;   // 一邊刪除、另一邊修改：保留修改的，避免資料遺失
+      else if (key === "f") { const ns = [l, sv].filter(x => typeof x === "number" && x > 1); r = ns.length ? Math.min(...ns) : l; }   // 兩邊都有：取較早的加入時間
       else r = key === "m" ? mergeMineEntry(l, sv) : l;
       if (r !== undefined) out[key][k] = r;
     }
@@ -2130,7 +2144,8 @@ function syncMerge(base, local, server){
 function syncApply(m){
   syncApplying = true;
   try {
-    favs = new Set(Object.keys(m.f)); store.set("favs", [...favs]);
+    const fk = Object.keys(m.f).sort((a, b) => (+m.f[a] || 0) - (+m.f[b] || 0));   // 依加入時間由舊到新
+    favs = new Set(fk); store.set("favs", [...favs]); store.set("favT", Object.fromEntries(fk.map((k, i) => [k, +m.f[k] > 1 ? +m.f[k] : 2 + i])));
     MINE = m.m; store.set("mine", MINE);
     targets = m.t; store.set("targets", targets);
   } finally { syncApplying = false; }
