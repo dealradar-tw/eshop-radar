@@ -685,16 +685,24 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
   .stats .st .ttl{font-size:12.5px;letter-spacing:-.02em}
   .stats .st:not(:has(b)){column-gap:3px}
 }
+
+/* 標題圖示與頁首按鈕 */
+header h1 .logo{display:inline-block;vertical-align:-.2em;width:1.15em;height:1.15em;border-radius:22%;margin-right:.3em;box-shadow:var(--sh)}
+.hdr-btns .chip{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;font-size:14px;font-weight:700;box-shadow:var(--sh);transition:transform .15s,box-shadow .15s}
+.hdr-btns .mine-btn{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hdr-btns .chip:active{transform:scale(.97)}
+@media (hover:hover){.hdr-btns .chip:hover{transform:translateY(-1px);box-shadow:var(--sh-up)}}
+@media (max-width:600px){.hdr-btns .chip{font-size:12.5px;padding:5px 11px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <div class="hdr-btns">
-    <button class="chip mine-btn" id="openMine">我的收藏</button>
-    <button class="chip theme-btn" id="setBtn" aria-label="設定">⚙ 設定</button>
+    <button class="chip mine-btn" id="openMine"><span aria-hidden="true">⭐</span> 我的收藏</button>
+    <button class="chip theme-btn" id="setBtn" aria-label="設定"><span aria-hidden="true">⚙️</span> 設定</button>
   </div>
-  <h1>特價雷達 <span class="beta">測試版</span></h1>
+  <h1><img class="logo" src="icons/icon-192.png" alt="" width="40" height="40">特價雷達 <span class="beta">測試版</span></h1>
   <p>非官方 Nintendo eShop 特價與價格追蹤。每天自動更新，最後更新：<time id="asof">載入中…</time><span id="visits"></span></p>
   <div class="stats">
     <button class="st" data-view="deals" aria-pressed="false"><b id="sTotal">–</b><span>件特價中</span></button>
@@ -835,7 +843,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v171・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v172・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
