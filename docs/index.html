@@ -798,7 +798,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
     <button class="st" data-view="hot" aria-pressed="false"><span class="ttl">Fami通<br>銷售排行</span></button>
     <button class="st" data-view="rankfav" aria-pressed="false"><span class="ttl">關注排行 TOP100</span></button>
     <button class="st" data-view="rankbuy" aria-pressed="false"><span class="ttl">購買排行 TOP100</span></button>
-    <button class="st" data-view="nso" aria-pressed="false"><span class="ttl">NSO 經典遊戲<i class="nso-new" id="nsoNew" hidden>新</i></span></button>
+    <button class="st" data-view="nso" aria-pressed="false"><span class="ttl">NSO <br>經典遊戲<i class="nso-new" id="nsoNew" hidden>新</i></span></button>
   </div>
 </header>
 
@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v206・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v207・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1202,7 +1202,7 @@ function whyMatch(g, q){
   return why ? `<span class="why" style="font-size:12.5px;color:var(--accent)">符合：${esc(why)}</span>` : "";
 }
 function metaLine(g){
-  const tg = [...new Set([...tagsOf(g.id), ...sharedOf(g.id).slice(0, 3)])];
+  const tg = [...new Set([...tagsOf(g.id), ...sharedOf(g.id).slice(0, 10)])];
   const parts = [whyMatch(g, $("#q")?.value) + badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
   if (tab === "new" && g.rel) { const [y, m, d] = g.rel.split("-"); parts.push(m && d ? `${y}/${+m}/${+d} 發售` : g.rel.slice(0, 4) + " 年發售"); }
   if (tab === "up") parts.push(upDate(g));
@@ -2432,10 +2432,19 @@ function syncSnapshot(){
   const f = favStamp();
   return {f, m: JSON.parse(JSON.stringify(MINE)), t: {...targets}};
 }
-function mergeMineEntry(a, b){
-  const seen = new Set(), p = [];
-  for (const x of [...(a.p || []), ...(b.p || [])]) { const k = JSON.stringify(x); if (!seen.has(k)) { seen.add(k); p.push(x); } }
-  return {...b, ...a, b: !!(a.b || b.b), p, tags: [...new Set([...(a.tags || []), ...(b.tags || [])])], n: a.n || b.n || "", fn: a.fn || b.fn || ""};
+// 兩邊都改過同一款時的合併：以「上次同步的樣子（base）」為基準逐欄位比對，一邊刪掉的標籤／購買明細不會被另一邊補回來
+function mergeMineEntry(a, b, base){
+  base = base || {};
+  const setMerge = (xa, xb, xbase) => {   // 清單類欄位：聯集，但扣掉任何一邊相對 base 刪掉的項目
+    const k = x => JSON.stringify(x), A = new Set((xa || []).map(k)), B = new Set((xb || []).map(k)), O = (xbase || []).map(k);
+    const gone = new Set(O.filter(i => !A.has(i) || !B.has(i)));
+    const seen = new Set(), out = [];
+    for (const x of [...(xa || []), ...(xb || [])]) { const j = k(x); if (!seen.has(j) && !gone.has(j)) { seen.add(j); out.push(x); } }
+    return out;
+  };
+  const textMerge = (x, y, o) => (x || "") === (o || "") ? (y || "") : (y || "") === (o || "") ? (x || "") : (x || "");   // 一邊沒動就採另一邊；兩邊都改，以這台為準
+  return {...b, ...a, b: (a.b || false) === (base.b || false) ? !!b.b : !!a.b, p: setMerge(a.p, b.p, base.p), tags: setMerge(a.tags, b.tags, base.tags),
+    n: textMerge(a.n, b.n, base.n), fn: textMerge(a.fn, b.fn, base.fn)};
 }
 function syncMerge(base, local, server){
   const eq = (x, y) => JSON.stringify(x) === JSON.stringify(y), out = {f: {}, m: {}, t: {}};
@@ -2447,7 +2456,7 @@ function syncMerge(base, local, server){
       if (!lc) r = sv; else if (!sc) r = l;
       else if (l === undefined || sv === undefined) r = l === undefined ? sv : l;   // 一邊刪除、另一邊修改：保留修改的，避免資料遺失
       else if (key === "f") { const ns = [l, sv].filter(x => typeof x === "number" && x > 1); r = ns.length ? Math.min(...ns) : l; }   // 兩邊都有：取較早的加入時間
-      else r = key === "m" ? mergeMineEntry(l, sv) : l;
+      else r = key === "m" ? mergeMineEntry(l, sv, b) : l;
       if (r !== undefined) out[key][k] = r;
     }
   }
@@ -2782,6 +2791,7 @@ function settingsDlg(){
     <div class="set-card">
       ${act("mineSync", "🔄", "跨裝置同步", "用同步碼或 QR Code，讓手機和電腦共用收藏、已購買、備忘錄和目標價。")}
       ${act("mineExport", "⬇️", "匯出備份", "把收藏與已購買存成檔案。換手機或清除瀏覽資料前，請先匯出。")}
+      ${store.get("mineBak", null) ? act("mineRestore", "🛟", "找回同步前的資料", `把「${new Date(store.get("mineBak").t).toLocaleString("zh-TW", {hour12: false})}」同步前自動留下的本機備份，合併回目前的資料（只補回缺少的內容，不會刪掉現有資料）。`) : ""}
       ${act("mineImport", "⬆️", "匯入備份", "選擇之前匯出的備份檔，合併到目前的資料（同一款遊戲以備份為準）。")}</div>
     <div class="set-card" id="rankPriv" hidden><div class="set-t"><span class="ico">📊</span>人氣排行</div>
       <p class="set-d" style="margin-top:0"><span id="rankPrivState"></span></p>
@@ -3031,6 +3041,16 @@ document.addEventListener("click", e => {
   if (th) { theme = th.dataset.th; store.set("theme", theme); applyTheme(); $("#chart")?._redraw?.(); $$("[data-th]").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === theme)); return; }
   if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
   if (t.closest("#mineSync")) { subOpen = true; syncDlg(); return; }
+  if (t.closest("#mineRestore")) {
+    const bak = store.get("mineBak", null); if (!bak) return;
+    const n = Object.keys(bak.mine || {}).length;
+    if (!confirm(`備份內有收藏 ${(bak.favs || []).length} 款、紀錄 ${n} 款。\n按「確定」把缺少的內容補回目前的資料（不會刪除或覆蓋你現有的內容）。`)) return;
+    store.set("mineBak", {t: Date.now(), favs: [...favs], mine: JSON.parse(JSON.stringify(MINE))});   // 先把現在的也存一份，可以再還原回來
+    (bak.favs || []).forEach(x => favs.add(String(x))); store.set("favs", [...favs]);
+    for (const [k, v] of Object.entries(bak.mine || {})) MINE[k] = MINE[k] ? mergeMineEntry(MINE[k], v, {}) : v;
+    saveMine(); store.set("syncBase", {f: {}, m: {}, t: {}}); closeDlg(); render(); if (!$("#minePage").hidden) renderMine(); updTiles();
+    return;
+  }
   if (t.closest("#mineExport")) {
     const blob = new Blob([JSON.stringify({app: "eshop-radar", v: 2, at: new Date().toISOString(), dev: deviceId(), favs: [...favs], mine: MINE}, null, 1)], {type: "application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
