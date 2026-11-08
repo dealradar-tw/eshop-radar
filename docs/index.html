@@ -946,7 +946,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v209・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v210・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2213,12 +2213,20 @@ function showExitToast(){
   clearTimeout(exitTimer);
   exitTimer = setTimeout(() => { exitArmed = false; t.classList.remove("on"); }, 2000);
 }
-try { history.replaceState({ov: "root"}, ""); history.pushState({ov: "guard"}, ""); } catch (_) {}
+// 返回鍵防護用的歷史紀錄，要在使用者第一次點擊時才加：Chrome 會略過「沒有使用者操作就加入」的紀錄，導致按返回直接退出
+try { history.replaceState({ov: "root"}, ""); } catch (_) {}
+let guardPushed = false;
+function ensureGuard(){ if (guardPushed) return; guardPushed = true; try { history.pushState({ov: "guard"}, ""); } catch (_) {} }
+["click", "touchend", "keydown"].forEach(ev => document.addEventListener(ev, ensureGuard, {capture: true, once: false, passive: true}));
 let mineForceClose = false;
 window.addEventListener("popstate", e => {
-  // 收藏／已購買頁往下捲動後按返回：先回到頁首，再按一次才離開這一頁
-  if (e.state?.ov !== "mine" && e.state?.ov !== "sheet" && !e.state?.mine && !mineForceClose && !$("#minePage").hidden && $("#sheet").hidden && $("#dlg").hidden && $("#lightbox").hidden && $("#minePage").scrollTop > 40) {
-    history.pushState({ov: "mine"}, ""); $("#minePage").scrollTo({top: 0, behavior: "smooth"}); return;
+  // 往下捲動後按返回：先回到頁首（收藏／已購買頁，或首頁清單），畫面在頁首時再按一次才離開
+  if (!mineForceClose && e.state?.ov !== "mine" && e.state?.ov !== "sheet" && !e.state?.mine && $("#sheet").hidden && $("#dlg").hidden && $("#lightbox").hidden) {
+    if (!$("#minePage").hidden) {
+      if ($("#minePage").scrollTop > 40) { history.pushState({ov: "mine"}, ""); $("#minePage").scrollTo({top: 0, behavior: "smooth"}); return; }
+    } else if (e.state?.ov === "root" && window.scrollY > 40) {
+      history.pushState({ov: "guard"}, ""); window.scrollTo({top: 0, behavior: "smooth"}); return;
+    }
   }
   mineForceClose = false;
   if (e.state?.ov === "root") {
