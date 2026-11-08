@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v205・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v206・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2012,6 +2012,31 @@ function titleKeys(x){
   }
   return [...out].filter(k => k.length >= 6);
 }
+// 副標題系列：「くにおくん ザ・ワールド 〜…〜」「Bloodstained: …」，主標題相同、只有副標題不同。成員太多（超過 12 款）的是發行品牌而不是系列，略過
+let BASE_IDX = null;
+const baseKey = t => { const p = String(t || "").split(/\s[-－–—]\s|[:：〜～]/); return p.length > 1 ? nameKey(p[0]) : ""; };
+function baseGroup(g){
+  if (!BASE_IDX) {
+    BASE_IDX = new Map();
+    for (const x of ITEMS) {
+      if (x.isDlc || !x.name) continue;
+      for (const k of new Set([x.name, x.zhName, x.enName].map(baseKey))) {
+        if (k.length < 7) continue;
+        if (!BASE_IDX.has(k)) BASE_IDX.set(k, []);
+        BASE_IDX.get(k).push(x);
+      }
+    }
+  }
+  const out = new Map();
+  for (const k of new Set([g.name, g.zhName, g.enName].map(baseKey))) {
+    const grp = BASE_IDX.get(k); if (grp && grp.length >= 2 && grp.length <= 12) for (const x of grp) out.set(x.id, x);
+  }
+  for (const t of [g.name, g.zhName, g.enName]) {   // 沒有副標題的合集／本篇，名稱以該系列主標題開頭
+    const k = nameKey(t); if (k.length < 7) continue;
+    for (const [bk, grp] of BASE_IDX) if (grp.length >= 2 && grp.length <= 12 && k.startsWith(bk)) for (const x of grp) out.set(x.id, x);
+  }
+  return [...out.values()];
+}
 let SERIES_IDX = null;
 function relatedGames(g, sibIds){
   if (!SERIES_IDX) {
@@ -2033,6 +2058,7 @@ function relatedGames(g, sibIds){
     if (!grp || grp.size < 2) continue;
     for (const {x, n} of grp.values()) if (!mine.has(x.id) && nameKey(x.name) !== nameKey(g.name) && !out.has(x.id)) out.set(x.id, {x, n});
   }
+  for (const x of baseGroup(g)) if (!mine.has(x.id) && !out.has(x.id) && nameKey(x.name) !== nameKey(g.name)) out.set(x.id, {x, n: seriesOf(x.zhName || x.name).n});
   // 名稱前綴相同（較短的名稱至少 12 個字元，才不會把不相干的遊戲連在一起）
   TITLE_KEYS ||= new Map(ITEMS.filter(x => !x.isDlc && x.name).map(x => [x.id, titleKeys(x)]));
   const gk = TITLE_KEYS.get(g.id) || titleKeys(g), gn = new Set([nameKey(g.name), nameKey(g.zhName), nameKey(g.enName)]);
@@ -2042,7 +2068,7 @@ function relatedGames(g, sibIds){
       const x = BY.get(id); if (x && !gn.has(nameKey(x.name))) out.set(id, {x, n: seriesOf(x.zhName || x.name).n});
     }
   }
-  return [...out.values()].sort((a, b) => a.n - b.n || (+a.x.s2) - (+b.x.s2)).slice(0, 10).map(o => o.x);
+  return [...out.values()].sort((a, b) => a.n - b.n || (+a.x.s2) - (+b.x.s2)).slice(0, 12).map(o => o.x);
 }
 const verTag = x => `${x.s2 ? "Switch 2" : "Switch"}${x.only === "jp" ? "・日本限定" : x.only === "hk" ? "・港區限定" : ""}`;
 async function openDetail(id, fromHistory){
