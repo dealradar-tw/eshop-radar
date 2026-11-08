@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v199・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v200・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2410,7 +2410,9 @@ async function doSync(){
         store.set("syncVer", w.ver);
       } else store.set("syncVer", ver);
       const changed = JSON.stringify(merged) !== JSON.stringify(local);
-      if (changed) syncApply(merged);
+      // 同步進行中你又改了東西（例如正在打備忘錄）：不能用舊的合併結果覆蓋，等下一輪再合併
+      if (changed && JSON.stringify(syncSnapshot()) !== JSON.stringify(local)) { store.set("syncAt", Date.now()); syncSoon(); return true; }
+      if (changed) { store.set("mineBak", {t: Date.now(), favs: [...favs], mine: MINE}); syncApply(merged); }   // 套用前留一份本機備份
       store.set("syncBase", merged); store.set("syncAt", Date.now()); store.set("syncErr", "");
       if (changed) syncRefreshUi();
       return true;
