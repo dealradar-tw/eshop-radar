@@ -943,7 +943,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v196・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v197・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1683,7 +1683,7 @@ async function renderNso(){
 document.addEventListener("click", e => {
   const t = e.target.closest("[data-nt],[data-nc],[data-npg]"); if (!t || tab !== "nso") return;
   if (t.dataset.npg) { if (t.disabled) return; nsoPage = +t.dataset.npg; renderNso().then(nsoScrollTop); return; }
-  if (t.dataset.nt) { nsoTab = t.dataset.nt; store.set("nsoTab", nsoTab); }
+  if (t.dataset.nt) { nsoTab = t.dataset.nt; store.set("nsoTab", nsoTab); nsoCon = "all"; }
   else if (t.dataset.nc) nsoCon = t.dataset.nc;
   nsoPage = 1;
   renderNso();
@@ -2784,6 +2784,8 @@ function openMine(){
 }
 function closeMineNow(){ $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
 const FF = {sale: g => dealOf(g), low: g => lowOf(g), soon: g => soonOf(g), nsale: g => favNewIds.s.has(g.id), nlow: g => favNewIds.l.has(g.id)};
+// 已購買的版本：每筆購買明細算一份；沒填明細或版本不明時，一律當作數位版
+const buyTypes = id => { const p = MINE[id]?.p || []; return p.length ? p.map(x => x.t === "pk" || x.t === "key" ? x.t : "dl") : ["dl"]; };
 function renderMine(){
   updRankPriv();
   const favIds = [...favs].reverse().filter(id => BY.has(id));
@@ -2796,7 +2798,7 @@ function renderMine(){
     $("#mineSpent").innerHTML = boughtIds.length ? `總花費約 <b>${dm(spent)}</b>${unk ? "＊" : ""}` : ""; }
   let ids = mineTab === "fav" ? favIds : boughtIds;
   const listIds = mineTab === "bought" && mineF ? ids.filter(id => mineF === "sw" ? !BY.get(id).s2 : mineF === "s2" ? BY.get(id).s2
-    : (MINE[id].p || []).some(x => x.t === mineF)) : mineTab === "fav" && favF ? ids.filter(id => FF[favF](BY.get(id))) : ids;
+    : buyTypes(id).includes(mineF)) : mineTab === "fav" && favF ? ids.filter(id => FF[favF](BY.get(id))) : ids;
   const items = ids.map(id => BY.get(id));
   $("#mineSum").classList.toggle("bought", mineTab !== "fav");
   if (mineTab === "fav") {
@@ -2807,7 +2809,7 @@ function renderMine(){
     $("#mineSum").innerHTML = "";
     // 分類統計：版本以份數計，主機以遊戲數計；點一下可篩選
     const byType = {dl: 0, pk: 0, key: 0};
-    ids.forEach(id => { const x = MINE[id].p?.[0]; if (x && x.t in byType) byType[x.t]++; });
+    ids.forEach(id => buyTypes(id).forEach(t => byType[t]++));
     const sw = ids.filter(id => !BY.get(id).s2).length, s2 = ids.length - sw;
     const tile = (k, ico, label, n) => `<button class="btile" data-mf="${k}" aria-pressed="${mineF === k}"><i aria-hidden="true">${ico}</i><b>${n}</b><span>${label}</span></button>`;
     const grp = (title, sub, tiles) => `<section class="bgrp"><h4 class="bgt">${title}<small>${sub}</small></h4><section class="bgr bgr${tiles.length}">${tiles.join("")}</section></section>`;
