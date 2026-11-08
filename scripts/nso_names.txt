@@ -29,7 +29,6 @@ EarthBound Beginnings||MOTHER
 Wario's Woods||ワリオの森
 Xevious||ゼビウス
 Pac-Man||パックマン
-Golf||ゴルフ
 Volleyball||バレーボール
 Mach Rider||マッハライダー
 Urban Champion||アーバンチャンピオン
@@ -116,16 +115,15 @@ The Legend of Zelda: Oracle of Ages||ゼルダの伝説 ふしぎの木の実 �
 The Legend of Zelda: Oracle of Seasons||ゼルダの伝説 ふしぎの木の実 大地の章
 Metroid II: Return of Samus||メトロイドII RETURN OF SAMUS
 Gargoyle's Quest||レッドアリーマー 魔界村外伝
-Mario Golf||マリオゴルフ GB
-Mario Tennis||マリオテニスGB
+Mario Golf@GB||マリオゴルフ GB
+Mario Tennis@GB||マリオテニスGB
 Alleyway||アレイウェイ
 Pokémon Trading Card Game|寶可夢集換式卡牌遊戲|ポケモンカードGB
 Mario's Picross||マリオのピクロス
 Donkey Kong Land||スーパードンキーコングGB
-Balloon Kid||バルーンキッド
+Balloon Kid||バルーンファイトGB
 Kirby's Tilt 'n' Tumble||カービィのコロコロキッズ
 Kirby's Star Stacker||カービィのきらきらきっず
-The Legend of Zelda: The Minish Cap||ゼルダの伝説 ふしぎのぼうし
 Kuru Kuru Kururin||くるくるくるりん
 Kururin Paradise||くるりんパラダイス
 Mario & Luigi: Superstar Saga|瑪利歐&路易吉RPG|マリオ&ルイージRPG
@@ -139,8 +137,8 @@ Fire Emblem: The Binding Blade||ファイアーエムブレム 封印の剣
 Fire Emblem: The Blazing Blade||ファイアーエムブレム 烈火の剣
 Fire Emblem: The Sacred Stones||ファイアーエムブレム 聖魔の光石
 Kirby & the Amazing Mirror||星のカービィ 鏡の大迷宮
-Golden Sun|黃金太陽|ゴールデン・サン 開かれし封印
-Golden Sun: The Lost Age|黃金太陽 失落的時代|ゴールデン・サン 失われし時代
+Golden Sun|黃金太陽|黄金の太陽 開かれた封印
+Golden Sun: The Lost Age|黃金太陽 失落的時代|黄金の太陽 失われし時代
 Mother 3||MOTHER3
 F-Zero: Maximum Velocity||F-ZERO FOR GAMEBOY ADVANCE
 F-Zero Climax||F-ZERO CLIMAX
@@ -242,3 +240,84 @@ Virtual Fishing||バーチャルフィッシング
 Dragon Hopper||ドラゴンホッパー
 Zero Racers||ゼロレーサーズ
 The Mansion of Innsmouth||インスマウスの館
+Mario Golf@N64|瑪利歐高爾夫|マリオゴルフ64
+Mario Tennis@N64|瑪利歐網球|マリオテニス64
+Golf@FC||ゴルフ
+The Legend of Zelda: The Minish Cap|薩爾達傳說 不可思議的帽子|ゼルダの伝説 ふしぎのぼうし
+Alien Storm||エイリアンストーム
+Angelique||アンジェリーク
+Avenging Spirit||ファンタズム
+Battletoads||バトルトード
+Beyond Oasis||ストーリー オブ トア 〜光を継ぐ者〜
+Big Run||ビッグラン
+Bombuzal||ボンバザル
+Brawl Brothers||ラッシング・ビート乱 複製都市
+Bubsy in Claws Encounters of the Furred Kind||やまねこバブジーの大冒険
+Castlevania Legends||悪魔城ドラキュラ 漆黒たる前奏曲
+City Connection||シティコネクション
+Comix Zone||コミックスゾーン
+Congo's Caper||戦え原始人2 ルーキーの冒険
+Cosmo Gang the Puzzle||コズモギャング・ザ・パズル
+Crusader of Centy||新創世記ラグナセンティ
+Crystalis||ゴッド・スレイヤー はるか天空のソナタ
+Doomsday Warrior||対決!!ブラスナンバーズ
+Double Dragon II: The Revenge||ダブルドラゴンII ザ・リベンジ
+Dr. Mario 64||ドクターマリオ64
+Dr. Robotnik's Mean Bean Machine||ドクターエッグマンのミーンビーンマシーン
+ESWAT: City Under Siege||サイバーポリス イースワット
+Earthworm Jim 2||アースワームジム2
+Extreme-G||エクストリームG
+Gradius: The Interstellar Assault||ネメシス
+Harvest Moon 64||牧場物語2
+Ikari Warriors||怒
+Jet Force Gemini||スターツインズ
+Joe & Mac||戦え原始人
+Joe & Mac 2: Lost in the Tropics||戦え原始人3 主役はやっぱりJOE&MAC
+Journey to Silius||ラフワールド
+Kaeru no Tame ni Kane wa Naru||カエルの為に鐘は鳴る
+Kid Chameleon||カメレオン キッド
+Kirby's Avalanche||カービィズ アバランチ
+Mario Kart: Super Circuit||マリオカートアドバンス
+Mega Man II||ロックマンワールド2
+Mega Man IV||ロックマンワールド4
+Mega Man V||ロックマンワールド5
+Mega Man: Dr. Wily's Revenge||ロックマンワールド
+Mendel Palace||クインティ
+Mole Mania||モグラ〜ニャ
+Mystery Tower||バベルの塔
+NES Open Tournament Golf||マリオオープンゴルフ
+Natsume Championship Wrestling||全日本プロレス´ 世界最強タッグ
+Nightshade||Kunoichi -忍-
+Pinball||ピンボール
+Pokémon Mystery Dungeon: Red Rescue Team||ポケモン不思議のダンジョン 赤の救助隊
+Pop'n TwinBee||ツインビーだ!!
+Prehistorik Man||P-マン
+Psycho Dream||サイコドリーム
+Punch-Out!!||マイクタイソン・パンチアウト!!
+Romance of the Three Kingdoms IV: Wall of Fire||三國志IV
+Rygar||アルゴスの戦士
+S.C.A.T.: Special Cybernetic Attack Team||ファイナルミッション
+Shadow Man||シャドーマン
+Shadow of the Ninja||闇の仕事人 KAGE
+Smash Tennis||スーパーファミリーテニス
+StarTropics||StarTropics
+Super Baseball Simulator 1.000||スーパーウルトラベースボール
+Super Tennis||グレートテニス
+Survival Kids||サバイバルキッズ 孤島の冒険者
+Sutte Hakkun||すってはっくん
+Tetris DX||テトリスDX
+The Ignition Factor||ファイヤー・ファイティング
+The Immortal||ウィザード・オブ・イモータル
+The Peace Keepers||ラッシング・ビート修羅
+The Sword of Hope II||セレクションII 暗黒の封印
+The Tower of Druaga||ドルアーガの塔
+ToeJam & Earl||トージャム&アール
+Tonic Trouble||TONIC TROUBLE
+Tuff E Nuff||DEAD DANCE
+Vectorman||ベクターマン
+Vice: Project Doom||ガンデック
+Virtual Boy Wario Land||バーチャルボーイ ワリオランド アワゾンの秘宝
+Vs. Excitebike||VS.エキサイトバイク
+Wrecking Crew||レッキングクルー
+Wrecking Crew '98||レッキングクルー'98
+Yakuman||役満

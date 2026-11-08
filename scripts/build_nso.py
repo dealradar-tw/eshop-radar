@@ -24,12 +24,13 @@ for ln in open(SRC,encoding="utf-8"):
         elif t.endswith("*"): reg="j"; t=t[:-1]
         tw = "?" if con=="VB" else ("n" if reg=="w" else "y")
         g={"c":con,"n":t,"d":date,"p":"b" if con in BASE else "e","tw":tw}
-        if t in nm:
-            if nm[t][0]: g["z"]=nm[t][0]
-            if nm[t][1]: g["j"]=nm[t][1]
+        k=(t+"@"+con) if (t+"@"+con) in nm else t
+        if k in nm:
+            if nm[k][0]: g["z"]=nm[k][0]
+            if nm[k][1]: g["j"]=nm[k][1]
         games.append(g)
 games.sort(key=lambda g:(g["d"],g["c"],g["n"]),reverse=True)
 out={"asof":str(datetime.date.today()),"src":SITE,"games":games}
 json.dump(out,open("docs/nso.json","w",encoding="utf-8"),ensure_ascii=False,separators=(",",":"))
 from collections import Counter
-print("zh",sum(1 for g in games if "z" in g),"ja",sum(1 for g in games if "j" in g),"unmatched",[k for k in nm if k not in {g["n"] for g in games}]);print(len(games),Counter(g["c"] for g in games),sum(1 for g in games if "e" in g))
+print("zh",sum(1 for g in games if "z" in g),"ja",sum(1 for g in games if "j" in g),"unmatched",[k for k in nm if k.split("@")[0] not in {g["n"] for g in games}]);print(len(games),Counter(g["c"] for g in games),sum(1 for g in games if "e" in g))
