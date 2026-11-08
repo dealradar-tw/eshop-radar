@@ -933,7 +933,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v192・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v193・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1634,7 +1634,7 @@ async function renderNso(){
   $$("#nsoSw [data-nt]").forEach(b => b.setAttribute("aria-pressed", b.dataset.nt === nsoTab));
   const fee = nsoTab === "fee";
   $("#nsoGames").hidden = fee; $("#nsoFee").hidden = !fee;
-  $("#nsoNote").innerHTML = '任天堂官方「<a href="https://www.nintendo.com/tw/nintendo-switch-online/nintendo-classics/index.html" target="_blank" rel="noopener">Nintendo Classics</a>」遊戲的加入紀錄。';
+  $("#nsoNote").innerHTML = 'Nintendo Switch Online 的經典遊戲加入紀錄。官方介紹：<a href="https://www.nintendo.com/tw/nintendo-switch-online/nintendo-classics/index.html" target="_blank" rel="noopener">任天堂台灣 Nintendo Classics</a>。';
   if (fee) { $("#nsoFee").innerHTML = nsoFeeHtml(); return; }
   const ul = $("#nsoList");
   ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
@@ -1642,7 +1642,7 @@ async function renderNso(){
   if (!NSO) { ul.innerHTML = '<li class="hot-miss"><div class="info">暫時讀不到 NSO 資料，請稍後再試。</div></li>'; return; }
   nsoMarkSeen();
   const all = NSO.games, recent = nsoTab === "recent";
-  $("#nsoNote").innerHTML += `資料整理自任天堂官方公告與公開紀錄，整理日 ${nsoDate(NSO.asof)}；遊戲卡上若標「台灣不可用」，是依日本／香港／台灣共用名單判斷、僅歐美有的遊戲，並非台灣官方逐款確認，實際以主機內為準。`;
+  $("#nsoNote").innerHTML += `遊戲名單與加入日期主要整理自 <a href="https://en.wikipedia.org/wiki/Nintendo_Classics" target="_blank" rel="noopener">Wikipedia「Nintendo Classics」</a>（CC BY-SA）並參考任天堂官方資訊，由本站人工維護，整理日 ${nsoDate(NSO.asof)}，可能有延遲或誤差；遊戲卡上若標「台灣不可用」，是依日本／香港／台灣共用名單判斷、僅歐美有的遊戲，並非台灣官方逐款確認，實際以主機內為準。`;
   // 主機篩選
   const cnt = {}; all.forEach(g => cnt[g.c] = (cnt[g.c] || 0) + 1);
   const chip = (k, t, n) => `<button class="chip" data-nc="${k}" aria-pressed="${k === nsoCon}">${t}<small>${n}</small></button>`;
