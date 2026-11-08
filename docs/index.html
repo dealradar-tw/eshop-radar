@@ -678,6 +678,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 .nso-ic.c-FC{--c:#c8102e}.nso-ic.c-SFC{--c:#7b6fb0}.nso-ic.c-GB{--c:#6b8e23}.nso-ic.c-GBA{--c:#4b3b9c}.nso-ic.c-N64{--c:#1f8a4c}.nso-ic.c-MD{--c:#2b2b2b}.nso-ic.c-GC{--c:#6a5acd}.nso-ic.c-VB{--c:#e60012}
 #nsoList li.nso-h{display:block;background:none;border:0;box-shadow:none;padding:10px 2px 0;font-weight:700;font-size:15px;color:var(--muted)}
 .nso-li .nm{font-weight:600;font-size:16px;line-height:1.4;word-break:break-word}
+.nso-li .nm small{display:block;font-weight:400;font-size:13px;color:var(--muted);line-height:1.4}
 .nso-li .mt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
 .nso-q{font-size:12.5px;color:var(--ink);text-decoration:underline;white-space:nowrap;margin-left:2px}
 .nso-tag{border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:12px;line-height:1.7;white-space:nowrap}
@@ -890,7 +891,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
   </div>
   <div id="nsoGames">
     <div class="chips nso-cons" id="nsoCons" role="group" aria-label="主機"></div>
-    <div class="nso-bar"><input id="nsoQ" type="search" placeholder="搜尋遊戲名稱（英文）" autocomplete="off"><button class="chip" id="nsoTw" aria-pressed="false">只看台灣可用</button></div>
+    <div class="nso-bar"><input id="nsoQ" type="search" placeholder="搜尋遊戲名稱（英／中／日文）" autocomplete="off"><button class="chip" id="nsoTw" aria-pressed="false">只看台灣可用</button></div>
     <ul id="nsoList"></ul>
   </div>
   <div class="nso-fee" id="nsoFee" hidden></div>
@@ -932,7 +933,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v186・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v187・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1602,7 +1603,7 @@ function nsoMarkSeen(){ if (NSO) { store.set("nsoSeen", nsoLatest()); updNsoTile
 const nsoDate = d => { const [y, m, dd] = d.split("-"); return `${y}/${+m}/${+dd}`; };
 function nsoCard(g){
   const tw = g.tw === "y" ? '<span class="nso-tag ok">台灣可用</span>' : g.tw === "n" ? '<span class="nso-tag no">台灣不可用</span>' : '<span class="nso-tag">台灣未確認</span>';
-  return `<li class="nso-li"><div class="nso-ic c-${g.c}" aria-hidden="true">${g.c === "GB" ? "GB<br>GBC" : g.c}</div><div class="nm">${esc(g.n)}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}<a class="nso-q" href="https://www.google.com/search?q=${encodeURIComponent(g.n + " " + (g.c === "GB" ? "Game Boy" : g.c) + " 遊戲")}" target="_blank" rel="noopener noreferrer">🔍 查詢</a></div></li>`;
+  return `<li class="nso-li"><div class="nso-ic c-${g.c}" aria-hidden="true">${g.c === "GB" ? "GB<br>GBC" : g.c}</div><div class="nm">${esc(g.n)}${g.z || g.j ? `<small>${[g.z, g.j].filter(Boolean).map(esc).join("　／　")}</small>` : ""}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}<a class="nso-q" href="https://www.google.com/search?q=${encodeURIComponent((g.z || g.n) + " " + (g.c === "GB" ? "Game Boy" : g.c) + " 遊戲")}" target="_blank" rel="noopener noreferrer">🔍 查詢</a></div></li>`;
 }
 function nsoFeeHtml(){
   const fx = FX || {}, J = fx.JPY || 0, H = fx.HKD || 0;
@@ -1638,7 +1639,7 @@ async function renderNso(){
   $("#nsoCons").innerHTML = chip("all", "全部", all.length) + grp(NSO_BASE) + '<span class="nsep">｜ 需擴充包 →</span>' + grp(NSO_EXP);
   $("#nsoTw").setAttribute("aria-pressed", nsoTwOnly);
   const q = $("#nsoQ").value.trim().toLowerCase();
-  let list = all.filter(g => (nsoCon === "all" || g.c === nsoCon) && (!nsoTwOnly || g.tw === "y") && (!q || g.n.toLowerCase().includes(q)) && (!recent || nsoAge(g) <= NSO_RECENT_DAYS));
+  let list = all.filter(g => (nsoCon === "all" || g.c === nsoCon) && (!nsoTwOnly || g.tw === "y") && (!q || (g.n + " " + (g.z || "") + " " + (g.j || "")).toLowerCase().includes(q)) && (!recent || nsoAge(g) <= NSO_RECENT_DAYS));
   if (!list.length) { ul.innerHTML = '<li class="hot-miss"><div class="info">沒有符合的遊戲。</div></li>'; return; }
   let last = "", out = "";
   for (const g of list) {
