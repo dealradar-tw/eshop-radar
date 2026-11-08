@@ -900,7 +900,9 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
   <div id="nsoGames">
     <div class="chips nso-cons" id="nsoCons" role="group" aria-label="主機"></div>
     <div class="nso-bar"><input id="nsoQ" type="search" placeholder="搜尋遊戲名稱（英／中／日文）" autocomplete="off"></div>
+    <p class="count" id="nsoCount"></p>
     <ul id="nsoList"></ul>
+    <nav class="pager" id="nsoPager" aria-label="換頁" hidden></nav>
   </div>
   <div class="nso-fee" id="nsoFee" hidden></div>
 </section>
@@ -941,7 +943,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v195・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v196・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1612,7 +1614,7 @@ let NSO = null, nsoP = null;
 const NSO_CON = {FC: "FC", SFC: "SFC", GB: "GB／GBC", GBA: "GBA", N64: "N64", MD: "MD", GC: "GC", VB: "VB"};
 const NSO_BASE = ["FC", "SFC", "GB"], NSO_EXP = ["GBA", "N64", "MD", "GC", "VB"];
 const NSO_NEW_DAYS = 30, NSO_RECENT_DAYS = 120;
-let nsoTab = store.get("nsoTab", "recent"), nsoCon = "all", nsoTwOnly = false;
+let nsoTab = store.get("nsoTab", "recent"), nsoCon = "all", nsoTwOnly = false, nsoPage = 1;
 function loadNso(){
   return nsoP || (nsoP = fetch("nso.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : null).then(d => (NSO = d)).catch(() => null));
 }
@@ -1660,21 +1662,38 @@ async function renderNso(){
   const q = $("#nsoQ").value.trim().toLowerCase();
   let list = all.filter(g => (nsoCon === "all" || g.c === nsoCon) && (!q || (g.n + " " + (g.z || "") + " " + (g.j || "")).toLowerCase().includes(q)) && (!recent || nsoAge(g) <= NSO_RECENT_DAYS));
   if (!recent) { const ord = [...NSO_BASE, ...NSO_EXP]; list = list.map((g, i) => [g, i]).sort((a, b) => ord.indexOf(a[0].c) - ord.indexOf(b[0].c) || a[1] - b[1]).map(x => x[0]); }
-  if (!list.length) { ul.innerHTML = '<li class="hot-miss"><div class="info">沒有符合的遊戲。</div></li>'; return; }
+  if (!list.length) { ul.innerHTML = '<li class="hot-miss"><div class="info">沒有符合的遊戲。</div></li>'; $("#nsoCount").textContent = "共 0 款"; $("#nsoPager").hidden = true; return; }
+  const pages = Math.max(1, Math.ceil(list.length / pageSize));
+  if (nsoPage > pages) nsoPage = pages;
+  const from = (nsoPage - 1) * pageSize;
+  $("#nsoCount").textContent = `共 ${nf(list.length)} 款 · 第 ${nsoPage} / ${pages} 頁（${nf(from + 1)}–${nf(Math.min(from + pageSize, list.length))}）`;
+  $("#nsoPager").innerHTML = `
+    <button class="chip" data-npg="${nsoPage - 1}" ${nsoPage <= 1 ? "disabled" : ""}>‹ 上一頁</button>
+    <select id="nsoPgSel" aria-label="跳到第幾頁">${Array.from({length: pages}, (_, i) => `<option value="${i + 1}"${i + 1 === nsoPage ? " selected" : ""}>第 ${i + 1} / ${pages} 頁</option>`).join("")}</select>
+    <button class="chip" data-npg="${nsoPage + 1}" ${nsoPage >= pages ? "disabled" : ""}>下一頁 ›</button>
+    <select id="nsoPgSize" aria-label="每頁顯示數量"><option value="50"${pageSize === 50 ? " selected" : ""}>每頁 50 項</option><option value="100"${pageSize === 100 ? " selected" : ""}>每頁 100 項</option></select>`;
+  $("#nsoPager").hidden = false;
   let last = "", out = "";
-  for (const g of list) {
+  for (const g of list.slice(from, from + pageSize)) {
     if (recent && g.d !== last) { last = g.d; out += `<li class="nso-h">${nsoDate(g.d)} 新增</li>`; }
     out += nsoCard(g);
   }
   ul.innerHTML = out;
 }
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-nt],[data-nc]"); if (!t || tab !== "nso") return;
+  const t = e.target.closest("[data-nt],[data-nc],[data-npg]"); if (!t || tab !== "nso") return;
+  if (t.dataset.npg) { if (t.disabled) return; nsoPage = +t.dataset.npg; renderNso().then(nsoScrollTop); return; }
   if (t.dataset.nt) { nsoTab = t.dataset.nt; store.set("nsoTab", nsoTab); }
   else if (t.dataset.nc) nsoCon = t.dataset.nc;
+  nsoPage = 1;
   renderNso();
 });
-document.addEventListener("input", e => { if (e.target.id === "nsoQ") renderNso(); });
+const nsoScrollTop = () => window.scrollTo(0, Math.max(0, $("#nsoGames").getBoundingClientRect().top + window.scrollY - 8));
+document.addEventListener("input", e => { if (e.target.id === "nsoQ") { nsoPage = 1; renderNso(); } });
+document.addEventListener("change", e => {
+  if (e.target.id === "nsoPgSel") { nsoPage = +e.target.value; renderNso().then(nsoScrollTop); }
+  if (e.target.id === "nsoPgSize") { pageSize = +e.target.value; store.set("pageSize", pageSize); nsoPage = 1; renderNso().then(nsoScrollTop); }
+});
 async function renderRank(t){
   const isFav = t === "rankfav";
   $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序，最多顯示前 100 名。" : "使用者標記為「已購買」的遊戲，依購買人數排序，最多顯示前 100 名。";
