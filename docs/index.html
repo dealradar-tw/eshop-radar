@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v202・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v203・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2893,14 +2893,14 @@ function renderMine(){
       info = [g.low != null ? `史低 ${dm(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "",
               g.cheapPct && !twMode(g) ? `${g.cheapRegion}現在便宜 ${g.cheapPct}%` : ""].filter(Boolean).join(" · ");
       info = (favNewIds.s.has(g.id) ? '<span class="new-badge">新特價</span>' : "") + (favNewIds.l.has(g.id) ? '<span class="new-badge">新史低</span>' : "") + info;
-      info += `<div class="memo">${m.fn ? `📝 ${esc(m.fn)}` : '<span class="muted">還沒有備忘錄</span>'}<button class="chip" data-memo="${g.id}">✎ 備忘錄</button></div>`;
+      info += (m.n ? `<div class="memo">🛒 購買記事：${esc(m.n)}</div>` : "") + `<div class="memo">${m.fn ? `📝 ${esc(m.fn)}` : '<span class="muted">還沒有備忘錄</span>'}<button class="chip" data-memo="${g.id}">✎ 備忘錄</button></div>`;
     } else {
       const x = m.p?.[0];
       info = x ? [`<b>${TYPES[x.t] || ""}</b>`, `${REGIONS[x.r] || ""}區`,
           x.a != null ? `${CURS[x.c] || ""}${nf(x.a)}${CURS[x.c] !== dsym() && toTwd(x.a, x.c) != null ? `（約 ${dm(toTwd(x.a, x.c))}）` : ""}` : '<span class="muted">未填金額</span>',
           x.d ? `${esc(x.d)} 購買` : ""].filter(Boolean).join(" · ")
         : '<span class="muted">還沒有填購買明細</span>';
-      info += `<div class="memo">${m.n ? `📝 ${esc(m.n)}` : ""}<button class="chip" data-buyedit="${g.id}">✎ 購買明細</button></div>`;
+      info += (m.fn ? `<div class="memo">📌 備忘錄：${esc(m.fn)}</div>` : "") + `<div class="memo">${m.n ? `📝 ${esc(m.n)}` : ""}<button class="chip" data-buyedit="${g.id}">✎ 購買明細</button></div>`;
     }
     info = whyMatch(g, mineQ) + (whyMatch(g, mineQ) ? " " : "") + info;
     return row(g).replace(/<\/li>\s*$/, `<div class="mine-info">${info}</div></li>`);
