@@ -931,7 +931,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v184・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v185・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1595,7 +1595,9 @@ function loadNso(){
   return nsoP || (nsoP = fetch("nso.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : null).then(d => (NSO = d)).catch(() => null));
 }
 const nsoAge = g => Math.floor((Date.now() - new Date(g.d + "T00:00:00+08:00")) / 864e5);
-function updNsoTile(){ const e = $("#nsoNew"); if (e && NSO) e.hidden = !NSO.games.some(g => nsoAge(g) <= NSO_NEW_DAYS); }
+const nsoLatest = () => NSO.games.reduce((m, g) => g.d > m ? g.d : m, "");
+function updNsoTile(){ const e = $("#nsoNew"); if (!e || !NSO) return; const L = nsoLatest(); e.hidden = !(NSO.games.some(g => nsoAge(g) <= NSO_NEW_DAYS) && L > store.get("nsoSeen", "")); }
+function nsoMarkSeen(){ if (NSO) { store.set("nsoSeen", nsoLatest()); updNsoTile(); } }
 const nsoDate = d => { const [y, m, dd] = d.split("-"); return `${y}/${+m}/${+dd}`; };
 function nsoCard(g){
   const tw = g.tw === "y" ? '<span class="nso-tag ok">台灣可用</span>' : g.tw === "n" ? '<span class="nso-tag no">台灣不可用</span>' : '<span class="nso-tag">台灣未確認</span>';
@@ -1624,7 +1626,7 @@ async function renderNso(){
   ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
   await loadNso();
   if (!NSO) { ul.innerHTML = '<li class="hot-miss"><div class="info">暫時讀不到 NSO 資料，請稍後再試。</div></li>'; return; }
-  updNsoTile();
+  nsoMarkSeen();
   const all = NSO.games, recent = nsoTab === "recent";
   $("#nsoNote").innerHTML += `資料整理自任天堂官方公告與公開紀錄，整理日 ${nsoDate(NSO.asof)}；「台灣可用」依日本／香港／台灣共用名單判斷，並非台灣官方逐款確認，實際以主機內為準。`;
   // 主機篩選
