@@ -648,7 +648,15 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 }
 
 /* 已購買：分類統計方塊 */
-.mine-sum.bought{grid-template-columns:repeat(5,minmax(0,1fr))}
+.mine-sum.bought{grid-template-columns:3fr 2fr;gap:8px 14px}
+.mine-sum .bgrp{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 10px 10px;box-shadow:var(--sh)}
+.bgt{margin:0 0 6px;font-size:14px;font-weight:700;color:var(--ink)}
+.bgt small{font-weight:400;font-size:12px;color:var(--muted);margin-left:6px}
+.bgr{display:grid;gap:6px}.bgr3{grid-template-columns:repeat(3,minmax(0,1fr))}.bgr2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mine-sum .bgrp .btile{box-shadow:none;background:var(--bg)}
+.mine-sum .bgrp .btile[aria-pressed="true"]{background:var(--ink)}
+.mine-sum.bought .bnote{grid-column:1/-1}
+@media (max-width:600px){.mine-sum.bought{grid-template-columns:1fr}}
 .btile{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;min-width:0;transition:transform .15s,box-shadow .15s}
 .btile i{font-style:normal;font-size:18px;line-height:1.2}
 .btile b{font-family:var(--display);font-size:22px;font-weight:800;line-height:1.2}
@@ -933,7 +941,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v193・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v194・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2783,8 +2791,9 @@ function renderMine(){
     ids.forEach(id => { const x = MINE[id].p?.[0]; if (x && x.t in byType) byType[x.t]++; });
     const sw = ids.filter(id => !BY.get(id).s2).length, s2 = ids.length - sw;
     const tile = (k, ico, label, n) => `<button class="btile" data-mf="${k}" aria-pressed="${mineF === k}"><i aria-hidden="true">${ico}</i><b>${n}</b><span>${label}</span></button>`;
-    $("#mineSum").innerHTML = tile("dl", "☁️", "數位版", byType.dl) + tile("pk", "💿", "實體版", byType.pk) + tile("key", "🔑", "鑰匙卡", byType.key)
-      + tile("sw", "🎮", "Switch", sw) + tile("s2", "✨", "Switch 2", s2)
+    const grp = (title, sub, tiles) => `<section class="bgrp"><h4 class="bgt">${title}<small>${sub}</small></h4><section class="bgr bgr${tiles.length}">${tiles.join("")}</section></section>`;
+    $("#mineSum").innerHTML = grp("購買版本", "以份數計", [tile("dl", "☁️", "數位版", byType.dl), tile("pk", "💿", "實體版", byType.pk), tile("key", "🔑", "鑰匙卡", byType.key)])
+      + grp("主機", "以遊戲數計", [tile("sw", "🎮", "Switch", sw), tile("s2", "✨", "Switch 2", s2)])
       + `<p class="bnote">${mineF ? "只顯示符合的遊戲，再點一次同一個分類可取消篩選。" : "點一下可篩選。版本以份數計，主機以遊戲數計。"}</p>`;
   }
   let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF));
