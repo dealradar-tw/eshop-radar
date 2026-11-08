@@ -46,6 +46,7 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           SITE_URL: ${{ vars.SITE_URL }}
           FEEDBACK_TOKEN: ${{ secrets.FEEDBACK_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ inputs.test_notify }}" = "true" ]; then
             python scripts/update.py --test-notify

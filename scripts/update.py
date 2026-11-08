@@ -1737,6 +1737,51 @@ def send_ntfy(topic, title, lines, tags, click=None):
         urllib.request.urlopen(req, timeout=20).read()
 
 
+HIST_DAYS = 365   # 價格歷史只保留最近一年（之前的價格以「一年前當天的價格」一筆代替，圖表起點才不會斷）
+
+
+def prune_history(hist, days=HIST_DAYS):
+    """刪掉一年以前的價格紀錄；保留一年前那一天正在生效的價格，當作起點。回傳刪掉幾筆。"""
+    cutoff = (datetime.strptime(TODAY, "%Y-%m-%d") - timedelta(days=days)).strftime("%Y-%m-%d")
+    cut = 0
+    for k, h in hist.items():
+        if not h or h[0][0] >= cutoff:
+            continue
+        old = [x for x in h if x[0] < cutoff]
+        keep = [x for x in h if x[0] >= cutoff]
+        start = [cutoff, old[-1][1]]
+        new = ([start] if not keep or keep[0][0] > cutoff else []) + keep
+        cut += len(h) - len(new)
+        hist[k] = new
+    return cut
+
+
+REPO_WARN_MB = (700, 900)   # 儲存庫容量達到這些大小時用 ntfy 通知一次（GitHub 建議上限 1 GB）
+
+
+def check_repo_size():
+    """查 GitHub 回報的儲存庫大小，記到 data/repo_size.json（含每天紀錄），超過門檻就通知一次。"""
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    if not repo:
+        return
+    headers = {"Accept": "application/vnd.github+json", **UA}
+    tok = os.environ.get("GITHUB_TOKEN")
+    if tok:
+        headers["Authorization"] = "Bearer " + tok
+    r = json.loads(urllib.request.urlopen(urllib.request.Request(f"https://api.github.com/repos/{repo}", headers=headers), timeout=30).read().decode())
+    mb = round(int(r.get("size") or 0) / 1024, 1)
+    st = load("repo_size.json", {"log": {}, "notified": []})
+    st["log"][TODAY] = mb
+    st["log"] = dict(sorted(st["log"].items())[-400:])
+    log(f"儲存庫大小：{mb} MB")
+    for th in REPO_WARN_MB:
+        if mb >= th and th not in st["notified"]:
+            send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "特價雷達：儲存庫容量提醒",
+                      [f"儲存庫目前約 {mb} MB，已超過 {th} MB（GitHub 建議上限 1 GB），建議整理舊資料。"], ["warning"])
+            st["notified"].append(th)
+    save(os.path.join(DATA, "repo_size.json"), st, pretty=True)
+
+
 def check_feedback():
     """有新的意見回饋就用 ntfy 通知（只說幾則，不含內容，因為通知主題名稱是公開的）。需要 GitHub 密鑰 FEEDBACK_TOKEN。
     檢查結果（含錯誤原因）寫進 data/feedback_seen.json，方便事後查看。"""
@@ -1904,6 +1949,10 @@ def main():
     cat["fx"] = fetch_fx(cat.get("fx"))
     save(os.path.join(DATA, "catalog.json"), cat, pretty=True)
     save(os.path.join(DATA, "dlc.json"), dlcs, pretty=True)
+    for _h in (hist, hist_hk, hist_jp):
+        n_cut = prune_history(_h)
+        if n_cut:
+            log(f"  價格歷史：刪除一年前的紀錄 {n_cut} 筆")
     save(os.path.join(DATA, "history.json"), hist)
     save(os.path.join(DATA, "history_hk.json"), hist_hk)
     save(os.path.join(DATA, "jp.json"), jp)
@@ -1914,6 +1963,10 @@ def main():
         check_feedback()
     except Exception as e:
         log(f"  意見回饋檢查失敗：{e}")
+    try:
+        check_repo_size()
+    except Exception as e:
+        log(f"  儲存庫大小檢查失敗：{e}")
     notify(items, drops, cat.get("fx") or {})
 
 

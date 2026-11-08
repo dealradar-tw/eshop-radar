@@ -1653,8 +1653,9 @@ document.addEventListener("change", e => {
 function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : (tab === "rankfav" || tab === "rankbuy") ? renderRank(tab) : render(); if (!$("#minePage").hidden) renderMine(); }
 
 // ── 價格走勢圖 ──
-const RANGES = [["6m", "半年", 182], ["1y", "一年", 365], ["2y", "兩年", 730]];
+const RANGES = [["6m", "半年", 182], ["1y", "一年", 365]];   // 價格歷史只保留一年
 let chartRange = store.get("chartRange", "1y");
+if (!RANGES.some(r => r[0] === chartRange)) chartRange = "1y";
 let chartOthers = store.get("chartOthers", false);
 // series: [{data:[[日期, 台幣]], cls, label, main}]，第一條是台區（有面積與最低點）
 function chartSVG(list, g, days){
