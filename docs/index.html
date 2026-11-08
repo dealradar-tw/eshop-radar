@@ -932,6 +932,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
     </nav>
     <div class="mine-sum" id="mineSum"></div>
     <p class="fav-new" id="favNew" hidden></p>
+    <input id="mineQ" type="search" placeholder="在我的收藏／已購買中搜尋（遊戲名稱、標籤、備忘錄）" enterkeyhint="search" autocomplete="off" style="width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit;font-size:15px">
     <div class="fav-ctl" id="favCtl" hidden></div>
     <ul id="mineList"></ul>
     <nav class="pager" id="favPager" aria-label="收藏換頁" hidden></nav>
@@ -944,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v198・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v199・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2161,7 +2162,9 @@ function toggleFav(id){
 
 document.addEventListener("change", e => {
   const t = e.target;
-  if (t.id === "favSortSel") { favSort = t.value; favPg = 1; renderMine(); }
+  if (t.id === "minePlatSel") { minePlat = t.value; favPg = 1; renderMine(); }
+  else if (t.id === "mineTagSel") { mineTag = t.value; favPg = 1; renderMine(); }
+  else if (t.id === "favSortSel") { favSort = t.value; favPg = 1; renderMine(); }
   else if (t.id === "favSizeSel") { favSize = +t.value === 100 ? 100 : 50; store.set("favSize", favSize); favPg = 1; renderMine(); }
   else if (t.id === "favPgSel") { favPg = +t.value; renderMine(); $("#minePage").scrollTop = 0; }
 });
@@ -2621,6 +2624,7 @@ for (const k in MINE) {
     if (extra.length) m.n = ((m.n ? m.n + "\n" : "") + "（舊紀錄）" + extra.join("；")).trim();
   }
 }
+let mineQ = "", minePlat = "all", mineTag = "";
 let favSort = "recent", favPg = 1, favSize = store.get("favSize", 50) === 100 ? 100 : 50;
 let favF = "";  // 收藏頁統計方塊篩選：sale 特價中／low 史低／soon 3 天內結束
 let mineTab = "fav", mineF = "";  // mineF：已購買頁的分類篩選（dl/pk/key/sw/s2）
@@ -2838,7 +2842,18 @@ function renderMine(){
       + grp("主機", "以遊戲數計", [tile("sw", "🎮", "Switch", sw), tile("s2", "✨", "Switch 2", s2)])
       + `<p class="bnote">${mineF ? "只顯示符合的遊戲，再點一次同一個分類可取消篩選。" : "點一下可篩選。版本以份數計，主機以遊戲數計。"}</p>`;
   }
-  let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF));
+  const mineTags = [...new Set(ids.flatMap(id => tagsOf(id)))].sort();
+  if (mineTag && !mineTags.includes(mineTag)) mineTag = "";
+  const mq = mineQ.trim().toLowerCase();
+  const mineActive = !!(mq || minePlat !== "all" || mineTag);
+  let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF)).filter(g => {
+    if (minePlat !== "all" && +g.s2 !== +minePlat) return false;
+    if (mineTag && !tagsOf(g.id).includes(mineTag)) return false;
+    if (!mq) return true;
+    const m = MINE[g.id] || {};
+    return [g.name, g.zhName, g.enName, ...tagsOf(g.id), ...sharedOf(g.id), m.fn, m.n].some(s => s && String(s).toLowerCase().includes(mq));
+  });
+  const mineMatch = listItems.length;
   const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewHtml();
   const fc = $("#favCtl"), fp = $("#favPager");
   {
@@ -2852,7 +2867,10 @@ function renderMine(){
     const pages = Math.max(1, Math.ceil(listItems.length / favSize));
     favPg = Math.min(Math.max(1, favPg), pages);
     fc.hidden = !ids.length;
-    fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>`;
+    fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>
+      <select id="minePlatSel" aria-label="平台"><option value="all">全部平台</option><option value="0"${minePlat === "0" ? " selected" : ""}>Switch</option><option value="1"${minePlat === "1" ? " selected" : ""}>Switch 2</option></select>
+      ${mineTags.length ? `<select id="mineTagSel" aria-label="我的標籤"><option value="">全部標籤</option>${mineTags.map(t => `<option value="${esc(t)}"${t === mineTag ? " selected" : ""}>#${esc(t)}</option>`).join("")}</select>` : ""}
+      ${mineActive ? `<span class="muted" style="font-size:13px">符合 ${mineMatch} 款</span><button class="chip" id="mineClr">清除條件</button>` : ""}`;
     const from = (favPg - 1) * favSize;
     const total = listItems.length;
     listItems = listItems.slice(from, from + favSize);
@@ -2879,16 +2897,18 @@ function renderMine(){
       info += `<div class="memo">${m.n ? `📝 ${esc(m.n)}` : ""}<button class="chip" data-buyedit="${g.id}">✎ 購買明細</button></div>`;
     }
     return row(g).replace(/<\/li>\s*$/, `<div class="mine-info">${info}</div></li>`);
-  }).join("") : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${mineTab === "fav"
+  }).join("") : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${ids.length && (mineActive || favF) ? "沒有符合條件的遊戲，試試清除搜尋或篩選條件。" : mineTab === "fav"
       ? "還沒有收藏。點遊戲卡片右上角的 ☆ 加入收藏。" : mineF ? "沒有符合這個分類的遊戲。" : "還沒有已購買的遊戲。點遊戲卡片星號下方的購物袋圖示，就能標記已購買並記錄明細。"}</li>`;
 }
 
 // ── 事件 ──
+document.addEventListener("input", e => { if (e.target.id === "mineQ") { mineQ = e.target.value; favPg = 1; renderMine(); } });
 document.addEventListener("click", e => {
   const t = e.target;
   if (t.id === "openMine") { openMine(); return; }
   if (t.id === "closeMine") { history.state?.ov === "mine" ? history.back() : closeMineNow(); return; }
   const fpb = t.closest("[data-fp]"); if (fpb && !fpb.disabled) { favPg = +fpb.dataset.fp; renderMine(); $("#minePage").scrollTop = 0; return; }
+  if (t.id === "mineClr") { mineQ = ""; minePlat = "all"; mineTag = ""; $("#mineQ").value = ""; favPg = 1; renderMine(); return; }
   const ff = t.closest("[data-ff]"); if (ff) { favF = favF === ff.dataset.ff ? "" : ff.dataset.ff; favPg = 1; renderMine(); return; }
   const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; mineF = ""; favPg = 1; renderMine(); $("#minePage").scrollTop = 0; return; }
   const mf = t.closest("[data-mf]"); if (mf) { mineF = mineF === mf.dataset.mf ? "" : mf.dataset.mf; favPg = 1; renderMine(); return; }
