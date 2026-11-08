@@ -46,12 +46,15 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 }
 header h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;margin-top:16px;font-variant-numeric:tabular-nums}
 .stats .st{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left;font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .stats .st[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .stats .st[aria-pressed="true"] .ttl{color:var(--bg);opacity:1}
 .stats .st[aria-pressed="true"] span{color:var(--bg);opacity:.8}
-.stats .st{display:flex;flex-direction:column}
+.stats .st{display:flex;flex-direction:column;grid-column:span 4}
+.stats .st:not(:has(b)){grid-column:span 3}
+.stats .st:not(:has(b)) .ttl{font-size:19px}
+@media (max-width:700px){.stats{grid-template-columns:repeat(6,minmax(0,1fr))}.stats .st{grid-column:span 2}.stats .st:not(:has(b)){grid-column:span 3}}
 .stats b{font-family:var(--display);font-size:27px;font-weight:800;line-height:1.15}
 @media (min-width:701px){.stats .st{flex-direction:row;align-items:baseline;gap:12px;padding:12px 16px}.stats .st .ttl br{display:none}.stats .st .ttl{white-space:nowrap}.stats b{font-size:30px}.stats span{font-size:17px}}
 .stats .st .ttl{font-size:22px;font-weight:700;color:var(--ink);line-height:1.3}
@@ -635,7 +638,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
   .stats .st::before{align-self:center;font-size:22px;line-height:1;flex:none;width:28px;text-align:center}
   .stats .st[data-view="deals"]::before{content:"🏷️"}.stats .st[data-view="low"]::before{content:"📉"}.stats .st[data-view="soon"]::before{content:"⏰"}
   .stats .st[data-view="all"]::before{content:"🎮"}.stats .st[data-view="new"]::before{content:"🆕"}.stats .st[data-view="up"]::before{content:"📅"}
-  .stats .st[data-view="hot"]::before{content:"📰"}.stats .st[data-view="rankfav"]::before{content:"⭐"}.stats .st[data-view="rankbuy"]::before{content:"🛒"}
+  .stats .st[data-view="hot"]::before{content:"📰"}.stats .st[data-view="rankfav"]::before{content:"⭐"}.stats .st[data-view="rankbuy"]::before{content:"🛒"}.stats .st[data-view="nso"]::before{content:"🕹️"}
 }
 @media (min-width:601px){
   .fpanel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px;box-shadow:var(--sh)}
@@ -658,6 +661,40 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
   .btile{flex-direction:row;justify-content:center;gap:10px;padding:12px 10px}
   .btile i{font-size:22px}.btile b{font-size:28px}.btile span{font-size:16px}
 }
+
+/* NSO 經典遊戲 */
+.nso-new{font-style:normal;font-size:11px;font-weight:700;background:#e60012;color:#fff;border-radius:999px;padding:1px 6px;margin-left:6px;vertical-align:middle;letter-spacing:0}
+.stats .st[aria-pressed="true"] .nso-new{background:#fff;color:#e60012}
+.nso-sw{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.nso-sw .chip{font-size:15px;padding:7px 16px}
+.nso-cons{margin-top:12px}
+.nso-cons .nsep{flex:none;font-size:12px;color:var(--muted);margin:0 2px 0 6px;white-space:nowrap}
+.nso-cons .chip small{opacity:.65;margin-left:3px}
+.nso-bar{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.nso-bar input{flex:1 1 160px;min-width:0;font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px}
+#nsoList{margin-top:12px}
+#nsoList li.nso-li{grid-template-columns:minmax(0,1fr);gap:4px;padding:10px 14px}
+#nsoList li.nso-h{display:block;background:none;border:0;box-shadow:none;padding:10px 2px 0;font-weight:700;font-size:15px;color:var(--muted)}
+.nso-li .nm{font-weight:600;font-size:16px;line-height:1.4;word-break:break-word}
+.nso-li .mt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
+.nso-tag{border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:12px;line-height:1.7;white-space:nowrap}
+.nso-tag.con{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.nso-tag.ex{border-color:#b8860b;color:#b8860b}
+.nso-tag.ok{border-color:#2e8b57;color:#2e8b57}.nso-tag.no{border-color:#c0392b;color:#c0392b}
+.nso-tag.nw{background:#e60012;border-color:#e60012;color:#fff;font-weight:700}
+.nso-fee{margin-top:12px}
+.nso-fee table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.nso-fee th,.nso-fee td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:15px;vertical-align:top}
+.nso-fee th:first-child,.nso-fee td:first-child{text-align:left}
+.nso-fee th{font-size:13px;color:var(--muted);font-weight:600}
+.nso-fee tr:last-child td{border-bottom:0}
+.nso-fee td:first-child{white-space:nowrap}.nso-fee small{display:block;color:var(--muted);font-size:12px;line-height:1.4;font-weight:400}
+.nso-fee td.lo b{color:#2e8b57}
+.nso-plan{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.nso-plan>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6}
+.nso-plan b{display:block;font-size:16px}
+@media (max-width:700px){.nso-cons .nsep{flex-basis:100%;margin:2px 0 0}.nso-plan{grid-template-columns:1fr}.nso-fee th,.nso-fee td{padding:8px 5px;font-size:13.5px}.nso-fee small{font-size:11px}.nso-sw .chip{flex:1;text-align:center;padding:7px 4px;font-size:14px}}
+@media (min-width:1100px){#nsoList{display:grid;grid-template-columns:1fr 1fr}#nsoList li.nso-h{grid-column:1/-1}}
 </style>
 <style>body{margin:0} img{max-width:100%} [hidden]{display:none!important} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 /* 手機版：首頁方塊與我的收藏方塊也加圖示（圖示在數字左側，文字在下方） */
@@ -665,7 +702,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
   .stats .st::before,.mine-sum>div[data-ff]::before{font-size:17px;line-height:1;flex:none}
   .stats .st[data-view="deals"]::before{content:"🏷️"}.stats .st[data-view="low"]::before{content:"📉"}.stats .st[data-view="soon"]::before{content:"⏰"}
   .stats .st[data-view="all"]::before{content:"🎮"}.stats .st[data-view="new"]::before{content:"🆕"}.stats .st[data-view="up"]::before{content:"📅"}
-  .stats .st[data-view="hot"]::before{content:"📰"}.stats .st[data-view="rankfav"]::before{content:"⭐"}.stats .st[data-view="rankbuy"]::before{content:"🛒"}
+  .stats .st[data-view="hot"]::before{content:"📰"}.stats .st[data-view="rankfav"]::before{content:"⭐"}.stats .st[data-view="rankbuy"]::before{content:"🛒"}.stats .st[data-view="nso"]::before{content:"🕹️"}
   .mine-sum>div[data-ff=""]::before{content:"⭐"}.mine-sum>div[data-ff="sale"]::before{content:"🏷️"}
   .mine-sum>div[data-ff="low"]::before{content:"📉"}.mine-sum>div[data-ff="soon"]::before{content:"⏰"}
   .stats .st:has(b){display:grid;grid-template-columns:auto 1fr;column-gap:6px;align-items:center}
@@ -748,6 +785,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
     <button class="st" data-view="hot" aria-pressed="false"><span class="ttl">Fami通<br>銷售排行</span></button>
     <button class="st" data-view="rankfav" aria-pressed="false"><span class="ttl">關注排行 TOP100</span></button>
     <button class="st" data-view="rankbuy" aria-pressed="false"><span class="ttl">購買排行 TOP100</span></button>
+    <button class="st" data-view="nso" aria-pressed="false"><span class="ttl">NSO 經典遊戲<i class="nso-new" id="nsoNew" hidden>新</i></span></button>
   </div>
 </header>
 
@@ -840,6 +878,20 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
   <p class="note" id="rankNote"></p>
   <ul id="rankList" style="margin-top:12px"></ul>
 </section>
+<section id="pNso" hidden>
+  <p class="note" id="nsoNote"></p>
+  <div class="nso-sw" id="nsoSw" role="group" aria-label="NSO 內容">
+    <button class="chip" data-nt="recent" aria-pressed="true">最近新增</button>
+    <button class="chip" data-nt="all" aria-pressed="false">全部遊戲</button>
+    <button class="chip" data-nt="fee" aria-pressed="false">會員費用</button>
+  </div>
+  <div id="nsoGames">
+    <div class="chips nso-cons" id="nsoCons" role="group" aria-label="主機"></div>
+    <div class="nso-bar"><input id="nsoQ" type="search" placeholder="搜尋遊戲名稱（英文）" autocomplete="off"><button class="chip" id="nsoTw" aria-pressed="false">只看台灣可用</button></div>
+    <ul id="nsoList"></ul>
+  </div>
+  <div class="nso-fee" id="nsoFee" hidden></div>
+</section>
 <section id="pHot" hidden>
   <p class="note" id="hotNote">依日本 Fami通 每週銷量排行。</p>
   <div class="chips plats" role="group" aria-label="主機" style="margin-top:14px">
@@ -877,7 +929,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v182・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v183・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1530,6 +1582,74 @@ function updTiles(){
   updRankTiles();
 }
 function updRankTiles(){}
+
+// ── NSO 經典遊戲（資料手工維護於 nso.json）──
+let NSO = null, nsoP = null;
+const NSO_CON = {FC: "FC", SFC: "SFC", GB: "GB／GBC", GBA: "GBA", N64: "N64", MD: "MD", GC: "GC", VB: "VB"};
+const NSO_BASE = ["FC", "SFC", "GB"], NSO_EXP = ["GBA", "N64", "MD", "GC", "VB"];
+const NSO_NEW_DAYS = 30, NSO_RECENT_DAYS = 120;
+let nsoTab = store.get("nsoTab", "recent"), nsoCon = "all", nsoTwOnly = false;
+function loadNso(){
+  return nsoP || (nsoP = fetch("nso.json", {cache: "no-cache"}).then(r => r.ok ? r.json() : null).then(d => (NSO = d)).catch(() => null));
+}
+const nsoAge = g => Math.floor((Date.now() - new Date(g.d + "T00:00:00+08:00")) / 864e5);
+function updNsoTile(){ const e = $("#nsoNew"); if (e && NSO) e.hidden = !NSO.games.some(g => nsoAge(g) <= NSO_NEW_DAYS); }
+const nsoDate = d => { const [y, m, dd] = d.split("-"); return `${y}/${+m}/${+dd}`; };
+function nsoCard(g){
+  const tw = g.tw === "y" ? '<span class="nso-tag ok">台灣可用</span>' : g.tw === "n" ? '<span class="nso-tag no">台灣不可用</span>' : '<span class="nso-tag">台灣未確認</span>';
+  return `<li class="nso-li"><div class="nm">${esc(g.n)}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}</div></li>`;
+}
+function nsoFeeHtml(){
+  const fx = FX || {}, J = fx.JPY || 0, H = fx.HKD || 0;
+  const rows = [["個人 1個月", 79, 400, 25, 1, 0], ["個人 3個月", 199, 1000, 65, 3, 0], ["個人 12個月", 599, 3000, 155, 12, 0], ["家庭 12個月", 1179, 5800, 295, 12, 1], ["個人＋擴充包", 1279, 5900, 325, 12, 0], ["家庭＋擴充包", 2399, 9900, 575, 12, 1]];
+  const r0 = n => nf(Math.round(n));
+  const body = rows.map(([n, t, j, h, m, fam]) => {
+    const jn = j * J, hn = h * H, lo = Math.min(t, jn || Infinity, hn || Infinity);
+    const sub = fam ? `12個月・最多8帳號<br>每人約 $${r0(t / 8)}／年` : m > 1 ? `${m === 12 && n.includes("擴充") ? "12個月<br>" : ""}約 $${r0(t / m)}／月` : "";
+    return `<tr><td>${n}${sub ? `<small>${sub}</small>` : ""}</td><td class="${t <= lo ? "lo" : ""}"><b>$${nf(t)}</b></td><td class="${jn && jn <= lo ? "lo" : ""}"><b>$${r0(jn)}</b><small>¥${nf(j)}</small></td><td class="${hn && hn <= lo ? "lo" : ""}"><b>$${r0(hn)}</b><small>HK$${nf(h)}</small></td></tr>`;
+  }).join("");
+  return `<div class="nso-plan"><div><b>基本方案</b>FC、SFC、GB／GBC 經典遊戲，以及線上遊玩、雲端存檔。</div><div><b>擴充包</b>再加 GBA、N64、MD（Mega Drive）、GC（僅 Switch 2）與 Virtual Boy（需另購專用硬體）。</div></div>
+  <table style="margin-top:12px"><thead><tr><th>方案</th><th>台灣 NT$</th><th>日本 約NT$</th><th>香港 約NT$</th></tr></thead><tbody>${body}</tbody></table>
+  <p class="note">金額單位皆為新台幣（日本、香港為換算）。價格取自各區 eShop 的 NSO 頁面（2026-11-08）。日本、香港以本站匯率換算（日圓 ${J}、港幣 ${H}，${esc(fx.date || "")}），僅供參考，實際以結帳為準；綠色為三區最便宜。首次加入個人方案有 7 天免費試用。各區帳號與付款方式需符合該區規定，請自行確認。</p>`;
+}
+async function renderNso(){
+  $$("#nsoSw [data-nt]").forEach(b => b.setAttribute("aria-pressed", b.dataset.nt === nsoTab));
+  const fee = nsoTab === "fee";
+  $("#nsoGames").hidden = fee; $("#nsoFee").hidden = !fee;
+  $("#nsoNote").innerHTML = '任天堂官方「<a href="https://www.nintendo.com/tw/nintendo-switch-online/nintendo-classics/index.html" target="_blank" rel="noopener">Nintendo Classics</a>」遊戲的加入紀錄。';
+  if (fee) { $("#nsoFee").innerHTML = nsoFeeHtml(); return; }
+  const ul = $("#nsoList");
+  ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
+  await loadNso();
+  if (!NSO) { ul.innerHTML = '<li class="hot-miss"><div class="info">暫時讀不到 NSO 資料，請稍後再試。</div></li>'; return; }
+  updNsoTile();
+  const all = NSO.games, recent = nsoTab === "recent";
+  $("#nsoNote").innerHTML += `資料整理自任天堂官方公告與公開紀錄，整理日 ${nsoDate(NSO.asof)}；「台灣可用」依日本／香港／台灣共用名單判斷，並非台灣官方逐款確認，實際以主機內為準。`;
+  // 主機篩選
+  const cnt = {}; all.forEach(g => cnt[g.c] = (cnt[g.c] || 0) + 1);
+  const chip = (k, t, n) => `<button class="chip" data-nc="${k}" aria-pressed="${k === nsoCon}">${t}<small>${n}</small></button>`;
+  const grp = a => a.filter(k => cnt[k]).map(k => chip(k, NSO_CON[k], cnt[k])).join("");
+  if (nsoCon !== "all" && !cnt[nsoCon]) nsoCon = "all";
+  $("#nsoCons").innerHTML = chip("all", "全部", all.length) + grp(NSO_BASE) + '<span class="nsep">｜ 需擴充包 →</span>' + grp(NSO_EXP);
+  $("#nsoTw").setAttribute("aria-pressed", nsoTwOnly);
+  const q = $("#nsoQ").value.trim().toLowerCase();
+  let list = all.filter(g => (nsoCon === "all" || g.c === nsoCon) && (!nsoTwOnly || g.tw === "y") && (!q || g.n.toLowerCase().includes(q)) && (!recent || nsoAge(g) <= NSO_RECENT_DAYS));
+  if (!list.length) { ul.innerHTML = '<li class="hot-miss"><div class="info">沒有符合的遊戲。</div></li>'; return; }
+  let last = "", out = "";
+  for (const g of list) {
+    if (recent && g.d !== last) { last = g.d; out += `<li class="nso-h">${nsoDate(g.d)} 新增</li>`; }
+    out += nsoCard(g);
+  }
+  ul.innerHTML = out;
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-nt],[data-nc],#nsoTw"); if (!t || tab !== "nso") return;
+  if (t.dataset.nt) { nsoTab = t.dataset.nt; store.set("nsoTab", nsoTab); }
+  else if (t.dataset.nc) nsoCon = t.dataset.nc;
+  else nsoTwOnly = !nsoTwOnly;
+  renderNso();
+});
+document.addEventListener("input", e => { if (e.target.id === "nsoQ") renderNso(); });
 async function renderRank(t){
   const isFav = t === "rankfav";
   $("#rankNote").textContent = isFav ? "使用者關注（收藏）的遊戲，目前剛好有特價的，依關注人數排序，最多顯示前 100 名。" : "使用者標記為「已購買」的遊戲，依購買人數排序，最多顯示前 100 名。";
@@ -1600,7 +1720,7 @@ function setSortOptions(){
 }
 // 上方四個數字：點了就切到對應的清單
 function setStatActive(){
-  const cur = tab === "rankfav" || tab === "rankbuy" ? tab : tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "up" ? "up" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
+  const cur = tab === "rankfav" || tab === "rankbuy" || tab === "nso" ? tab : tab === "hot" ? "hot" : tab === "new" ? "new" : tab === "up" ? "up" : tab === "all" ? "all" : tab === "deals" ? (soonOnly ? "soon" : lowOnly ? "low" : "deals") : "";
   $$(".stats .st").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === cur));
 }
 function showTab(t){
@@ -1609,12 +1729,13 @@ function showTab(t){
   if (tab !== t && window.scrollY > tabsTop) window.scrollTo(0, tabsTop);
   tab = t; store.set("tab", t);
   const isRank = t === "rankfav" || t === "rankbuy";
-  $("#pList").hidden = t === "hot" || isRank; $("#pHot").hidden = t !== "hot"; $("#pRank").hidden = !isRank;
+  $("#pNso").hidden = t !== "nso";
+  $("#pList").hidden = t === "hot" || isRank || t === "nso"; $("#pHot").hidden = t !== "hot"; $("#pRank").hidden = !isRank;
   $("#recentBox").hidden = t !== "new";
   $("#upBox").hidden = t !== "up";
   $("#q").placeholder = "搜尋全部遊戲（中文／英文名稱）";
   page = 1;
-  if (t === "hot") renderHot(); else if (isRank) renderRank(t); else { setSortOptions(); render(); }
+  if (t === "hot") renderHot(); else if (t === "nso") renderNso(); else if (isRank) renderRank(t); else { setSortOptions(); render(); }
   if (t === "up" && $("#sort").value === "upFav" && !RANKS) loadRanks().then(() => tab === "up" && render());
   setStatActive();
 }
@@ -1650,7 +1771,7 @@ document.addEventListener("change", e => {
   if (e.target.id === "pgSel") goPage(+e.target.value);
   if (e.target.id === "pgSize") { pageSize = +e.target.value; store.set("pageSize", pageSize); goPage(1); }
 });
-function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : (tab === "rankfav" || tab === "rankbuy") ? renderRank(tab) : render(); if (!$("#minePage").hidden) renderMine(); }
+function rerender(){ page = 1; setChips(); tab === "hot" ? renderHot() : tab === "nso" ? renderNso() : (tab === "rankfav" || tab === "rankbuy") ? renderRank(tab) : render(); if (!$("#minePage").hidden) renderMine(); }
 
 // ── 價格走勢圖 ──
 const RANGES = [["6m", "半年", 182], ["1y", "一年", 365]];   // 價格歷史只保留一年
@@ -2017,7 +2138,7 @@ document.addEventListener("click", e => {
     clearFilters();  // 先清掉其他篩選，清單數量才會跟上面的數字一致
     lowOnly = w === "low"; soonOnly = w === "soon";
     lowTipNow = lowOnly && lowTipDue();
-    showTab(["all", "hot", "new", "up", "rankfav", "rankbuy"].includes(w) ? w : "deals");
+    showTab(["all", "hot", "new", "up", "rankfav", "rankbuy", "nso"].includes(w) ? w : "deals");
     if (w === "soon") { $("#sort").value = "end"; render(); }
     setChips();
     return;
@@ -2120,8 +2241,9 @@ $("#sort").addEventListener("change", async () => {
     updTiles();
     buildGenreChips();
     setChips();
-    showTab(["deals", "hot", "new", "up", "all", "rankfav", "rankbuy"].includes(tab) ? tab : "deals");
+    showTab(["deals", "hot", "new", "up", "all", "rankfav", "rankbuy", "nso"].includes(tab) ? tab : "deals");
     loadRanks().then(updRankTiles);
+    loadNso().then(updNsoTile);
     syncBoot();
   } catch (e) {
     console.error(e);

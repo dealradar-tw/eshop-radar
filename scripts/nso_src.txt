@@ -1,0 +1,150 @@
+# 手工維護的 NSO 來源檔。格式：主機|加入日期|遊戲1;遊戲2…   標記：結尾 ~ = 僅歐美版、結尾 * = 僅日本版(日/港/台共用名單)
+# 資料彙整自 Wikipedia「Nintendo Classics」與任天堂官方公告，日期可能與當地時區差一天。
+FC|2018-09-19|Balloon Fight;Baseball;Donkey Kong;Double Dragon;Dr. Mario;Excitebike;Ghosts 'n Goblins;Gradius;Ice Climber;Ice Hockey;The Legend of Zelda;Mario Bros.;Pro Wrestling;River City Ransom;Soccer;Super Mario Bros.;Super Mario Bros. 3;Tecmo Bowl;Tennis;Yoshi
+FC|2018-10-10|NES Open Tournament Golf;Solomon's Key;Super Dodge Ball
+FC|2018-11-14|Metroid;Mighty Bomb Jack;TwinBee
+FC|2018-12-12|Adventures of Lolo;Ninja Gaiden;Wario's Woods
+FC|2019-01-16|Blaster Master;Joy Mech Fight;Zelda II: The Adventure of Link
+FC|2019-02-13|Kirby's Adventure;Super Mario Bros. 2;Tsuppari Ōzumō*
+FC|2019-03-13|Fire Emblem: Shadow Dragon and the Blade of Light*;Kid Icarus;StarTropics~;Yie Ar Kung-Fu*
+FC|2019-04-10|Punch-Out!!;Star Soldier;Super Mario Bros.: The Lost Levels
+FC|2019-05-15|Clu Clu Land~;Clu Clu Land: Welcome to New Cluclu Land*;Donkey Kong Jr.;Vs. Excitebike
+FC|2019-06-12|City Connection;Double Dragon II: The Revenge;Volleyball
+FC|2019-07-17|Donkey Kong 3;Wrecking Crew
+FC|2019-08-21|Downtown Nekketsu March: Super-Awesome Field Day!;Kung-Fu Heroes;Vice: Project Doom
+FC|2019-12-12|Crystalis;Famicom Wars*;Journey to Silius;Route-16 Turbo*
+FC|2020-02-19|Eliminator Boat Duel~;The Mystery of Atlantis;Shadow of the Ninja~
+FC|2020-05-20|Rygar
+FC|2020-07-15|The Immortal~
+FC|2020-09-23|S.C.A.T.: Special Cybernetic Attack Team~
+FC|2020-12-18|Nightshade~;Smash Ping Pong*
+FC|2021-02-17|Fire 'n Ice
+FC|2021-05-26|Ninja JaJaMaru-kun
+FC|2022-02-09|EarthBound Beginnings
+FC|2022-03-30|Dig Dug II;Mappy-Land
+FC|2022-05-26|Pinball
+FC|2022-07-21|Daiva Story 6: Imperial of Nirsartia
+FC|2023-03-15|Xevious
+FC|2023-06-05|Mystery Tower
+FC|2023-10-31|Devil World;The Mysterious Murasame Castle
+FC|2024-02-21|R.C. Pro-Am~;Snake Rattle 'n' Roll~
+FC|2024-07-04|Cobra Triangle~;Donkey Kong Jr. Math;Famicom Mukashibanashi: Shin Onigashima*;Golf;Gomoku Narabe Renju*;Mach Rider;Mah-Jong*;Solar Jetman~;Urban Champion
+FC|2024-12-12|Tetris
+FC|2025-11-26|Battletoads;Ninja Gaiden II: The Dark Sword of Chaos
+FC|2026-04-09|Mendel Palace;Pac-Man;The Tower of Druaga
+FC|2026-09-02|Dragon Buster*;Ikari Warriors;Ninja Gaiden III: The Ancient Ship of Doom;R.C. Pro-Am II~
+SFC|2019-09-05|Brawl Brothers;Breath of Fire;Demon's Crest;F-Zero;Joe & Mac 2: Lost in the Tropics;Kirby's Dream Course;Kirby's Dream Land 3;The Legend of Zelda: A Link to the Past;Pilotwings;Smash Tennis;Star Fox;Stunt Race FX;Super E.D.F. Earth Defense Force;Super Ghouls 'n Ghosts;Super Mario Kart;Super Mario World;Super Mario World 2: Yoshi's Island;Super Metroid;Super Puyo Puyo 2;Super Tennis
+SFC|2019-12-12|Breath of Fire II;Kirby Super Star;Star Fox 2;Super Punch-Out!!
+SFC|2020-02-19|Pop'n TwinBee
+SFC|2020-05-20|Operation Logic Bomb~;Panel de Pon;Wild Guns
+SFC|2020-07-15|Donkey Kong Country;Natsume Championship Wrestling~;Shin Megami Tensei*
+SFC|2020-09-03|Super Mario All-Stars
+SFC|2020-09-23|Donkey Kong Country 2;Fire Emblem: Mystery of the Emblem*;Mario's Super Picross;The Peace Keepers~
+SFC|2020-12-18|Amazing Hebereke;Donkey Kong Country 3;The Ignition Factor;Kunio-kun no Dodgeball da yo Zen'in Shūgō!;Super Valis IV~;Tuff E Nuff
+SFC|2021-02-17|Doomsday Warrior;Prehistorik Man~;Psycho Dream;Shin Megami Tensei II*
+SFC|2021-05-26|Fire Emblem: Genealogy of the Holy War*;Joe & Mac;Magical Drop II;Spanky's Quest~;Super Baseball Simulator 1.000
+SFC|2021-07-28|Bombuzal;Claymates~;Jelly Boy~;Shin Megami Tensei If…*
+SFC|2022-02-09|EarthBound
+SFC|2022-03-30|Earthworm Jim 2~;Harvest Moon
+SFC|2022-05-26|Congo's Caper~;Rival Turf!;Umihara Kawase*
+SFC|2022-07-21|Fighter's History;Kirby's Avalanche~;Kirby's Star Stacker
+SFC|2023-03-15|Side Pocket
+SFC|2024-02-21|Battletoads in Battlemaniacs;Killer Instinct~
+SFC|2024-04-12|Marvelous: Mōhitotsu no Takarajima*;Super R-Type;Wrecking Crew '98
+SFC|2024-09-18|Angelique*;Battletoads/Double Dragon~;Big Run;Cosmo Gang the Puzzle
+SFC|2025-01-24|Fatal Fury 2;Super Ninja Boy;Sutte Hakkun
+SFC|2025-03-28|Nobunaga's Ambition;Nobunaga's Ambition: Lord of Darkness;Romance of the Three Kingdoms IV: Wall of Fire;Uncharted Waters: New Horizons
+SFC|2025-07-29|Mario Paint
+SFC|2025-10-09|Bubsy in Claws Encounters of the Furred Kind;Fatal Fury Special;Mario & Wario
+GB|2023-02-08|Alone in the Dark: The New Nightmare~;Game & Watch Gallery 3;Gargoyle's Quest;Kirby's Dream Land;The Legend of Zelda: Link's Awakening DX;Metroid II: Return of Samus;Super Mario Land 2: 6 Golden Coins;Tetris;Wario Land 3;Yakuman*
+GB|2023-03-15|BurgerTime Deluxe;Kirby's Dream Land 2
+GB|2023-06-05|Blaster Master: Enemy Below;Kirby's Tilt 'n' Tumble
+GB|2023-07-27|The Legend of Zelda: Oracle of Ages;The Legend of Zelda: Oracle of Seasons
+GB|2023-08-08|Pokémon Trading Card Game
+GB|2023-09-06|Quest for Camelot~
+GB|2023-10-31|Castlevania Legends
+GB|2024-03-12|Dr. Mario;Mario Golf;Mario Tennis
+GB|2024-05-15|Alleyway;Baseball;Kaeru no Tame ni Kane wa Naru*;Super Mario Land
+GB|2024-06-07|Mega Man: Dr. Wily's Revenge;Mega Man II;Mega Man III;Mega Man IV;Mega Man V
+GB|2024-11-22|Donkey Kong Land
+GB|2024-11-26|Donkey Kong Land 2
+GB|2024-12-04|Donkey Kong Land III
+GB|2024-12-12|Tetris DX
+GB|2025-03-07|Donkey Kong;Mario's Picross
+GB|2025-05-23|Gradius: The Interstellar Assault;Kirby's Star Stacker;Survival Kids;The Sword of Hope
+GB|2025-11-26|Bionic Commando;Kid Icarus: Of Myths and Monsters
+GB|2026-02-04|Balloon Kid;Yoshi
+GB|2026-07-08|Fortified Zone;The Sword of Hope II;Wario Land: Super Mario Land 3
+GB|2026-10-27|Avenging Spirit;Mole Mania;Pinball: Revenge of the 'Gator
+GBA|2023-02-08|Kuru Kuru Kururin;The Legend of Zelda: The Minish Cap;Mario & Luigi: Superstar Saga;Mario Kart: Super Circuit;Super Mario Advance 4: Super Mario Bros. 3;WarioWare, Inc.: Mega Microgames!
+GBA|2023-03-09|Metroid Fusion
+GBA|2023-05-25|Super Mario Advance;Super Mario World: Super Mario Advance 2;Yoshi's Island: Super Mario Advance 3
+GBA|2023-06-23|Fire Emblem: The Binding Blade*;Fire Emblem: The Blazing Blade
+GBA|2023-09-29|Kirby & the Amazing Mirror
+GBA|2024-01-17|Golden Sun;Golden Sun: The Lost Age
+GBA|2024-02-21|Mother 3*
+GBA|2024-03-29|F-Zero: Maximum Velocity
+GBA|2024-06-18|The Legend of Zelda: A Link to the Past and Four Swords;Metroid: Zero Mission
+GBA|2024-07-12|Densetsu no Starfy;Densetsu no Starfy 2;Densetsu no Starfy 3
+GBA|2024-08-09|Pokémon Mystery Dungeon: Red Rescue Team
+GBA|2024-10-11|F-Zero Climax;F-Zero: GP Legend
+GBA|2025-02-14|Wario Land 4
+GBA|2025-04-22|Fire Emblem: The Sacred Stones
+GBA|2025-09-04|Magical Vacation*
+GBA|2025-09-25|Klonoa: Empire of Dreams;Mr. Driller 2
+GBA|2026-03-10|Mario vs. Donkey Kong
+GBA|2026-07-08|Dr. Mario & Puzzle League;Tomato Adventure*
+GBA|2026-10-14|Kururin Paradise;Metal Slug Advance;Monster Rancher Advance
+N64|2021-10-25|Dr. Mario 64~;The Legend of Zelda: Ocarina of Time;Mario Kart 64;Mario Tennis;Sin & Punishment;Star Fox 64;Super Mario 64;WinBack;Yoshi's Story
+N64|2021-12-10|Paper Mario
+N64|2022-01-20|Banjo-Kazooie
+N64|2022-02-25|The Legend of Zelda: Majora's Mask
+N64|2022-03-11|F-Zero X
+N64|2022-04-15|Mario Golf
+N64|2022-05-20|Kirby 64: The Crystal Shards
+N64|2022-06-24|Pokémon Snap
+N64|2022-07-15|Custom Robo*;Custom Robo V2*;Pokémon Puzzle League~
+N64|2022-08-19|Wave Race 64
+N64|2022-10-13|Pilotwings 64
+N64|2022-11-02|Mario Party;Mario Party 2
+N64|2023-01-27|GoldenEye 007
+N64|2023-04-12|Pokémon Stadium
+N64|2023-08-08|Pokémon Stadium 2
+N64|2023-08-30|Excitebike 64
+N64|2023-10-27|Mario Party 3
+N64|2023-11-30|Jet Force Gemini
+N64|2023-12-08|1080° Snowboarding;Harvest Moon 64
+N64|2024-02-21|Blast Corps
+N64|2024-04-24|Extreme-G~;Iggy's Reckin' Balls~
+N64|2024-06-18|Perfect Dark;Turok: Dinosaur Hunter
+N64|2024-10-25|Banjo-Tooie
+N64|2024-10-29|Shadow Man~;Turok 2: Seeds of Evil
+N64|2025-01-31|Ridge Racer 64
+N64|2025-05-16|Killer Instinct Gold~
+N64|2025-09-04|Forsaken 64~
+N64|2025-12-17|Rayman 2: The Great Escape~;Tonic Trouble~
+N64|2026-06-04|Donkey Kong 64
+MD|2021-10-25|Castlevania: Bloodlines;Contra: Hard Corps;Dr. Robotnik's Mean Bean Machine~;Ecco the Dolphin;Golden Axe;Gunstar Heroes;MUSHA;Phantasy Star IV;Puyo Puyo*;Ristar;Shining Force;Shinobi III: Return of the Ninja Master;Sonic the Hedgehog 2;Streets of Rage 2;Strider
+MD|2021-12-16|Altered Beast;Dynamite Headdy;Sword of Vermilion;Thunder Force II;ToeJam & Earl
+MD|2022-03-16|Alien Soldier;Light Crusader;Super Fantasy Zone
+MD|2022-04-21|Shining Force II;Sonic Spinball;Space Harrier II
+MD|2022-06-30|Comix Zone;Mega Man: The Wily Wars;Target Earth;Zero Wing
+MD|2022-09-15|Alisia Dragoon;Beyond Oasis;Earthworm Jim
+MD|2022-12-15|Alien Storm;Columns;Golden Axe II;Virtua Fighter 2
+MD|2023-04-18|Flicky;Kid Chameleon;Pulseman;Street Fighter II': Special Champion Edition
+MD|2023-06-28|Crusader of Centy;Ghouls 'n Ghosts;Landstalker;The Revenge of Shinobi
+MD|2024-11-27|Mercs;ToeJam & Earl in Panic on Funkotron;Vectorman
+MD|2025-04-11|ESWAT: City Under Siege;Streets of Rage;Super Thunder Blade
+GC|2025-06-05|F-Zero GX;The Legend of Zelda: The Wind Waker;Soulcalibur II
+GC|2025-07-03|Super Mario Strikers
+GC|2025-08-21|Chibi-Robo!
+GC|2025-10-30|Luigi's Mansion
+GC|2025-12-11|Wario World
+GC|2026-01-09|Fire Emblem: Path of Radiance
+GC|2026-03-18|Pokémon XD: Gale of Darkness
+GC|2026-08-13|Super Mario Sunshine
+GC|2026-09-09|Star Fox Adventures
+VB|2026-02-17|3D Tetris;Galactic Pinball;Golf;The Mansion of Innsmouth;Red Alarm;Teleroboxer;Virtual Boy Wario Land
+VB|2026-03-10|Mario Clash;Mario's Tennis
+VB|2026-05-14|Jack Bros.;Space Invaders Virtual Collection;V-Tetris;Vertical Force;Virtual Bowling;Virtual Fishing*
+VB|2026-08-04|Dragon Hopper;Zero Racers
