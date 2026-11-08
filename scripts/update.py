@@ -1810,6 +1810,7 @@ def check_feedback():
                   [f"收到 {n} 則新回饋，點這則通知會直接開啟 Supabase 的 feedback 表查看。"], ["speech_balloon"],
                   click="https://supabase.com/dashboard/project/uvjioxaubsjxibvhsqgf/editor/17778?schema=public")
         seen["id"] = mx
+        seen["date"] = today
     save(path, seen)
 
 
@@ -1832,12 +1833,14 @@ def check_tags():
         return
     n, mx = int(r.get("n") or 0), int(r.get("max_id") or 0)
     log(f"共用標籤：新增 {n} 個")
-    seen = {"id": seen.get("id") or 0, "status": f"正常，本次新增 {n} 個"}
-    if n > 0:
+    today = datetime.now(TW).strftime("%Y-%m-%d")
+    seen = {"id": seen.get("id") or 0, "date": seen.get("date") or "", "status": f"正常，累計未通知 {n} 個"}
+    if n > 0 and seen["date"] != today:   # 一天最多通知一次，沒通知的標籤會累計到下一次
         send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "特價雷達：有新的共用標籤",
                   [f"使用者新增了 {n} 個共用標籤，點這則通知開啟 Supabase 後台，在 game_tags 表查看或刪除不當內容。"], ["label"],
                   click="https://supabase.com/dashboard/project/uvjioxaubsjxibvhsqgf/editor")
         seen["id"] = mx
+        seen["date"] = today
     save(path, seen)
 
 
