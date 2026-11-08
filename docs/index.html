@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v200・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v201・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1192,9 +1192,18 @@ function priceText(g){
   const c = cheapest(g);
   return c ? `${c.cur === dsym() ? c.cur + nf(c.now) : dm(c.twd)}${c.onSale ? ` -${c.pct}%` : ""}` : "價格未定";
 }
+// 搜尋時說明「為什麼這款符合」：名稱符合就不用說明，其他來源（標籤、備忘錄、購買記事）標出來
+function whyMatch(g, q){
+  q = String(q || "").trim().toLowerCase(); if (!q) return "";
+  const has = s => s && String(s).toLowerCase().includes(q);
+  if ([g.name, g.zhName, g.enName].some(has)) return "";
+  const m = MINE[g.id] || {}, own = tagsOf(g.id).find(has), sh = sharedOf(g.id).find(has);
+  const why = own ? `標籤 #${own}` : sh ? `大家加的標籤 #${sh}` : has(m.fn) ? "備忘錄" : has(m.n) ? "購買記事" : "";
+  return why ? `<span class="why" style="font-size:12.5px;color:var(--accent)">符合：${esc(why)}</span>` : "";
+}
 function metaLine(g){
   const tg = [...new Set([...tagsOf(g.id), ...sharedOf(g.id).slice(0, 3)])];
-  const parts = [badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
+  const parts = [whyMatch(g, $("#q")?.value) + badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
   if (tab === "new" && g.rel) { const [y, m, d] = g.rel.split("-"); parts.push(m && d ? `${y}/${+m}/${+d} 發售` : g.rel.slice(0, 4) + " 年發售"); }
   if (tab === "up") parts.push(upDate(g));
   if (g.isDlc) { const p = BY.get(g.parent); if (p?.name) parts.push(esc(p.name) + " 的追加內容"); }
@@ -2898,6 +2907,7 @@ function renderMine(){
         : '<span class="muted">還沒有填購買明細</span>';
       info += `<div class="memo">${m.n ? `📝 ${esc(m.n)}` : ""}<button class="chip" data-buyedit="${g.id}">✎ 購買明細</button></div>`;
     }
+    info = whyMatch(g, mineQ) + (whyMatch(g, mineQ) ? " " : "") + info;
     return row(g).replace(/<\/li>\s*$/, `<div class="mine-info">${info}</div></li>`);
   }).join("") : `<li class="empty" style="display:block;text-align:center;color:var(--muted);padding:30px">${ids.length && (mineActive || favF) ? "沒有符合條件的遊戲，試試清除搜尋或篩選條件。" : mineTab === "fav"
       ? "還沒有收藏。點遊戲卡片右上角的 ☆ 加入收藏。" : mineF ? "沒有符合這個分類的遊戲。" : "還沒有已購買的遊戲。點遊戲卡片星號下方的購物袋圖示，就能標記已購買並記錄明細。"}</li>`;
