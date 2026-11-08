@@ -933,7 +933,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v188・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v189・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1977,7 +1977,7 @@ async function openDetail(id, fromHistory){
         ${g.enName && g.enName.toLowerCase() !== (g.zhName || g.name || "").toLowerCase() ? `<div class="zhn-d">英文名：${esc(g.enName)}</div>` : ""}
         ${statsHTML(g, true)}
         <div class="tagbox" id="tagBox" data-id="${id}">${tagBoxInner(id)}</div>
-        ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${{zt: "台灣版遊戲支援繁體中文", zs: "台灣版遊戲支援簡體中文（不支援繁體）", zp: "台灣版只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]]}${g.jpNz ? '<span class="nz" style="margin-left:6px">日本版無中文</span>' : ""}</span></div>` : ""}
+        ${zhInfo(g) ? `<div class="zh-line">${zhBadge(g)}<span>${(() => { const P = g.only ? ({jp: "日本區", hk: "港區"}[onlyKind(g)] || "日本／港區") + "商店頁標示" : "台灣版遊戲"; return {zt: P + "支援繁體中文", zs: P + "支援簡體中文（不支援繁體）", zp: P + "只有部分內容是中文（例如選單或字幕），詳見下方介紹", zn: "遊戲不支援中文"}[zhInfo(g)[0]] + (g.only ? "（台灣沒有販售，實際以遊戲為準）" : ""); })()}${g.jpNz ? '<span class="nz" style="margin-left:6px">日本版無中文</span>' : ""}</span></div>` : ""}
         <div class="pricebox">${priceBox}</div>
         ${regionBox(g, id)}
         <details class="fold" id="chartFold"><summary>價格走勢</summary><div class="chart" id="chart"></div></details>
