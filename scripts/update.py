@@ -1813,6 +1813,34 @@ def check_feedback():
     save(path, seen)
 
 
+def check_tags():
+    """使用者新增共用標籤時用 ntfy 通知（只說幾個，不含內容）。資料表還沒建立（HTTP 404）就略過。"""
+    path = os.path.join(DATA, "tags_seen.json")
+    seen = load("tags_seen.json", {"id": 0})
+    token = os.environ.get("FEEDBACK_TOKEN")
+    if not token:
+        return
+    body = json.dumps({"p_token": token, "p_since": int(seen.get("id") or 0)}).encode()
+    key = "sb_publishable_LLpV_PtbZXbmjRX-Okkn0Q_utokEh-i"
+    req = urllib.request.Request("https://uvjioxaubsjxibvhsqgf.supabase.co/rest/v1/rpc/admin_tags_new", data=body,
+                                 headers={"apikey": key, "Content-Type": "application/json", **UA})
+    try:
+        r = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())
+    except urllib.error.HTTPError as e:
+        seen["status"] = f"查詢失敗 HTTP {e.code}（若是 404，代表還沒執行 supabase/tags.sql）"
+        save(path, seen)
+        return
+    n, mx = int(r.get("n") or 0), int(r.get("max_id") or 0)
+    log(f"共用標籤：新增 {n} 個")
+    seen = {"id": seen.get("id") or 0, "status": f"正常，本次新增 {n} 個"}
+    if n > 0:
+        send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "特價雷達：有新的共用標籤",
+                  [f"使用者新增了 {n} 個共用標籤，點這則通知開啟 Supabase 後台，在 game_tags 表查看或刪除不當內容。"], ["label"],
+                  click="https://supabase.com/dashboard/project/uvjioxaubsjxibvhsqgf/editor")
+        seen["id"] = mx
+    save(path, seen)
+
+
 def notify(items, drops, fx):
     """推播通知（ntfy，另可加 Telegram）：收藏降價、達到目標價、特價快結束（同一件事只通知一次）。"""
     token, chat = os.environ.get("TELEGRAM_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
@@ -1963,6 +1991,10 @@ def main():
         check_feedback()
     except Exception as e:
         log(f"  意見回饋檢查失敗：{e}")
+    try:
+        check_tags()
+    except Exception as e:
+        log(f"  共用標籤檢查失敗：{e}")
     try:
         check_repo_size()
     except Exception as e:

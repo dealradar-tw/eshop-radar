@@ -688,6 +688,7 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 .nso-li .nm{font-weight:600;font-size:16px;line-height:1.4;word-break:break-word}
 .nso-li .nm small{display:block;font-weight:400;font-size:13px;color:var(--muted);line-height:1.4}
 .nso-li .mt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
+.nso-tagb{font:inherit;font-size:12.5px;border:1px dashed var(--line);background:none;color:var(--muted);border-radius:6px;padding:0 6px;cursor:pointer}
 .nso-q{font-size:12.5px;color:var(--ink);text-decoration:underline;white-space:nowrap;margin-left:2px}
 .nso-tag{border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:12px;line-height:1.7;white-space:nowrap}
 .nso-tag.con{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
@@ -943,7 +944,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v197・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v198・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1191,7 +1192,7 @@ function priceText(g){
   return c ? `${c.cur === dsym() ? c.cur + nf(c.now) : dm(c.twd)}${c.onSale ? ` -${c.pct}%` : ""}` : "價格未定";
 }
 function metaLine(g){
-  const tg = tagsOf(g.id);
+  const tg = [...new Set([...tagsOf(g.id), ...sharedOf(g.id).slice(0, 3)])];
   const parts = [badges(g) + (tg.length ? tg.map(t => `<span class="utag">#${esc(t)}</span>`).join("") : "") + endText(g)];
   if (tab === "new" && g.rel) { const [y, m, d] = g.rel.split("-"); parts.push(m && d ? `${y}/${+m}/${+d} 發售` : g.rel.slice(0, 4) + " 年發售"); }
   if (tab === "up") parts.push(upDate(g));
@@ -1288,7 +1289,7 @@ function filtered(){
   if (q) {  // 有輸入搜尋字時：不分分頁（搜尋全部遊戲），但篩選面板的條件仍然套用
     return ITEMS.filter(g => !!g.name && !g.isDlc &&
       ((g.name || "").toLowerCase().includes(q) || (g.zhName || "").toLowerCase().includes(q) || (g.enName || "").toLowerCase().includes(q)
-        || tagsOf(g.id).some(t => t.toLowerCase().includes(q))) &&
+        || tagsOf(g.id).some(t => t.toLowerCase().includes(q)) || sharedOf(g.id).some(t => t.toLowerCase().includes(q))) &&
       (plat === "all" || +g.s2 === +plat) &&
       (regF === "all" || (regF === "tw" ? !g.only : onlyKind(g) === regF)) &&
       (inTier(g) || (g.price == null && g.minTwd == null)) && gameFilters(g) &&
@@ -1624,8 +1625,9 @@ function updNsoTile(){ const e = $("#nsoNew"); if (!e || !NSO) return; const L =
 function nsoMarkSeen(){ if (NSO) { store.set("nsoSeen", nsoLatest()); updNsoTile(); } }
 const nsoDate = d => { const [y, m, dd] = d.split("-"); return `${y}/${+m}/${+dd}`; };
 function nsoCard(g){
+  const key = nsoKey(g), ntg = [...new Set([...tagsOf(key), ...sharedOf(key)])];
   const tw = g.tw === "y" ? "" : g.tw === "n" ? '<span class="nso-tag no">台灣不可用</span>' : '<span class="nso-tag">台灣未確認</span>';
-  return `<li class="nso-li"><div class="nso-ic c-${g.c}" aria-hidden="true">${g.c === "GB" ? "GB<br>GBC" : g.c}</div><div class="nm">${esc(g.n)}${g.z || g.j ? `<small>${[g.z, g.j].filter(Boolean).map(esc).join("　／　")}</small>` : ""}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}<a class="nso-q" href="https://www.google.com/search?q=${encodeURIComponent((g.z || g.n) + " " + (g.c === "GB" ? "Game Boy" : g.c) + " 遊戲")}" target="_blank" rel="noopener noreferrer">🔍 查詢</a></div></li>`;
+  return `<li class="nso-li"><div class="nso-ic c-${g.c}" aria-hidden="true">${g.c === "GB" ? "GB<br>GBC" : g.c}</div><div class="nm">${esc(g.n)}${g.z || g.j ? `<small>${[g.z, g.j].filter(Boolean).map(esc).join("　／　")}</small>` : ""}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}${ntg.map(t => `<span class="utag">#${esc(t)}</span>`).join("")}<button class="nso-tagb" data-ntag="${esc(key)}">＋標籤</button><a class="nso-q" href="https://www.google.com/search?q=${encodeURIComponent((g.z || g.n) + " " + (g.c === "GB" ? "Game Boy" : g.c) + " 遊戲")}" target="_blank" rel="noopener noreferrer">🔍 查詢</a></div></li>`;
 }
 function nsoFeeHtml(){
   const fx = FX || {}, J = fx.JPY || 0, H = fx.HKD || 0;
@@ -1648,7 +1650,7 @@ async function renderNso(){
   if (fee) { $("#nsoFee").innerHTML = nsoFeeHtml(); return; }
   const ul = $("#nsoList");
   ul.innerHTML = '<li class="loading" style="display:block">載入中…</li>';
-  await loadNso();
+  await Promise.all([loadNso(), loadShared()]);
   if (!NSO) { ul.innerHTML = '<li class="hot-miss"><div class="info">暫時讀不到 NSO 資料，請稍後再試。</div></li>'; return; }
   nsoMarkSeen();
   const all = NSO.games, recent = nsoTab === "recent";
@@ -1660,7 +1662,7 @@ async function renderNso(){
   if (nsoCon !== "all" && !cnt[nsoCon]) nsoCon = "all";
   $("#nsoCons").innerHTML = chip("all", "全部", all.length) + grp(NSO_BASE) + '<span class="nsep">｜ 需擴充包 →</span>' + grp(NSO_EXP);
   const q = $("#nsoQ").value.trim().toLowerCase();
-  let list = all.filter(g => (nsoCon === "all" || g.c === nsoCon) && (!q || (g.n + " " + (g.z || "") + " " + (g.j || "")).toLowerCase().includes(q)) && (!recent || nsoAge(g) <= NSO_RECENT_DAYS));
+  let list = all.filter(g => (nsoCon === "all" || g.c === nsoCon) && (!q || (g.n + " " + (g.z || "") + " " + (g.j || "") + " " + [...tagsOf(nsoKey(g)), ...sharedOf(nsoKey(g))].join(" ")).toLowerCase().includes(q)) && (!recent || nsoAge(g) <= NSO_RECENT_DAYS));
   if (!recent) { const ord = [...NSO_BASE, ...NSO_EXP]; list = list.map((g, i) => [g, i]).sort((a, b) => ord.indexOf(a[0].c) - ord.indexOf(b[0].c) || a[1] - b[1]).map(x => x[0]); }
   if (!list.length) { ul.innerHTML = '<li class="hot-miss"><div class="info">沒有符合的遊戲。</div></li>'; $("#nsoCount").textContent = "共 0 款"; $("#nsoPager").hidden = true; return; }
   const pages = Math.max(1, Math.ceil(list.length / pageSize));
@@ -1687,6 +1689,24 @@ document.addEventListener("click", e => {
   else if (t.dataset.nc) nsoCon = t.dataset.nc;
   nsoPage = 1;
   renderNso();
+});
+function nsoAddTag(key, raw){
+  const t = String(raw || "").replace(/^#+/, "").trim().slice(0, 20); if (!t) return;
+  if (isBad(t)) { toast("標籤含有不適當的用詞，無法新增"); return; }
+  const m = (MINE[key] ||= {p: []}); m.tags ||= [];
+  if (!m.tags.includes(t)) m.tags.push(t);
+  saveMine(); submitTag(key, t); renderNso();
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-ntag]");
+  if (b) {
+    const key = b.dataset.ntag, box = document.createElement("span");
+    box.className = "tag-add"; box.innerHTML = '<input type="text" maxlength="20" placeholder="例如：中文名稱" enterkeyhint="done"><button class="chip">新增</button>';
+    const inp = box.querySelector("input"), go = () => nsoAddTag(key, inp.value);
+    box.querySelector("button").onclick = go; inp.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); go(); } };
+    const note = document.createElement("small"); note.className = "muted"; note.textContent = "標籤會公開，所有人都搜尋得到";
+    b.replaceWith(box); box.after(note); inp.focus();
+  }
 });
 const nsoScrollTop = () => window.scrollTo(0, Math.max(0, $("#nsoGames").getBoundingClientRect().top + window.scrollY - 8));
 document.addEventListener("input", e => { if (e.target.id === "nsoQ") { nsoPage = 1; renderNso(); } });
@@ -2288,6 +2308,7 @@ $("#sort").addEventListener("change", async () => {
     showTab(["deals", "hot", "new", "up", "all", "rankfav", "rankbuy", "nso"].includes(tab) ? tab : "deals");
     loadRanks().then(updRankTiles);
     loadNso().then(updNsoTile);
+    loadShared().then(() => { if (!$("#q").value.trim()) return; render(); });
     syncBoot();
   } catch (e) {
     console.error(e);
@@ -2941,7 +2962,27 @@ $("#mineFile").addEventListener("change", async e => {
 })();
 
 // ── 自訂標籤：在遊戲介紹頁新增，搜尋時名稱和標籤都會比對（只存在這台裝置，會一起匯出備份） ──
-function tagsOf(id){ return (typeof MINE !== "undefined" && MINE[id]?.tags) || []; }
+// ── 共用標籤：使用者新增的標籤也會送到伺服器，所有人都能用來搜尋（伺服器還沒設定好時只存在自己的裝置）──
+const BAD_RE = /幹你娘|幹你媽|幹林|幹您|操你|肏|靠北|靠杯|三小|機掰|雞掰|機歪|幹話連|白癡|白痴|智障|低能|腦殘|賤人|婊子|王八蛋|去死|死全家|死ㄍㄚ|屌|懶叫|懒叫|屁眼|他媽的|他媽|媽的|妈的|草泥馬|肏你|fuck|shit|bitch|asshole|cunt|nigger|nigga|porn|av女優|強暴|强奸|強姦|援交|約砲|炮友|做愛|性愛|成人影片|裸照|支那|鬼子|黑鬼|賤種|殘障|畜生/i;
+const isBad = t => BAD_RE.test(String(t).toLowerCase().replace(/[\s\-_.,，。、*＊·・~!！?？]/g, ""));
+const maskBad = t => String(t).replace(new RegExp(BAD_RE.source, "gi"), m => "＊".repeat(m.length));
+let SHARED = {}, sharedP = null;
+function loadShared(){
+  return sharedP || (sharedP = !rankOn() ? Promise.resolve({}) : rpc("get_tags", {}).then(j => (SHARED = j && typeof j === "object" ? Object.fromEntries(Object.entries(j).map(([k, a]) => [k, a.filter(t => !isBad(t))])) : {})).catch(() => ({})));
+}
+const sharedOf = key => SHARED[key] || [];
+const nsoKey = g => "nso:" + g.c + ":" + g.n;
+function submitTag(key, tag){
+  if (!rankOn() || rankOut()) return;
+  const t = String(tag || "").replace(/^#+/, "").trim().slice(0, 20); if (!t || isBad(t)) return;
+  rpc("submit_tag", {p_device: deviceId(), p_key: key.slice(0, 120), p_tag: t}).then(() => { const a = (SHARED[key] ||= []); if (!a.includes(t)) a.push(t); }).catch(() => {});
+}
+function toast(t){
+  let e = document.getElementById("toastMsg");
+  if (!e) { e = document.createElement("div"); e.id = "toastMsg"; e.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;z-index:9999;max-width:86vw;text-align:center"; document.body.appendChild(e); }
+  e.textContent = t; e.style.display = "block"; clearTimeout(e._t); e._t = setTimeout(() => e.style.display = "none", 2500);
+}
+function tagsOf(id){ return ((typeof MINE !== "undefined" && MINE[id]?.tags) || []).filter(t => !isBad(t)); }
 function allTags(){
   const c = new Map();
   for (const k in MINE) for (const t of MINE[k].tags || []) c.set(t, (c.get(t) || 0) + 1);
@@ -2951,15 +2992,18 @@ function tagBoxInner(id){
   const tg = tagsOf(id), sug = allTags().filter(t => !tg.includes(t)).slice(0, 12);
   return `<div class="tag-row"><span class="lbl">搜尋標籤</span>
       ${tg.map((t, i) => `<span class="utag big">#${esc(t)}<button data-deltag="${i}" aria-label="移除標籤 ${esc(t)}">×</button></span>`).join("")}
-      <span class="tag-add"><input id="tagIn" type="text" maxlength="20" placeholder="例如：派對、想買" enterkeyhint="done"><button class="chip" id="tagAdd">新增</button></span></div>
+      <span class="tag-add"><input id="tagIn" type="text" maxlength="20" placeholder="例如：中文名稱、派對" enterkeyhint="done"><button class="chip" id="tagAdd">新增</button></span></div>
+    <p class="cnote" style="margin:4px 0 0">新增的標籤會公開，所有使用者搜尋時都找得到，請不要填寫個人資訊或不當內容。</p>
+    ${sharedOf(id).filter(t => !tg.includes(t)).length ? `<div class="tag-sug"><span class="muted">大家加的：</span>${sharedOf(id).filter(t => !tg.includes(t)).map(t => `<span class="utag">#${esc(t)}</span>`).join("")}</div>` : ""}
     ${sug.length ? `<div class="tag-sug"><span class="muted">常用：</span>${sug.map(t => `<button class="chip" data-addtag="${esc(t)}">#${esc(t)}</button>`).join("")}</div>` : ""}`;
 }
 function addTag(id, raw){
   const t = String(raw || "").replace(/^#+/, "").trim().slice(0, 20);
   if (!t) return;
+  if (isBad(t)) { toast("標籤含有不適當的用詞，無法新增"); return; }
   const m = (MINE[id] ||= {p: []}); m.tags ||= [];
   if (!m.tags.includes(t)) m.tags.push(t);
-  saveMine(); refreshTags(id);
+  saveMine(); submitTag(id, t); refreshTags(id);
 }
 function refreshTags(id){
   const box = $("#tagBox"); if (box && box.dataset.id === id) { box.innerHTML = tagBoxInner(id); }
