@@ -933,7 +933,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v191・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v192・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -966,6 +966,13 @@ let tab = store.get("tab", "deals"), plat = store.get("plat", "all"), tier = sto
 if (!["all", "lt100", "100-300", "300-500", "500", "custom"].includes(tier)) { tier = "all"; store.set("tier", tier); }  // 舊版的「100 以上」已改成區間
 let kind = store.get("kind", "game"), zhF = store.get("zh", 0), plF = store.get("pl", 0), genresF = new Set(store.get("genres", []));
 let regF = store.get("regF", "all");
+// 顯示幣別（設定裡切換）：價格內部都以台幣計算，顯示時才換算；沒有匯率就退回台幣
+let DC = store.get("dispCur", "TWD");
+const DSYM = {TWD: "NT$", HKD: "HK$", JPY: "¥"}, DNAME = {TWD: "台幣", HKD: "港幣", JPY: "日圓"};
+const dcur = () => DC !== "TWD" && FX[DC] ? DC : "TWD";
+const dsym = () => DSYM[dcur()];
+const dv = twd => twd == null ? null : dcur() === "TWD" ? twd : Math.round(twd / FX[dcur()]);
+const dm = twd => dsym() + nf(dv(twd));
 let favOnly = false, lowOnly = false, soonOnly = false, page = 1, pageSize = store.get("pageSize", 50), demoOnly = store.get("demoOnly", false);
 let GAMES = [];  // GAMES：全部遊戲（算上方數字用）
 const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -1111,11 +1118,11 @@ function regionBox(g, id){
   if (!rows.length) return "";
   const best = Math.min(...rows.filter(r => r.twd != null).map(r => r.twd));
   return `<div class="region"><h3>各區價格比較</h3><table>
-    <thead><tr><th>地區</th><th>當地價格</th><th>約合台幣</th></tr></thead><tbody>
+    <thead><tr><th>地區</th><th>當地價格</th><th>約合${DNAME[dcur()]}</th></tr></thead><tbody>
     ${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>
       <td>${r.url ? `<a href="${r.url}" target="_blank" rel="noopener">${r.flag} ↗</a>` : r.flag}${r.nz ? ' <span class="nz">無中文</span>' : ""}</td>
       <td>${r.sale != null && r.sale < r.reg ? `<s>${r.cur}${nf(r.reg)}</s> ` : ""}${r.cur}${nf(r.local)}</td>
-      <td>${r.twd != null ? `NT$${nf(r.twd)}` : "–"}${r.twd === best ? " <b>最便宜</b>" : ""}</td></tr>`).join("")}
+      <td>${r.twd != null ? (r.cur === dsym() ? r.cur + nf(r.local) : dm(r.twd)) : "–"}${r.twd === best ? " <b>最便宜</b>" : ""}</td></tr>`).join("")}
     </tbody></table>
     <p class="cnote">匯率：1 港幣 ≈ ${FX.HKD} 台幣、1 日圓 ≈ ${FX.JPY} 台幣（台灣銀行即期賣出，${esc(FX.date || "")}）。日本區只對應遊戲本體，DLC 暫不比較。${g.jpNz ? "這款的日區是另外發行的日文版，<b>沒有中文</b>。" : ""}實際刷卡金額依發卡銀行匯率與手續費而定；跨區購買需要該區的任天堂帳號。</p></div>`;
 }
@@ -1161,16 +1168,17 @@ function priceHTML(g){
   const c = cheapest(g);
   if (!c) return '<b class="full" style="font-size:14px">價格未定</b>';
   const nz = c.cur === "¥" && g.jpNz ? ' <span class="nz">無中文</span>' : "";  // 日區是另一個版本、沒有中文
-  const loc = c.tw ? "" : `<span class="twd">${c.cur}${nf(c.onSale ? c.sale : c.reg)}${nz}</span>`;
-  const fl = `${c.flag}`;
-  if (c.onSale) return `<s>NT$${nf(c.regTwd)}</s><b>${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
-  return `<b class="full">${fl}<small>NT$</small>${nf(c.twd)}</b>${loc}`;
+  const sym = dsym(), nat = c.cur === sym;   // 最便宜地區的幣別剛好等於顯示幣別時，直接用當地價
+  const loc = nat ? "" : `<span class="twd">${c.cur}${nf(c.onSale ? c.sale : c.reg)}${nz}</span>`;
+  const fl = `${c.flag}`, R = nat ? c.reg : dv(c.regTwd), N = nat ? c.now : dv(c.twd);
+  if (c.onSale) return `<s>${sym}${nf(R)}</s><b>${fl}<small>${sym}</small>${nf(N)}</b>${loc}`;
+  return `<b class="full">${fl}<small>${sym}</small>${nf(N)}</b>${loc}`;
 }
 // 簡短價格文字（合輯拆開列出時用）：最便宜地區換算台幣，特價標折數
 function priceText(g){
   if (g.reg === 0) return "免費";
   const c = cheapest(g);
-  return c ? `NT$${nf(c.twd)}${c.onSale ? ` -${c.pct}%` : ""}` : "價格未定";
+  return c ? `${c.cur === dsym() ? c.cur + nf(c.now) : dm(c.twd)}${c.onSale ? ` -${c.pct}%` : ""}` : "價格未定";
 }
 function metaLine(g){
   const tg = tagsOf(g.id);
@@ -1819,7 +1827,7 @@ function chartSVG(list, g, days){
   const path = pts => { let d = `M${x(pts[0][0]).toFixed(1)},${y(pts[0][1]).toFixed(1)}`;
     for (let i = 1; i < pts.length; i++) d += `H${x(pts[i][0]).toFixed(1)}V${y(pts[i][1]).toFixed(1)}`; return d; };
   const ticks = [lo + (hi - lo) * 0.15, (lo + hi) / 2, hi - (hi - lo) * 0.15].map(v => Math.round(v));
-  const grid = ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 3}" text-anchor="end">${nf(v)}</text>`).join("");
+  const grid = ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 3}" text-anchor="end">${nf(dv(v))}</text>`).join("");
   const short = span < 150 * 864e5;
   const fmt = t => short ? `${t.getMonth() + 1}/${t.getDate()}` : `${String(t.getFullYear()).slice(2)}/${t.getMonth() + 1}`;
   const xt = [0, 0.5, 1].map(f => new Date(+from + span * f));
@@ -1834,7 +1842,7 @@ function chartSVG(list, g, days){
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="價格走勢圖">${grid}${xl}
     <path class="area-tw" d="${area}"/>${others}<path class="line-tw" d="${d}"/>
     <circle class="pt-low" cx="${x(lowPt[0])}" cy="${y(lowP)}" r="4"/>
-    <text class="lbl-low" x="${Math.min(x(lowPt[0]) + 6, W - R - 70)}" y="${Math.max(y(lowP) - 8, 12)}">最低 ${nf(lowP)}</text></svg>`
+    <text class="lbl-low" x="${Math.min(x(lowPt[0]) + 6, W - R - 70)}" y="${Math.max(y(lowP) - 8, 12)}">最低 ${nf(dv(lowP))}</text></svg>`
     + (all.length > 1 ? `<div class="legend">${all.map(s => `<span><i class="${s.cls}-k"></i>${s.label}</span>`).join("")}</div>` : "");
 }
 function chartStats(series, g){
@@ -1852,7 +1860,7 @@ function chartStats(series, g){
     gap = `約 ${Math.round(avg)} 天`;
   }
   return `<div class="cstats">
-    <div><b>NT$${nf(low)}</b><span>史低（${lowDate}）</span></div>
+    <div><b>${dm(low)}</b><span>史低（${lowDate}）</span></div>
     <div><b>${sales.length} 次</b><span>記錄期間打折次數</span></div>
     <div><b>${gap}</b><span>平均打折間隔</span></div></div>`;
 }
@@ -1942,12 +1950,12 @@ async function openDetail(id, fromHistory){
   const hot = (HOT.items || []).filter(h => h.id && h.id.slice(-6) === id).map(h => [h, h.plat === "s2" ? "Switch 2" : "Switch"])[0];
   const ch = cheapest(g, true);
   const priceBox = g.reg === 0 ? "<b>免費</b>"
-    : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>NT$${nf(ch.regTwd)}</s><br>` : ""}<b>${ch.flag}<small>NT$</small>${nf(ch.twd)}</b></div>
-       <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}${ch.cur === "¥" && g.jpNz ? "（日區無中文）" : ""}　·　${g.reg != null ? `台灣 NT$${nf(g.sale ?? g.reg)}` : "台灣沒有販售"}</div>`
-    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>NT$${nf(g.reg)}</s><br><b>${FLAG.tw}<small>NT$</small>${nf(g.sale)}</b></div>
+    : ch && !ch.tw ? `${ch.onSale ? `<div class="tag">-${ch.pct}%</div>` : ""}<div>${ch.onSale ? `<s>${dsym()}${nf(ch.cur === dsym() ? ch.reg : dv(ch.regTwd))}</s><br>` : ""}<b>${ch.flag}<small>${dsym()}</small>${nf(ch.cur === dsym() ? ch.now : dv(ch.twd))}</b></div>
+       <div class="when">${ch.flag} 最便宜地區　·　當地價 ${ch.cur}${nf(ch.onSale ? ch.sale : ch.reg)}${ch.cur === "¥" && g.jpNz ? "（日區無中文）" : ""}　·　${g.reg != null ? `台灣 ${dm(g.sale ?? g.reg)}` : "台灣沒有販售"}</div>`
+    : g.onSale ? `<div class="tag">-${g.pct}%</div><div><s>${dm(g.reg)}</s><br><b>${FLAG.tw}<small>${dsym()}</small>${nf(dv(g.sale))}</b></div>
        <div class="when">${g.days != null ? (g.days <= 3 ? `<span style="color:var(--urgent);font-weight:700">特價${g.days <= 0 ? "今天" : `剩 ${g.days} 天`}結束</span>` : `特價到 ${g.end.slice(5).replace("-", "/")}`) : ""}${g.isLow ? "　<b style='color:#178a4c;font-size:13px'>目前是史低價</b>" : ""}</div>`
     : g.reg == null ? "<b style='font-size:18px'>價格未定</b>"
-    : `<b>${FLAG.tw}<small>NT$</small>${nf(g.reg)}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
+    : `<b>${FLAG.tw}<small>${dsym()}</small>${nf(dv(g.reg))}</b><div class="when">${endText(g) || "目前沒有特價"}</div>`;
   const rows = [
     ["平台", g.s2 ? '<span class="plat">Switch 2 專用</span>' : "Nintendo Switch"],
     g.only && ["販售地區", {jp: "只有日本區商店有賣（台灣、香港都沒有）", hk: "只有港區商店有賣（台灣、日本都沒有）", jh: "台灣沒有，日本區和港區商店有賣"}[onlyKind(g)]],
@@ -2549,7 +2557,7 @@ function renderLows(h, g){
   if (!rows.length) { box.innerHTML = ""; return; }
   const best = Math.min(...rows.map(r => r.twd));
   box.innerHTML = `<h3>各區史低</h3><table><tbody>${rows.map(r => `<tr${r.twd === best && rows.length > 1 ? ' class="best"' : ""}>
-      <td>${r.n}</td><td>${r.c}${nf(r.p)}</td><td>${r.c !== "NT$" ? `約 NT$${nf(r.twd)}` : ""}</td><td class="muted">${r.d}</td></tr>`).join("")}</tbody></table>
+      <td>${r.n}</td><td>${r.c}${nf(r.p)}</td><td>${r.c !== dsym() ? `約 ${dm(r.twd)}` : ""}</td><td class="muted">${r.d}</td></tr>`).join("")}</tbody></table>
     <p class="cnote">從開始記錄（2026-10-14 起）以來的最低價與日期；換算用今天的匯率。</p>`;
 }
 
@@ -2620,6 +2628,9 @@ function settingsDlg(){
     <div class="set-card"><div class="set-t"><span class="ico">🌏</span>區域顯示</div>
       ${seg(regList, regF, "gr")}
       <p class="set-d">決定首頁、排行榜、我的收藏要顯示哪些地區的遊戲，全站套用。選「台灣區」只顯示台灣有賣的遊戲，價格也只看台灣；「日本限定」「港區限定」「日港限定」則是只有該地區才買得到的遊戲。</p></div>
+    <div class="set-card"><div class="set-t"><span class="ico">💱</span>顯示幣別</div>
+      ${seg([["TWD", "新台幣 NT$"], ["HKD", "港幣 HK$"], ["JPY", "日圓 ¥"]], dcur(), "dc")}
+      <p class="set-d">決定價格用哪種幣別顯示。選港幣或日圓時，台灣價格會依本站匯率換算（僅供參考），港區、日區的遊戲則直接顯示當地價。價格篩選與目標價仍以新台幣輸入。</p></div>
     <div class="set-card"><div class="set-t"><span class="ico">🌓</span>顯示模式</div>
       ${seg(THEMES.map(t => [t[0], t[1]]), theme, "th")}
       <p class="set-d">跟隨系統：依手機或電腦的深色設定自動切換；淺色、深色：固定使用該模式。</p></div>
@@ -2755,7 +2766,7 @@ function renderMine(){
     b.textContent = (b.dataset.mt === "fav" ? "收藏" : "已購買") + `（${b.dataset.mt === "fav" ? favIds.length : boughtIds.length}）`; });
   { let spent = 0, unk = false;
     boughtIds.forEach(id => { const x = mineSpent(id); spent += x.twd; unk ||= x.unknown; });
-    $("#mineSpent").innerHTML = boughtIds.length ? `總花費約 <b>NT$${nf(spent)}</b>${unk ? "＊" : ""}` : ""; }
+    $("#mineSpent").innerHTML = boughtIds.length ? `總花費約 <b>${dm(spent)}</b>${unk ? "＊" : ""}` : ""; }
   let ids = mineTab === "fav" ? favIds : boughtIds;
   const listIds = mineTab === "bought" && mineF ? ids.filter(id => mineF === "sw" ? !BY.get(id).s2 : mineF === "s2" ? BY.get(id).s2
     : (MINE[id].p || []).some(x => x.t === mineF)) : mineTab === "fav" && favF ? ids.filter(id => FF[favF](BY.get(id))) : ids;
@@ -2804,14 +2815,14 @@ function renderMine(){
     const m = MINE[g.id] || {};
     let info;
     if (mineTab === "fav") {
-      info = [g.low != null ? `史低 NT$${nf(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "",
+      info = [g.low != null ? `史低 ${dm(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "",
               g.cheapPct && !twMode(g) ? `${g.cheapRegion}現在便宜 ${g.cheapPct}%` : ""].filter(Boolean).join(" · ");
       info = (favNewIds.s.has(g.id) ? '<span class="new-badge">新特價</span>' : "") + (favNewIds.l.has(g.id) ? '<span class="new-badge">新史低</span>' : "") + info;
       info += `<div class="memo">${m.fn ? `📝 ${esc(m.fn)}` : '<span class="muted">還沒有備忘錄</span>'}<button class="chip" data-memo="${g.id}">✎ 備忘錄</button></div>`;
     } else {
       const x = m.p?.[0];
       info = x ? [`<b>${TYPES[x.t] || ""}</b>`, `${REGIONS[x.r] || ""}區`,
-          x.a != null ? `${CURS[x.c] || ""}${nf(x.a)}${x.c !== "TWD" && toTwd(x.a, x.c) != null ? `（約 NT$${nf(toTwd(x.a, x.c))}）` : ""}` : '<span class="muted">未填金額</span>',
+          x.a != null ? `${CURS[x.c] || ""}${nf(x.a)}${CURS[x.c] !== dsym() && toTwd(x.a, x.c) != null ? `（約 ${dm(toTwd(x.a, x.c))}）` : ""}` : '<span class="muted">未填金額</span>',
           x.d ? `${esc(x.d)} 購買` : ""].filter(Boolean).join(" · ")
         : '<span class="muted">還沒有填購買明細</span>';
       info += `<div class="memo">${m.n ? `📝 ${esc(m.n)}` : ""}<button class="chip" data-buyedit="${g.id}">✎ 購買明細</button></div>`;
@@ -2853,6 +2864,8 @@ document.addEventListener("click", e => {
   if (t.closest("#fbBtn")) { subOpen = true; feedbackDlg(); return; }
   const gr = t.closest("[data-gr]");
   if (gr) { regF = gr.dataset.gr; store.set("regF", regF); rerender(); $$("[data-gr]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gr === regF)); return; }
+  const dcb = t.closest("[data-dc]");
+  if (dcb) { DC = dcb.dataset.dc; store.set("dispCur", DC); rerender(); $("#chart")?._redraw?.(); $$("[data-dc]").forEach(b => b.setAttribute("aria-pressed", b.dataset.dc === dcur())); return; }
   const th = t.closest("[data-th]");
   if (th) { theme = th.dataset.th; store.set("theme", theme); applyTheme(); $("#chart")?._redraw?.(); $$("[data-th]").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === theme)); return; }
   if (t.id === "rankOptBtn") { toggleRankOpt(); return; }
