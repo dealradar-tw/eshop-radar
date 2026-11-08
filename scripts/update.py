@@ -1762,9 +1762,8 @@ def check_feedback():
     seen = {"id": seen.get("id") or 0, "status": f"正常，本次新增 {n} 則"}
     if n > 0:
         send_ntfy(os.environ.get("NTFY_TOPIC") or NTFY_TOPIC, "特價雷達：有新的意見回饋",
-                  [f"收到 {n} 則新回饋，點這則通知會開啟 Supabase 的 SQL 編輯器（查詢已填好），按右下角 Run 就能看到內容。"], ["speech_balloon"],
-                  click="https://supabase.com/dashboard/project/uvjioxaubsjxibvhsqgf/sql/new?content=" + urllib.parse.quote(
-                      "select id, created_at at time zone 'Asia/Taipei' as 時間, kind, body, contact, page from public.feedback order by id desc limit 20;"))
+                  [f"收到 {n} 則新回饋，點這則通知會直接開啟 Supabase 的 feedback 表查看。"], ["speech_balloon"],
+                  click="https://supabase.com/dashboard/project/uvjioxaubsjxibvhsqgf/editor/17778?schema=public")
         seen["id"] = mx
     save(path, seen)
 
