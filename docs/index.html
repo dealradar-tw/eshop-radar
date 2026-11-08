@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v203・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v204・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1993,6 +1993,38 @@ function sameNames(g){
   for (const grp of SAME_GROUPS) if (grp.some(i => i.slice(-6) === g.id)) for (const i of grp) { const x = BY.get(i.slice(-6)); if (x && x.id !== g.id) out.set(x.id, x); }
   return [...out.values()].sort((a, b) => (a.only ? 1 : 0) - (b.only ? 1 : 0) || (+a.s2) - (+b.s2) || a.id.localeCompare(b.id));
 }
+// ── 系列作品：名稱只差在結尾的續作編號（「… Moon」與「… Moon 2」），列在「相關作品」，和同款遊戲的不同版本分開 ──
+const ROMAN = {II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10};
+function seriesOf(t){   // → {key, n}，沒有續作編號時 n = 1
+  const s = String(t || "").replace(/nintendo\s*switch\s*2?\s*edition|for\s*nintendo\s*switch\s*2?/gi, "").replace(/[™®©]/g, "").normalize("NFKC").trim();
+  const m = s.match(/^(.*?[^\d\s])\s*(?:[:：\-－–]\s*)?(\d{1,2}|II|III|IV|V|VI|VII|VIII|IX|X)\s*$/);
+  let n = 1, base = s;
+  if (m) { const v = ROMAN[m[2]] || +m[2]; if (v >= 2 && v <= 19) { n = v; base = m[1]; } }
+  return {key: nameKey(base), n};
+}
+let SERIES_IDX = null;
+function relatedGames(g, sibIds){
+  if (!SERIES_IDX) {
+    SERIES_IDX = new Map();
+    for (const x of ITEMS) {
+      if (x.isDlc || !x.name) continue;
+      const seen = new Set();
+      for (const t of [x.name, x.zhName, x.enName]) {
+        if (!t) continue; const s = seriesOf(t);
+        if (s.key.length < 4 || seen.has(s.key)) continue; seen.add(s.key);
+        if (!SERIES_IDX.has(s.key)) SERIES_IDX.set(s.key, new Map());
+        SERIES_IDX.get(s.key).set(x.id, {x, n: s.n});
+      }
+    }
+  }
+  const out = new Map(), mine = new Set([g.id, ...sibIds]);
+  for (const t of [g.name, g.zhName, g.enName]) {
+    if (!t) continue; const s = seriesOf(t), grp = SERIES_IDX.get(s.key);
+    if (!grp || grp.size < 2) continue;
+    for (const {x, n} of grp.values()) if (!mine.has(x.id) && nameKey(x.name) !== nameKey(g.name) && !out.has(x.id)) out.set(x.id, {x, n});
+  }
+  return [...out.values()].sort((a, b) => a.n - b.n || (+a.x.s2) - (+b.x.s2)).slice(0, 10).map(o => o.x);
+}
 const verTag = x => `${x.s2 ? "Switch 2" : "Switch"}${x.only === "jp" ? "・日本限定" : x.only === "hk" ? "・港區限定" : ""}`;
 async function openDetail(id, fromHistory){
   const g = BY.get(id); if (!g) return;
@@ -2033,6 +2065,7 @@ async function openDetail(id, fromHistory){
   SHOTS = det.shots || [];
   const vids = det.vids || [];
   const sib = g.isDlc ? [] : sameNames(g);
+  const rel = g.isDlc ? [] : relatedGames(g, sib.map(x => x.id));
   const dlcs = (DLC_BY_PARENT.get(id) || []).slice().sort((a, b) => (b.onSale - a.onSale) || (a.price ?? 0) - (b.price ?? 0));
   $("#sheet").innerHTML = `<div class="sheet-bg" data-close>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
@@ -2060,6 +2093,11 @@ async function openDetail(id, fromHistory){
         </div>` : ""}
         ${!g.isDlc && rankOn() && COMMENTS_ON ? cmSkeleton(id) : ""}
         ${sib.length ? `<div class="dlcs sibs"><h3>同名遊戲・其他版本與地區（${sib.length}）</h3><ul>${sib.map(d => `<li data-card="${d.id}">
+            ${thumb(d)}</div>
+            <div class="info"><button class="name" data-open="${d.id}">${esc(d.zhName || d.name)}</button>
+              <div class="meta"><span class="nw">${verTag(d)}</span>${d.isLow ? ' <span class="low-badge">史低</span>' : ""} ${endText(d)}</div></div>
+            <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
+        ${rel.length ? `<div class="dlcs sibs"><h3>系列作品・相關遊戲（${rel.length}）</h3><ul>${rel.map(d => `<li data-card="${d.id}">
             ${thumb(d)}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.zhName || d.name)}</button>
               <div class="meta"><span class="nw">${verTag(d)}</span>${d.isLow ? ' <span class="low-badge">史低</span>' : ""} ${endText(d)}</div></div>
