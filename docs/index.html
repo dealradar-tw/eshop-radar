@@ -673,7 +673,9 @@ input[type=search]:focus,select:focus{outline:0;border-color:var(--accent);box-s
 .nso-bar{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .nso-bar input{flex:1 1 160px;min-width:0;font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px}
 #nsoList{margin-top:12px}
-#nsoList li.nso-li{grid-template-columns:minmax(0,1fr);gap:4px;padding:10px 14px}
+#nsoList li.nso-li{grid-template-columns:48px minmax(0,1fr);gap:2px 12px;padding:10px 14px;align-items:center}
+.nso-ic{grid-row:1/3;width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:-.02em;text-align:center;line-height:1.1;background:var(--c,#555);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.nso-ic.c-FC{--c:#c8102e}.nso-ic.c-SFC{--c:#7b6fb0}.nso-ic.c-GB{--c:#6b8e23}.nso-ic.c-GBA{--c:#4b3b9c}.nso-ic.c-N64{--c:#1f8a4c}.nso-ic.c-MD{--c:#2b2b2b}.nso-ic.c-GC{--c:#6a5acd}.nso-ic.c-VB{--c:#e60012}
 #nsoList li.nso-h{display:block;background:none;border:0;box-shadow:none;padding:10px 2px 0;font-weight:700;font-size:15px;color:var(--muted)}
 .nso-li .nm{font-weight:600;font-size:16px;line-height:1.4;word-break:break-word}
 .nso-li .mt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
@@ -929,7 +931,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v183・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v184・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1597,7 +1599,7 @@ function updNsoTile(){ const e = $("#nsoNew"); if (e && NSO) e.hidden = !NSO.gam
 const nsoDate = d => { const [y, m, dd] = d.split("-"); return `${y}/${+m}/${+dd}`; };
 function nsoCard(g){
   const tw = g.tw === "y" ? '<span class="nso-tag ok">台灣可用</span>' : g.tw === "n" ? '<span class="nso-tag no">台灣不可用</span>' : '<span class="nso-tag">台灣未確認</span>';
-  return `<li class="nso-li"><div class="nm">${esc(g.n)}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}</div></li>`;
+  return `<li class="nso-li"><div class="nso-ic c-${g.c}" aria-hidden="true">${g.c === "GB" ? "GB<br>GBC" : g.c}</div><div class="nm">${esc(g.n)}</div><div class="mt"><span class="nso-tag con">${NSO_CON[g.c]}</span><span class="nso-tag ${g.p === "e" ? "ex" : ""}">${g.p === "e" ? "擴充包" : "基本方案"}</span>${tw}<span>${nsoDate(g.d)} 加入</span>${nsoAge(g) <= NSO_NEW_DAYS ? '<span class="nso-tag nw">新</span>' : ""}</div></li>`;
 }
 function nsoFeeHtml(){
   const fx = FX || {}, J = fx.JPY || 0, H = fx.HKD || 0;
