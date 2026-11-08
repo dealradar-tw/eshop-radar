@@ -945,7 +945,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v204・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v205・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2002,6 +2002,16 @@ function seriesOf(t){   // → {key, n}，沒有續作編號時 n = 1
   if (m) { const v = ROMAN[m[2]] || +m[2]; if (v >= 2 && v <= 19) { n = v; base = m[1]; } }
   return {key: nameKey(base), n};
 }
+// 同系列的另一種判斷：一款遊戲的完整名稱，是另一款名稱的開頭（「… 熱血少女」與「… 熱血少女 零」「… 熱血少女2」）。名稱中的英文部分也會比對
+let TITLE_KEYS = null;
+function titleKeys(x){
+  const out = new Set();
+  for (const t of [x.name, x.zhName, x.enName]) {
+    if (!t) continue; out.add(nameKey(t));
+    for (const r of String(t).match(/[A-Za-z][A-Za-z0-9'’:!&.\- ]{9,}/g) || []) if (!/nintendo|switch|edition|classics|collection|version|\bver\b/i.test(r)) out.add(nameKey(r));
+  }
+  return [...out].filter(k => k.length >= 6);
+}
 let SERIES_IDX = null;
 function relatedGames(g, sibIds){
   if (!SERIES_IDX) {
@@ -2022,6 +2032,15 @@ function relatedGames(g, sibIds){
     if (!t) continue; const s = seriesOf(t), grp = SERIES_IDX.get(s.key);
     if (!grp || grp.size < 2) continue;
     for (const {x, n} of grp.values()) if (!mine.has(x.id) && nameKey(x.name) !== nameKey(g.name) && !out.has(x.id)) out.set(x.id, {x, n});
+  }
+  // 名稱前綴相同（較短的名稱至少 12 個字元，才不會把不相干的遊戲連在一起）
+  TITLE_KEYS ||= new Map(ITEMS.filter(x => !x.isDlc && x.name).map(x => [x.id, titleKeys(x)]));
+  const gk = TITLE_KEYS.get(g.id) || titleKeys(g), gn = new Set([nameKey(g.name), nameKey(g.zhName), nameKey(g.enName)]);
+  for (const [id, ks] of TITLE_KEYS) {
+    if (mine.has(id) || out.has(id)) continue;
+    if (gk.some(a => ks.some(b => a !== b && Math.min(a.length, b.length) >= 12 && (a.startsWith(b) || b.startsWith(a))))) {
+      const x = BY.get(id); if (x && !gn.has(nameKey(x.name))) out.set(id, {x, n: seriesOf(x.zhName || x.name).n});
+    }
   }
   return [...out.values()].sort((a, b) => a.n - b.n || (+a.x.s2) - (+b.x.s2)).slice(0, 10).map(o => o.x);
 }
