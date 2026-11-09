@@ -593,6 +593,7 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 .hc-th.s2o{outline:2px solid var(--s2,#8f5bd6);outline-offset:-2px}
 .hc-game{grid-column:2/4;text-align:left;font:inherit;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;line-height:1.35}
 .hc-game small{font-size:12px}
+.hcdeal{align-self:flex-start;font-family:var(--display);font-size:12px;background:var(--tag);color:var(--tag-ink);border-radius:5px;padding:1px 7px;margin-top:2px}
 
 /* ── 介面美化（首頁、我的收藏）：圓角、陰影、對齊 ── */
 :root{--sh:0 1px 2px rgb(15 23 42 / .06),0 2px 8px rgb(15 23 42 / .05);--sh-up:0 2px 4px rgb(15 23 42 / .08),0 8px 20px rgb(15 23 42 / .10)}
@@ -946,7 +947,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v210・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v211・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1218,7 +1219,7 @@ function row(g, rank, extra = ""){
   const hx = extra.includes("本週約");   // Fami通：銷量資訊獨立一排，放在名稱與金額之間
   const cls = [g.s2 ? "s2" : "", hx ? "has-x" : ""].filter(Boolean).join(" ");
   return `<li data-card="${g.id}"${cls ? ` class="${cls}"` : ""}>
-    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : dealOf(g) ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
+    ${thumb(g)}${rank ? `<div class="rank">#${rank}</div>` : ""}${dealOf(g) ? `<div class="tag">-${tagPct(g)}%</div>` : ""}</div>
     <div class="info">
       ${g.name ? `<button class="name" data-open="${g.id}">${esc(g.zhName || g.name)}${subName(g) ? `<small class="zhn">${esc(subName(g))}</small>` : ""}</button>` : `<button class="name unnamed" data-open="${g.id}">名稱待補</button>`}
       ${hx ? `<div class="xtra">${extra}</div>` : ""}<div class="mx"><div class="meta">${metaLine(g) || "&nbsp;"}</div>${hx ? "" : extra}</div>
@@ -1748,7 +1749,7 @@ function collRow(h, parts, platTag, infoHtml){
     <div class="acts hc-acts"><button class="star" data-cfav="${ids}" aria-pressed="${allFav}" aria-label="收藏整套">${STAR_SVG}</button><button class="buy" data-cbuy="${ids}" aria-pressed="${allBuy}" aria-label="整套已購買">${BAG_SVG}</button></div>
     <div class="hc-sales">${infoHtml}</div>
     ${parts.map((p, k) => `<div class="hc-th${p.s2 ? " s2o" : ""}" style="grid-row:${3 + k}">${thumb(p)}</div></div>
-    <button class="hc-game" data-open="${p.id}" style="grid-row:${3 + k}"><span>${esc(p.zhName || p.name)}</span><small class="muted">${priceText(p)}</small></button>`).join("")}
+    <button class="hc-game" data-open="${p.id}" style="grid-row:${3 + k}"><span>${esc(p.zhName || p.name)}</span><small class="muted">${priceText(p)}</small>${dealOf(p) ? `<b class="hcdeal">特價 -${tagPct(p)}%</b>` : ""}</button>`).join("")}
   </li>`;
 }
 function refreshColl(){
@@ -2139,17 +2140,17 @@ async function openDetail(id, fromHistory){
         </div>` : ""}
         ${!g.isDlc && rankOn() && COMMENTS_ON ? cmSkeleton(id) : ""}
         ${sib.length ? `<div class="dlcs sibs"><h3>同名遊戲・其他版本與地區（${sib.length}）</h3><ul>${sib.map(d => `<li data-card="${d.id}">
-            ${thumb(d)}</div>
+            ${thumb(d)}${dealOf(d) ? `<div class="tag">-${tagPct(d)}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.zhName || d.name)}</button>
               <div class="meta"><span class="nw">${verTag(d)}</span>${d.isLow ? ' <span class="low-badge">史低</span>' : ""} ${endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         ${rel.length ? `<div class="dlcs sibs"><h3>系列作品・相關遊戲（${rel.length}）</h3><ul>${rel.map(d => `<li data-card="${d.id}">
-            ${thumb(d)}</div>
+            ${thumb(d)}${dealOf(d) ? `<div class="tag">-${tagPct(d)}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.zhName || d.name)}</button>
               <div class="meta"><span class="nw">${verTag(d)}</span>${d.isLow ? ' <span class="low-badge">史低</span>' : ""} ${endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
         ${dlcs.length ? `<div class="dlcs"><h3>追加內容（${dlcs.length}）</h3><ul>${dlcs.map(d => `<li data-card="${d.id}">
-            ${thumb(d)}${d.onSale ? `<div class="tag">-${d.pct}%</div>` : ""}</div>
+            ${thumb(d)}${dealOf(d) ? `<div class="tag">-${tagPct(d)}%</div>` : ""}</div>
             <div class="info"><button class="name" data-open="${d.id}">${esc(d.name)}</button>
               <div class="meta">${(d.isLow ? '<span class="low-badge">史低</span>' : "") + endText(d)}</div></div>
             <div class="price">${priceHTML(d)}</div></li>`).join("")}</ul></div>` : ""}
