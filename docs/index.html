@@ -593,6 +593,8 @@ li.hot-coll{display:grid!important;grid-template-columns:84px minmax(0,1fr) auto
 .hc-th.s2o{outline:2px solid var(--s2,#8f5bd6);outline-offset:-2px}
 .hc-game{grid-column:2/4;text-align:left;font:inherit;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;line-height:1.35}
 .hc-game small{font-size:12px}
+#minePage .fpanel{position:static!important;max-height:none!important;overflow:visible!important;margin:8px 0}
+#minePage .fpanel [aria-label="類別"]{display:none}
 .hcdeal{align-self:flex-start;font-family:var(--display);font-size:12px;background:var(--tag);color:var(--tag-ink);border-radius:5px;padding:1px 7px;margin-top:2px}
 
 /* ── 介面美化（首頁、我的收藏）：圓角、陰影、對齊 ── */
@@ -936,6 +938,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
     <p class="fav-new" id="favNew" hidden></p>
     <input id="mineQ" type="search" placeholder="在我的收藏／已購買中搜尋（遊戲名稱、標籤、備忘錄）" enterkeyhint="search" autocomplete="off" style="width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit;font-size:15px">
     <div class="fav-ctl" id="favCtl" hidden></div>
+    <div id="mineFSlot"></div>
     <ul id="mineList"></ul>
     <nav class="pager" id="favPager" aria-label="收藏換頁" hidden></nav>
     <p class="cnote" style="margin:16px 0 40px">收藏和購買紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先到首頁右上角「設定」匯出備份，之後用「匯入備份」就能還原，也可以開啟跨裝置同步。</p>
@@ -947,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v212・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v213・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2270,8 +2273,7 @@ function toggleFav(id){
 
 document.addEventListener("change", e => {
   const t = e.target;
-  if (t.id === "minePlatSel") { minePlat = t.value; favPg = 1; renderMine(); }
-  else if (t.id === "favSortSel") { favSort = t.value; favPg = 1; renderMine(); }
+  if (t.id === "favSortSel") { favSort = t.value; favPg = 1; renderMine(); }
   else if (t.id === "favSizeSel") { favSize = +t.value === 100 ? 100 : 50; store.set("favSize", favSize); favPg = 1; renderMine(); }
   else if (t.id === "favPgSel") { favPg = +t.value; renderMine(); $("#minePage").scrollTop = 0; }
 });
@@ -2745,7 +2747,20 @@ for (const k in MINE) {
     if (extra.length) m.n = ((m.n ? m.n + "\n" : "") + "（舊紀錄）" + extra.join("；")).trim();
   }
 }
-let mineQ = "", minePlat = "all";
+let mineQ = "", mineFOpen = false, fpanelHome = null;
+// 主分頁的篩選面板（主機、價格、中文、人數、類型）直接搬到收藏頁使用，兩邊共用同一組條件
+const mineFN = () => (plat !== "all" ? 1 : 0) + (tier !== "all" ? 1 : 0) + (zhF ? 1 : 0) + (plF ? 1 : 0) + genresF.size;
+function placeFilterPanel(open){
+  const p = $(".fpanel"); if (!p) return;
+  if (open) {
+    if (!fpanelHome) fpanelHome = {parent: p.parentNode, next: p.nextSibling};
+    if (p.parentNode !== $("#mineFSlot")) $("#mineFSlot").appendChild(p);
+    p.classList.add("open"); document.body.classList.add("mineFilt");
+  } else if (fpanelHome && p.parentNode === $("#mineFSlot")) {
+    p.classList.remove("open"); fpanelHome.parent.insertBefore(p, fpanelHome.next); document.body.classList.remove("mineFilt");
+    const ft = $("#fToggle"); ft.setAttribute("aria-expanded", false); ft.lastChild.textContent = " ▾";
+  }
+}
 let favSort = "recent", favPg = 1, favSize = store.get("favSize", 50) === 100 ? 100 : 50;
 let favF = "";  // 收藏頁統計方塊篩選：sale 特價中／low 史低／soon 3 天內結束
 let mineTab = "fav", mineF = "";  // mineF：已購買頁的分類篩選（dl/pk/key/sw/s2）
@@ -2930,7 +2945,7 @@ function openMine(){
   try { sessionStorage.setItem("mineOpen", "1"); } catch (_) {}
   renderMine(); $("#minePage").scrollTop = 0;
 }
-function closeMineNow(){ try { sessionStorage.removeItem("mineOpen"); } catch (_) {} $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
+function closeMineNow(){ placeFilterPanel(false); mineFOpen = false; try { sessionStorage.removeItem("mineOpen"); } catch (_) {} $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
 const FF = {sale: g => dealOf(g), low: g => lowOf(g), soon: g => soonOf(g), nsale: g => favNewIds.s.has(g.id), nlow: g => favNewIds.l.has(g.id)};
 // 已購買的版本：每筆購買明細算一份；沒填明細或版本不明時，一律當作數位版
 const buyTypes = id => { const p = MINE[id]?.p || []; return p.length ? p.map(x => x.t === "pk" || x.t === "key" ? x.t : "dl") : ["dl"]; };
@@ -2966,9 +2981,10 @@ function renderMine(){
       + `<p class="bnote">${mineF ? "只顯示符合的遊戲，再點一次同一個分類可取消篩選。" : "點一下可篩選。版本以份數計，主機以遊戲數計。"}</p>`;
   }
   const mq = mineQ.trim().toLowerCase();
-  const mineActive = !!(mq || minePlat !== "all");
+  const mineActive = !!(mq || mineFN());
   let listItems = listIds.map(id => BY.get(id)).filter(g => regOk(g, regF)).filter(g => {
-    if (minePlat !== "all" && +g.s2 !== +minePlat) return false;
+    if (plat !== "all" && +g.s2 !== +plat) return false;
+    if (!inTier(g) || !gameFilters(g)) return false;
     if (!mq) return true;
     const m = MINE[g.id] || {};
     return [g.name, g.zhName, g.enName, ...tagsOf(g.id), ...sharedOf(g.id), m.fn, m.n].some(s => s && String(s).toLowerCase().includes(mq));
@@ -2988,7 +3004,7 @@ function renderMine(){
     favPg = Math.min(Math.max(1, favPg), pages);
     fc.hidden = !ids.length;
     fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>
-      <select id="minePlatSel" aria-label="平台"><option value="all">全部平台</option><option value="0"${minePlat === "0" ? " selected" : ""}>Switch</option><option value="1"${minePlat === "1" ? " selected" : ""}>Switch 2</option></select>
+      <button class="chip ftoggle" id="mineFToggle" aria-expanded="${mineFOpen}" style="display:inline-block">篩選<span class="fb${mineFN() ? " on" : ""}">${mineFN()}</span><span class="arr">${mineFOpen ? " ▴" : " ▾"}</span></button>
       ${mineActive ? `<span class="muted" style="font-size:13px">符合 ${mineMatch} 款</span><button class="chip" id="mineClr">清除條件</button>` : ""}`;
     const from = (favPg - 1) * favSize;
     const total = listItems.length;
@@ -3028,7 +3044,13 @@ document.addEventListener("click", e => {
   if (t.id === "openMine") { openMine(); return; }
   if (t.id === "closeMine") { mineForceClose = true; history.state?.ov === "mine" ? history.back() : closeMineNow(); return; }
   const fpb = t.closest("[data-fp]"); if (fpb && !fpb.disabled) { favPg = +fpb.dataset.fp; renderMine(); $("#minePage").scrollTop = 0; return; }
-  if (t.id === "mineClr") { mineQ = ""; minePlat = "all"; $("#mineQ").value = ""; favPg = 1; renderMine(); return; }
+  if (t.id === "mineClr") {
+    mineQ = ""; $("#mineQ").value = ""; favPg = 1;
+    plat = "all"; tier = "all"; pMin = pMax = null; store.set("pMin", null); store.set("pMax", null); zhF = 0; plF = 0; genresF.clear();
+    Object.entries({plat, tier, zh: zhF, pl: plF, genres: []}).forEach(([k, v]) => store.set(k, v));
+    rerender(); return;
+  }
+  if (t.closest("#mineFToggle")) { mineFOpen = !mineFOpen; placeFilterPanel(mineFOpen); renderMine(); return; }
   const ff = t.closest("[data-ff]"); if (ff) { favF = favF === ff.dataset.ff ? "" : ff.dataset.ff; favPg = 1; renderMine(); return; }
   const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; try { sessionStorage.setItem("mineTab", mineTab); } catch (_) {} mineF = ""; favPg = 1; renderMine(); $("#minePage").scrollTop = 0; return; }
   const mf = t.closest("[data-mf]"); if (mf) { mineF = mineF === mf.dataset.mf ? "" : mf.dataset.mf; favPg = 1; renderMine(); return; }
