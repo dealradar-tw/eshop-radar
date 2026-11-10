@@ -947,7 +947,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v211・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v212・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2416,6 +2416,9 @@ $("#sort").addEventListener("change", async () => {
     buildGenreChips();
     setChips();
     showTab(["deals", "hot", "new", "up", "all", "rankfav", "rankbuy", "nso"].includes(tab) ? tab : "deals");
+    try {   // 重新整理後，如果原本開著「我的收藏／已購買」，就回到同一頁與同一個分頁
+      if (sessionStorage.getItem("mineOpen") === "1") { mineTab = sessionStorage.getItem("mineTab") === "bought" ? "bought" : "fav"; openMine(); }
+    } catch (_) {}
     loadRanks().then(updRankTiles);
     loadNso().then(updNsoTile);
     loadShared().then(() => { if (!$("#q").value.trim()) return; render(); });
@@ -2924,9 +2927,10 @@ function openMine(){
   calcFavNew();
   if ($("#minePage").hidden) history.pushState({ov: "mine"}, "");
   $("#minePage").hidden = false; document.body.style.overflow = "hidden";
+  try { sessionStorage.setItem("mineOpen", "1"); } catch (_) {}
   renderMine(); $("#minePage").scrollTop = 0;
 }
-function closeMineNow(){ $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
+function closeMineNow(){ try { sessionStorage.removeItem("mineOpen"); } catch (_) {} $("#minePage").hidden = true; if ($("#sheet").hidden) document.body.style.overflow = ""; }
 const FF = {sale: g => dealOf(g), low: g => lowOf(g), soon: g => soonOf(g), nsale: g => favNewIds.s.has(g.id), nlow: g => favNewIds.l.has(g.id)};
 // 已購買的版本：每筆購買明細算一份；沒填明細或版本不明時，一律當作數位版
 const buyTypes = id => { const p = MINE[id]?.p || []; return p.length ? p.map(x => x.t === "pk" || x.t === "key" ? x.t : "dl") : ["dl"]; };
@@ -3026,7 +3030,7 @@ document.addEventListener("click", e => {
   const fpb = t.closest("[data-fp]"); if (fpb && !fpb.disabled) { favPg = +fpb.dataset.fp; renderMine(); $("#minePage").scrollTop = 0; return; }
   if (t.id === "mineClr") { mineQ = ""; minePlat = "all"; $("#mineQ").value = ""; favPg = 1; renderMine(); return; }
   const ff = t.closest("[data-ff]"); if (ff) { favF = favF === ff.dataset.ff ? "" : ff.dataset.ff; favPg = 1; renderMine(); return; }
-  const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; mineF = ""; favPg = 1; renderMine(); $("#minePage").scrollTop = 0; return; }
+  const mt = t.closest("[data-mt]"); if (mt) { mineTab = mt.dataset.mt; try { sessionStorage.setItem("mineTab", mineTab); } catch (_) {} mineF = ""; favPg = 1; renderMine(); $("#minePage").scrollTop = 0; return; }
   const mf = t.closest("[data-mf]"); if (mf) { mineF = mineF === mf.dataset.mf ? "" : mf.dataset.mf; favPg = 1; renderMine(); return; }
   if (t.closest("[data-dlgclose]") || t.id === "dlg") { closeDlg(); return; }
   const by = t.closest("[data-buy]");
