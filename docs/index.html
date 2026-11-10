@@ -950,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v213・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v214・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2993,7 +2993,10 @@ function renderMine(){
   const fn = $("#favNew"); fn.hidden = !(mineTab === "fav" && favNewTxt && favIds.length); fn.innerHTML = favNewHtml();
   const fc = $("#favCtl"), fp = $("#favPager");
   {
-    if (favSort !== "recent") {
+    if (["pct", "save", "end", "new", "rel", "relOld"].includes(favSort)) {   // 和首頁相同的排序；同值時維持原本的先後
+      const sf = sorters[favSort];
+      listItems = listItems.map((g, i) => ({g, i})).sort((a, b) => sf(a.g, b.g) || a.i - b.i).map(x => x.g);
+    } else if (favSort !== "recent") {
       const pr = g => { const c = cheapest(g); return c ? c.twd : (g.sale ?? g.reg); };
       const dir = favSort === "asc" ? 1 : -1;
       listItems = listItems.map((g, i) => ({g, i, p: pr(g)})).sort((a, b) => {
@@ -3003,7 +3006,7 @@ function renderMine(){
     const pages = Math.max(1, Math.ceil(listItems.length / favSize));
     favPg = Math.min(Math.max(1, favPg), pages);
     fc.hidden = !ids.length;
-    fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價錢低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價錢高到低</option></select>
+    fc.innerHTML = `<select id="favSortSel" aria-label="收藏排序"><option value="recent"${favSort === "recent" ? " selected" : ""}>${mineTab === "fav" ? "最近收藏" : "最近購買"}</option><option value="pct"${favSort === "pct" ? " selected" : ""}>折扣最多</option><option value="save"${favSort === "save" ? " selected" : ""}>省最多錢</option><option value="end"${favSort === "end" ? " selected" : ""}>最快結束</option><option value="new"${favSort === "new" ? " selected" : ""}>最新上架</option><option value="asc"${favSort === "asc" ? " selected" : ""}>價格低到高</option><option value="desc"${favSort === "desc" ? " selected" : ""}>價格高到低</option><option value="rel"${favSort === "rel" ? " selected" : ""}>發售日新到舊</option><option value="relOld"${favSort === "relOld" ? " selected" : ""}>發售日舊到新</option></select>
       <button class="chip ftoggle" id="mineFToggle" aria-expanded="${mineFOpen}" style="display:inline-block">篩選<span class="fb${mineFN() ? " on" : ""}">${mineFN()}</span><span class="arr">${mineFOpen ? " ▴" : " ▾"}</span></button>
       ${mineActive ? `<span class="muted" style="font-size:13px">符合 ${mineMatch} 款</span><button class="chip" id="mineClr">清除條件</button>` : ""}`;
     const from = (favPg - 1) * favSize;
