@@ -950,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v214・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v215・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1111,6 +1111,7 @@ function zhInfo(g){
 const demoBadge = g => g.demo ? '<span class="demo-badge">有體驗版</span>' : "";
 const zhBadge = g => { const z = zhInfo(g); return z ? `<span class="zh ${z[0]}">${z[1]}</span>` : ""; };
 // 台灣沒賣的遊戲分三種：只有日本（jp）、只有香港（hk）、日本和香港都有（jh）
+const lowRegion = g => g.only === "jp" ? "日區" : g.only === "hk" ? "港區" : "台區";   // 史低價是哪一區商店的紀錄
 const onlyKind = g => g.only === "hk" ? (g.jpNow != null ? "jh" : "hk") : (g.only || "");
 const ONLY_LABEL = {jp: "日本限定", hk: "港區限定", jh: "日港限定"};
 function badges(g){
@@ -1922,7 +1923,7 @@ function chartStats(series, g){
     gap = `約 ${Math.round(avg)} 天`;
   }
   return `<div class="cstats">
-    <div><b>${dm(low)}</b><span>史低（${lowDate}）</span></div>
+    <div><b>${dm(low)}</b><span>${lowRegion(g)}史低（${lowDate}）</span></div>
     <div><b>${sales.length} 次</b><span>記錄期間打折次數</span></div>
     <div><b>${gap}</b><span>平均打折間隔</span></div></div>`;
 }
@@ -3022,8 +3023,7 @@ function renderMine(){
     const m = MINE[g.id] || {};
     let info;
     if (mineTab === "fav") {
-      info = [g.low != null ? `史低 ${dm(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "",
-              g.cheapPct && !twMode(g) ? `${g.cheapRegion}現在便宜 ${g.cheapPct}%` : ""].filter(Boolean).join(" · ");
+      info = g.low != null ? `${lowRegion(g)}史低 ${dm(g.low)}${g.lowDate ? `（${g.lowDate}）` : ""}` : "";
       info = (favNewIds.s.has(g.id) ? '<span class="new-badge">新特價</span>' : "") + (favNewIds.l.has(g.id) ? '<span class="new-badge">新史低</span>' : "") + info;
       info += (m.n ? `<div class="memo">🛒 購買記事：${esc(m.n)}</div>` : "") + `<div class="memo">${m.fn ? `📝 ${esc(m.fn)}` : '<span class="muted">還沒有備忘錄</span>'}<button class="chip" data-memo="${g.id}">✎ 備忘錄</button></div>`;
     } else {
