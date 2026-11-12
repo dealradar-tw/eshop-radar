@@ -1082,10 +1082,14 @@ def refresh_jp_zh(games, limit=2500):
 def refresh_hot(games, jp):
     """熱門排行：抓 Fami通 每週銷量排行（日本實體＋下載卡等推估銷量），Switch／Switch 2 的全部列出，
     對得上商店的遊戲附上編號（可點進介紹頁）。"""
+    def status(result, period="", note=""):   # 每次都記下抓取結果，方便事後查「為什麼沒更新」
+        save(os.path.join(DATA, "hot_status.json"), {"checked": datetime.now(TW).strftime("%Y-%m-%d %H:%M"), "result": result,
+                                                      "period": period, "note": str(note)[:200]}, True)
     try:
         h = get(FAMITSU, 40)
     except Exception as e:
         log(f"  Fami通排行抓取失敗，沿用上次：{e}")
+        status("fetch_fail", note=e)
         return rematch_hot(games, jp)
     pat = re.compile(r'__ranking">(\d+)</div><div><div class="[^"]*__platform[^"]*?__(\w+)">[^<]*</div>'
                      r'<div class="[^"]*__title">([^<]*)</div><div class="[^"]*salesCountLine">'
@@ -1102,6 +1106,7 @@ def refresh_hot(games, jp):
     period = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
     if not cards:
         log("  Fami通排行解析不到資料（網頁格式可能改了），沿用上次")
+        status("parse_fail", period, f"html {len(h)} 字元，找到 listItem {len(re.findall('listItem', h))} 個")
         return rematch_hot(games, jp)
     items = [{"fr": int(rk), "plat": "s2" if "switch2" in pl else "sw", "title": title.strip(),
               "sales": int(sales.replace(",", "")), "total": int(total.replace(",", "") or 0), "rel": rel}
@@ -1109,6 +1114,7 @@ def refresh_hot(games, jp):
     miss = match_hot(items, games, jp)
     out = {"week": period, "src": "Fami通", "items": items}
     log(f"Fami通排行（{period}）：Switch／Switch 2 共 {len(items)} 款，商店找不到 {miss} 款")
+    status("ok", period, f"Switch／Switch 2 共 {len(items)} 款")
     if items:
         save_if_changed(os.path.join(DOCS, "hot.json"), out)
 
