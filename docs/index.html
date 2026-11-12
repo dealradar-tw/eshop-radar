@@ -950,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v218・版本更新日期 2026-11-08</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v219・版本更新日期 2026-11-08</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1762,7 +1762,7 @@ function refreshColl(){
 }
 function renderHot(){
   const items = (HOT.items || []).filter(h => plat === "all" || (plat === "1") === (h.plat === "s2"));
-  if (HOT.week) $("#hotNote").innerHTML = `依日本 Fami通 每週銷量排行（${esc(HOT.week)}）。<br><span class="muted">每週更新一次，通常在週四前後公布，實際依 Fami通 公布時間為準；本站在 Fami通 公布後的下一次自動更新時換新。日本的連假（年末年始、黃金週、盂蘭盆節）期間可能停刊或延後。</span>`;
+  if (HOT.week) $("#hotNote").innerHTML = `依日本 Fami通 每週銷量排行（${esc(HOT.week)}）。<br><span class="muted">每週更新一次，通常在週四前後公布，實際依 Fami通 公布時間為準；本站在 Fami通 公布後的下一次自動更新時換新。日本的連假（年末年始、黃金週、盂蘭盆節）期間可能停刊或延後。</span>${HOT.checked ? `<br><span class="muted">本站最後檢查：${esc(HOT.checked)}（台北時間）。官網尚未公布新一期時，這裡會維持上一期。</span>` : ""}`;
   const info = h => `<div class="hotinfo"><span class="nw">本週約 <b>${nf(h.sales)}</b> 本${h.total ? " ·" : ""}</span>${h.total ? ` <span class="nw">累計 ${nf(h.total)} 本</span>` : ""}</div>`;
   $("#hotList").innerHTML = items.length ? items.map(h => {
     const g = h.id && BY.get(h.id.slice(-6));

@@ -1112,7 +1112,7 @@ def refresh_hot(games, jp):
               "sales": int(sales.replace(",", "")), "total": int(total.replace(",", "") or 0), "rel": rel}
              for rk, pl, title, sales, total, rel in cards if "switch" in pl]
     miss = match_hot(items, games, jp)
-    out = {"week": period, "src": "Fami通", "items": items}
+    out = {"week": period, "src": "Fami通", "checked": datetime.now(TW).strftime("%Y-%m-%d %H:%M"), "items": items}
     log(f"Fami通排行（{period}）：Switch／Switch 2 共 {len(items)} 款，商店找不到 {miss} 款")
     status("ok", period, f"Switch／Switch 2 共 {len(items)} 款")
     if items:
