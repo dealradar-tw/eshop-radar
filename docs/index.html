@@ -950,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v220・版本更新日期 2026-11-15</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v221・版本更新日期 2026-11-15</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -2860,14 +2860,16 @@ function buyDlg(id){
   // 每款遊戲一筆購買明細，直接填寫、自動儲存（多買其他區的請寫在記事備忘錄）
   const g = BY.get(id), m = MINE[id] || {}, x = m.p?.[0] || {};
   const today = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+  // 只列台灣、香港、日本三區；舊紀錄若原本選了其他區／美元，仍保留那一項，避免打開後被改掉
+  const pick = (o, keys, cur) => Object.fromEntries(Object.entries(o).filter(([k]) => keys.includes(k) || k === cur));
   const opt = (o, v) => Object.entries(o).map(([k, t]) => `<option value="${k}"${k === v ? " selected" : ""}>${t}</option>`).join("");
   openDlg(`<div class="dlg-head"><h3>購買明細</h3><button class="chip" data-dlgclose>完成</button></div>
     <p class="dlg-name">${esc(g?.name || id)}</p>
     <div class="buyform" id="buyForm" data-id="${id}">
       <label>購買日期<input type="date" id="bDate" value="${esc(x.d || today)}"></label>
       <label>版本<select id="bType">${opt(TYPES, x.t || "dl")}</select></label>
-      <label>購買地區<select id="bReg">${opt(REGIONS, x.r || "tw")}</select></label>
-      <label>幣別<select id="bCur">${opt({TWD: "新台幣 NT$", HKD: "港幣 HK$", JPY: "日圓 ¥", USD: "美元 US$"}, x.c || "TWD")}</select></label>
+      <label>購買地區<select id="bReg">${opt(pick(REGIONS, ["tw", "hk", "jp"], x.r), x.r || "tw")}</select></label>
+      <label>幣別<select id="bCur">${opt(pick({TWD: "新台幣 NT$", HKD: "港幣 HK$", JPY: "日圓 ¥", USD: "美元 US$"}, ["TWD", "HKD", "JPY"], x.c), x.c || "TWD")}</select></label>
       <label>金額<input type="number" id="bAmt" min="0" step="any" inputmode="decimal" placeholder="例如 ${g?.price ?? 990}" value="${x.a ?? ""}"></label>
       <p class="cnote" id="bTwd"></p>
     </div>
