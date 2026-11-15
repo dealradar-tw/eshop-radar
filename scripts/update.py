@@ -1091,9 +1091,9 @@ def refresh_hot(games, jp):
         log(f"  Fami通排行抓取失敗，沿用上次：{e}")
         status("fetch_fail", note=e)
         return rematch_hot(games, jp)
-    pat = re.compile(r'__ranking">(\d+)</div><div><div class="[^"]*__platform[^"]*?__(\w+)">[^<]*</div>'
-                     r'<div class="[^"]*__title">([^<]*)</div><div class="[^"]*salesCountLine">'
-                     r'<p class="[^"]*salesCount">([\d,]+)')
+    pat = re.compile(r'_ranking">(\d+)</div><div><div class="[^"]*?_platform[^"]*?_(\w+)">[^<]*</div>'
+                     r'<div class="[^"]*?_title">([^<]*)</div><div class="[^"]*?salesCountLine">'
+                     r'<p class="[^"]*?salesCount">([\d,]+)')   # class 名稱的前綴是雜湊字（_6qX9Ba_ 之類），會改，所以只比對尾段
     cards = []
     for chunk in re.split(r'<li class="[^"]*listItem">', h)[1:]:
         m = pat.search(chunk)
