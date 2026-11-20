@@ -573,12 +573,8 @@ li.has-x .acts,li.has-x[data-card] .thumb{grid-row:1/4}
 .acts{grid-column:4;grid-row:1/3;flex-direction:column;gap:2px;align-self:center;justify-self:end;margin-left:-4px}
 @media (max-width:700px){
   /* 封面貼齊卡片左、上、下邊，放大填滿 */
-  li[data-card]{padding:0 4px 0 0;overflow:hidden;gap:6px;grid-template-columns:var(--thumb-w,110px) auto minmax(0,1fr) auto}
+  li[data-card]{padding:0 4px 0 0;overflow:hidden;gap:6px;grid-template-columns:var(--thumb-w,92px) auto minmax(0,1fr) auto}
   li[data-card] .thumb{grid-column:1;grid-row:1/3;border-radius:0;aspect-ratio:auto;height:auto;align-self:stretch;min-height:88px}
-  /* 封面不再撐滿：保持 16:9 原圖比例，封面寬度剛好放進原圖寬度的 80%（左右各裁 10%），上下留空 */
-  li[data-card] .thumb{display:flex;align-items:center;justify-content:center}
-  li[data-card] .thumb img{flex:none;width:125%;height:auto;max-width:none;aspect-ratio:16/9;object-fit:cover}
-  li[data-card] .soon{white-space:normal}   /* 封面變寬後右邊變窄，「剩 N 天（日期結束）」允許換行，不要被切掉 */
   li[data-card] .info .name{padding-top:7px}
   li[data-card] .mx,li[data-card] .side{padding-bottom:7px}
   li[data-card] .acts{padding-block:7px}
@@ -954,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v225・版本更新日期 2026-11-15</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v226・版本更新日期 2026-11-15</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
