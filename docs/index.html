@@ -950,7 +950,7 @@ li[data-card]:active,.mine-sum>div[data-ff]:active,.set-card button:active{trans
 <div id="lightbox" hidden></div>
 
 <footer>
-  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v226・版本更新日期 2026-11-15</span><br>
+  測試版：功能與資料仍在調整，若有錯誤歡迎回報。<span id="verText" hidden>網站版本 v227・版本更新日期 2026-11-15</span><br>
   非官方個人工具，價格以主機上的 eShop 實際顯示為準。資料來源：任天堂 eShop 公開資料；遊戲介紹取自任天堂台灣區商店。<br>
   價格歷史從 2026-10-14 開始記錄；「史低價」是開始記錄以來的最低價。剛上架、商店頁面還沒公開的商品查不到名稱，會先不列出，每天自動更新時會再試。<br>
   大部分 Switch 遊戲也能在 Switch 2 上玩；紫色標示的是 Switch 2 專用遊戲。<br>
@@ -1739,7 +1739,7 @@ async function renderRank(t){
   await loadRanks(); updRankTiles();
   if (!RANKS) { ul.innerHTML = '<li class="hot-miss"><div class="info">暫時讀不到排行資料，請稍後再試。</div></li>'; return; }
   const list = (isFav ? rankLists().fav : rankLists().buy).slice(0, 100);
-  ul.innerHTML = list.length ? list.map((x, i) => row(x.g, i + 1, `<div class="hotinfo"><b>${nf(x.n)}</b> 人${isFav ? "關注" : "購買"}</div>`)).join("")
+  ul.innerHTML = list.length ? list.map((x, i) => row(x.g, i + 1)   /* 人數已由卡片上的 👁☆🛍 圖示顯示，不再另外寫「N 人關注／購買」 */).join("")
     : `<li class="hot-miss"><div class="info">${isFav ? "目前沒有被關注又有特價的遊戲。" : "還沒有人標記已購買。"}</div></li>`;
 }
 const dec = t => String(t).replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
