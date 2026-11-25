@@ -41328,7 +41328,7 @@
 },
 "70050000068891":{
 "first_seen":"2026-10-14",
-"parent":"70010000111555",
+"parent":"70010000143471",
 "name":"Experience x3 - Dragon Spira",
 "img":"3e297e97811a3656d0b7a9993d5e669569235d8a390bace08424f8b6d5a69914",
 "mem":false,
@@ -41345,7 +41345,7 @@
 },
 "70050000068892":{
 "first_seen":"2026-10-14",
-"parent":"70010000111555",
+"parent":"70010000143471",
 "name":"JP x3 - Dragon Spira",
 "img":"b482ef93a8049f92059dea0132dc0b5220a25e301a5dfc57ccdb90ca4a4b17b5",
 "mem":false,
@@ -41362,7 +41362,7 @@
 },
 "70050000068893":{
 "first_seen":"2026-10-14",
-"parent":"70010000111555",
+"parent":"70010000143471",
 "name":"Experience & JP x2 - Dragon Spira",
 "img":"673ced0ab5337c450a7fa88b306e3b409ad6ecca566a087d3fef0ff12340daf1",
 "mem":false,
@@ -41379,7 +41379,7 @@
 },
 "70050000068894":{
 "first_seen":"2026-10-14",
-"parent":"70010000111555",
+"parent":"70010000143471",
 "name":"Damage x2 - Dragon Spira",
 "img":"b105b8447cffdb4931a2e37c4720a79cd189fde01284a20a522cb772578e68a3",
 "mem":false,
@@ -66745,7 +66745,7 @@
 "img":"abd8f3994b1f441e0b9e00a053657e94b09bcda2afad6faa3fe6f643875ef103",
 "mem":false,
 "date":"2026-11-26",
-"status":"preorder",
+"status":"onsale",
 "reg":120,
 "sale":90,
 "end":"2027-03-02T15:59:59Z",
