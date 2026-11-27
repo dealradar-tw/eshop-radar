@@ -1086,7 +1086,12 @@ def refresh_hot(games, jp):
         save(os.path.join(DATA, "hot_status.json"), {"checked": datetime.now(TW).strftime("%Y-%m-%d %H:%M"), "result": result,
                                                       "period": period, "note": str(note)[:200]}, True)
     try:
-        h = get(FAMITSU, 40)
+        # Fami通 的 CDN 設了 stale-while-revalidate（很長）：同一個網址常拿到舊頁面，Actions 這種少人連的節點更容易中。
+        # 所以每次加上不重複的參數強制拿新的，並把 CDN 回應狀態記在 hot_status，方便事後查。
+        req = urllib.request.Request(f"{FAMITSU.rstrip('/')}?_={int(time.time())}", headers={**UA, "Cache-Control": "no-cache", "Pragma": "no-cache"})
+        with urllib.request.urlopen(req, timeout=40) as r:
+            h = r.read().decode("utf-8", "replace")
+            cdn = f"x-cache={r.headers.get('x-cache', '?')} age={r.headers.get('age', '-')}"
     except Exception as e:
         log(f"  Fami通排行抓取失敗，沿用上次：{e}")
         status("fetch_fail", note=e)
@@ -1106,7 +1111,7 @@ def refresh_hot(games, jp):
     period = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
     if not cards:
         log("  Fami通排行解析不到資料（網頁格式可能改了），沿用上次")
-        status("parse_fail", period, f"html {len(h)} 字元，找到 listItem {len(re.findall('listItem', h))} 個")
+        status("parse_fail", period, f"html {len(h)} 字元，找到 listItem {len(re.findall('listItem', h))} 個；{cdn}")
         return rematch_hot(games, jp)
     items = [{"fr": int(rk), "plat": "s2" if "switch2" in pl else "sw", "title": title.strip(),
               "sales": int(sales.replace(",", "")), "total": int(total.replace(",", "") or 0), "rel": rel}
@@ -1114,7 +1119,7 @@ def refresh_hot(games, jp):
     miss = match_hot(items, games, jp)
     out = {"week": period, "src": "Fami通", "checked": datetime.now(TW).strftime("%Y-%m-%d %H:%M"), "items": items}
     log(f"Fami通排行（{period}）：Switch／Switch 2 共 {len(items)} 款，商店找不到 {miss} 款")
-    status("ok", period, f"Switch／Switch 2 共 {len(items)} 款")
+    status("ok", period, f"Switch／Switch 2 共 {len(items)} 款；{cdn}")
     if items:
         save_if_changed(os.path.join(DOCS, "hot.json"), out)
 
